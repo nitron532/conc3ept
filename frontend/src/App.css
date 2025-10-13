@@ -1,0 +1,34 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+.topleft{
+  position: fixed;
+  top: 10px;
+  left: 20px;
+}
+.topright{
+  position: fixed;
+  top: 10px;
+  right: 20px;
+}
+.graphContainer{
+  border: none !important;
+  outline: none !important;
+}
+.bottomleft{
+  position: fixed;
+  bottom: 10px;
+  left: 20px;
+}
