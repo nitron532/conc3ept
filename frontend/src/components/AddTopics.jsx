@@ -16,7 +16,7 @@ import axios from "axios"
 
 export default function AddTopics() {
   const [open, setOpen] = React.useState(false);
-  const initialState = {topic: "", connections : []}
+  const initialState = {topicInput: "", connections : []}
   const [formData, setFormData] = React.useState(initialState) //to db
   const [courseNodes, setCourseNodes] = React.useState([{}]) //from db
 
@@ -32,7 +32,7 @@ export default function AddTopics() {
   };
   const refreshNodes = React.useCallback(async (forceRefresh = false)=>{
     try{
-        
+        console.log("test refreshNodes")
     }
     catch(error){
         console.log("Failed to fetch graph data:", error)
@@ -43,7 +43,7 @@ export default function AddTopics() {
     console.log("submitted:", formData)
     try{
         await axios.post(
-            "localhost/AddTopic",
+            "http://localhost:5000/AddTopic",
             formData,
             {headers:{"Content-Type": "application/json"}}
         )
@@ -59,8 +59,8 @@ export default function AddTopics() {
     <Box sx={{ width: 450 }} role="presentation">
         <Button sx ={{my:1}} onClick={toggleDrawer(false)}> Back </Button>
       <Divider />
-    <TextField name = "topicInput" sx ={{t:3}} fullWidth id="topicInput" label="Topic" variant="outlined" onChange = {handleChange()}/>
-    <Button variant="outlined" onClick={function(event){toggleDrawer(false); postNewNode()}}>Add</Button>
+    <TextField name = "topicInput" sx ={{t:3}} fullWidth id="topicInput" label="Topic" variant="outlined" onChange = {handleChange}/>
+    <Button variant="outlined" onClick={function(event){toggleDrawer(false); postNewNode(event)}}>Add</Button>
     </Box>
   );
 

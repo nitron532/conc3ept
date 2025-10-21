@@ -33,8 +33,10 @@ def LoadGraph():
     print("request graphs from neo4j and return as json (maybe just request updated things perhaps?)")
 
 @app.route("/AddTopic", methods = ["POST"])
-def addTopic():
+def AddTopic():
     data = request.json
+    print(data)
+    return "OK", 200
 
 
 
