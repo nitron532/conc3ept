@@ -3,6 +3,8 @@ import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 
+// get login state from main component
+
 export default function BasicMenu() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -14,7 +16,7 @@ export default function BasicMenu() {
   };
 
   return (
-    <div className = "topright">
+    <div className = "topright"style = {{zIndex:1}}>
       <Button
         id="basic-button"
         aria-controls={open ? 'basic-menu' : undefined}

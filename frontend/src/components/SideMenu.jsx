@@ -53,7 +53,7 @@ export default function SideMenu() {
   );
 
   return (
-    <div className = "topleft">
+    <div className = "topleft" style = {{zIndex:1}}>
       <Button onClick={toggleDrawer(true)}>Menu</Button>
       <Drawer open={open} onClose={toggleDrawer(false)}>
         {DrawerList}

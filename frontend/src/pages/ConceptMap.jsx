@@ -31,17 +31,29 @@ export default function App() {
  
   return (
     <>
-    <div style={{ width: '80vw', height: '75vh' }}>
-      <ReactFlow
-        colorMode = "dark"
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        fitView
-      />
-    </div>
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+        <div style={{ width: '90vw', height: '90vh' }}>
+          <ReactFlow
+            colorMode = "dark"
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            fitView
+            style={{ backgroundColor: '#0000' }}
+          />
+        </div>
+      </div>
     <div className = "bottomleft"> <AddTopics/> </div>
     {/* pass prop containing which course */}
     </>
