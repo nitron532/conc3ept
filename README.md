@@ -1,1 +1,1 @@
-CS3E Lab
+UCSB CS3E Lab
