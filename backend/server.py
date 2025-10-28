@@ -9,53 +9,6 @@ from dotenv import load_dotenv
 from flask import g
 import pydantic
 
-
-# class ConceptGraphService:
-#     def __init__(self, supabase_url, supabase_key, user_session=None):
-#         """
-#         supabase_url/key: credentials to connect to Supabase
-#         user_session: optional dict or object with user info
-#         """
-#         from supabase import create_client
-#         self.client = create_client(supabase_url, supabase_key)
-#         self.user_session = user_session  # store authenticated user info
-
-#     # ----------------------------
-#     # Authentication methods
-#     # ----------------------------
-#     def sign_in(self, email, password):
-#         auth_resp = self.client.auth.sign_in_with_password({
-#             "email": email,
-#             "password": password
-#         })
-#         self.user_session = auth_resp.data
-#         return auth_resp
-
-#     def sign_out(self):
-#         self.user_session = None
-#         return self.client.auth.sign_out()
-
-#     # ----------------------------
-#     # Graph methods
-#     # ----------------------------
-#     def get_nodes(self):
-#         resp = self.client.table("concepts").select("*").execute()
-#         return resp.data
-
-#     def add_node(self, concept_name):
-#         resp = self.client.table("concepts").insert({"concept_name": concept_name}).execute()
-#         return resp.data
-
-#     def add_link(self, source_id, target_id):
-#         resp = self.client.table("concept_links").insert({
-#             "source_concept_id": source_id,
-#             "target_concept_id": target_id
-#         }).execute()
-#         return resp.data
-
-#     # more helper functions: update, delete, fetch connections...
-
-
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:5173"]) 
 #connect to supabase
@@ -154,14 +107,6 @@ def GetGraph():
         )
     return jsonify({"nodes":nodes, "edges":edges})
 
-    """
-const initialEdges = [{ id: 'n1-n2', source: 'n1', target: 'n2' }];
-
-    const initialNodes = [
-  { id: 'n1', position: { x: 0, y: 0 }, data: { label: 'Pointers' } },
-  { id: 'n2', position: { x: 0, y: 100 }, data: { label: 'Linked List' } },
-];
-"""
     
 
     
@@ -173,4 +118,5 @@ const initialEdges = [{ id: 'n1-n2', source: 'n1', target: 'n2' }];
 
 
 if __name__ == "__main__":
+
     app.run(host="0.0.0.0", port=5000, debug=True)
