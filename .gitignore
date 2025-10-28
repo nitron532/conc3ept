@@ -1,3 +1,4 @@
 .env
 backend/venv/
 neo.txt
+frontend/.env.frontend

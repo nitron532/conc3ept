@@ -1,20 +1,49 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge } from '@xyflow/react';
+import axios from "axios"
 import AddTopics from '../components/AddTopics'
 import '@xyflow/react/dist/style.css';
  
 //wanna pass in course data, user data
 //initial positions could be updated via a save button after the user drags nodes around?
 //wanna have a course label on this page
+
+//initial nodes are loaded in from database
+
+
+
 const initialNodes = [
-  { id: 'n1', position: { x: 0, y: 0 }, data: { label: 'Pointers' } },
-  { id: 'n2', position: { x: 0, y: 100 }, data: { label: 'Linked List' } },
+
 ];
-const initialEdges = [{ id: 'n1-n2', source: 'n1', target: 'n2' }];
+
+const initialEdges = [];
+
+const getGraph = async () =>{
+  console.log("retrieving graph")
+  const response = await axios.get(
+    `${import.meta.env.VITE_SERVER_URL}/GetGraph`
+  )
+  return response.data;
+}
  
-export default function App() {
+export default function ConceptMap() {
   const [nodes, setNodes] = useState(initialNodes);
   const [edges, setEdges] = useState(initialEdges);
+
+  const refreshNodes = useCallback (async (forceRefresh = false) =>{
+    try{
+        const responseData = await getGraph();
+        setNodes(responseData.nodes)
+        setEdges(responseData.edges)
+    }
+    catch(Error){
+      console.error("Failed to retrieve graph: ", Error);
+    }
+  }, []);
+
+  useEffect(()=>{
+    refreshNodes();
+  }, [refreshNodes])
  
   const onNodesChange = useCallback(
     (changes) => setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)),
@@ -54,7 +83,7 @@ export default function App() {
           />
         </div>
       </div>
-    <div className = "bottomleft"> <AddTopics/> </div>
+    <div className = "bottomleft"> <AddTopics refreshNodes = {refreshNodes}/> </div>
     {/* pass prop containing which course */}
     </>
   );
