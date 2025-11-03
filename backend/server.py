@@ -29,7 +29,7 @@ def LoadGraph():
 
 #need prevention of empty data
 @app.route("/AddTopic", methods = ["POST"])
-#add option in UI to allow topical cycles
+#add option in UI to allow topical cycles (?)
 def AddTopic():
     data = request.json
     topicName: str = data["topicInput"]
@@ -54,7 +54,7 @@ def AddTopic():
     )
     return "OK", 200
 
-@app.route("/EditTopic", methods = ["POST"])
+@app.route("/EditTopic", methods = ["PATCH"])
 def EditTopic():
     print("edit")
 
@@ -62,7 +62,7 @@ def EditTopic():
 #only display nodes that belong in the course(so if they are linked to other things, dont show those other things)
 
 @app.route("/GetNodes", methods = ["GET"])
-def getNodes():
+def GetNodes():
     getNodesResponse = (
         supabase.table("Concepts")
         .select("id, conceptName")

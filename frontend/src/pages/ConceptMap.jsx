@@ -1,15 +1,14 @@
 import { useState, useCallback, useEffect } from 'react';
 import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge } from '@xyflow/react';
 import axios from "axios"
-import AddTopics from '../components/AddTopics'
+import AddEditTopics from '../components/AddEditTopics'
 import '@xyflow/react/dist/style.css';
  
 //wanna pass in course data, user data
 //initial positions could be updated via a save button after the user drags nodes around?
 //wanna have a course label on this page
 
-//initial nodes are loaded in from database
-
+//wanna  make a search function to find a specific topic or edge
 
 
 const initialNodes = [
@@ -19,7 +18,6 @@ const initialNodes = [
 const initialEdges = [];
 
 const getGraph = async () =>{
-  console.log("retrieving graph")
   const response = await axios.get(
     `${import.meta.env.VITE_SERVER_URL}/GetGraph`
   )
@@ -83,7 +81,7 @@ export default function ConceptMap() {
           />
         </div>
       </div>
-    <div className = "bottomleft"> <AddTopics refreshNodes = {refreshNodes}/> </div>
+    <div className = "bottomleft"> <AddEditTopics refreshNodes = {refreshNodes}/> </div>
     {/* pass prop containing which course */}
     </>
   );

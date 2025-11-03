@@ -1,29 +1,20 @@
-
-import * as React from 'react';
+import  {useState} from 'react'
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import Button from '@mui/material/Button';
-import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import ListSubheader from '@mui/material/ListSubheader';
 import TextField from '@mui/material/TextField';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import { Link as RouterLink } from 'react-router-dom';
 import MenuItem from '@mui/material/MenuItem';
 import axios from "axios"
 
-export default function AddTopics({refreshNodes}) {
-  const [open, setOpen] = React.useState(false);
+export default function AddEditTopics({refreshNodes}) {
+  const [open, setOpen] = useState(false);
   const initialState = {topicInput: "", connections : []}
-  const [formData, setFormData] = React.useState(initialState) //to db
-  const [courseNodes, setCourseNodes] = React.useState([]) //from db
-
+  const [formData, setFormData] = useState(initialState) //to db
+  const [courseNodes, setCourseNodes] = useState([]) //from db
 
   const handleChange = (e) =>{
     const {name, value} = e.target
@@ -36,9 +27,27 @@ export default function AddTopics({refreshNodes}) {
     setOpen(newOpen);
     if(newOpen) getNodes();
   };
+
+  const patchNode = async (e) => {
+    e.preventDefault();
+    try{
+      await axios.patch(
+        `${import.meta.env.VITE_SERVER}/EditTopic`,
+        formData,
+        {headers:{"Content-Type": "application/json"}}
+      )
+    }
+    catch (error){
+      console.error("Failed to update: ", error);
+    }
+  }
+
   const postNewNode = async (e) => {
     e.preventDefault();
-    console.log("submitted:", formData)
+    if(formData.connections.length === 0 && formData.topicInput.length === 0){
+      //add warning saying it cant be empty?
+      return
+    }
     try{
         await axios.post(
             `${import.meta.env.VITE_SERVER_URL}/AddTopic`,
@@ -66,6 +75,9 @@ export default function AddTopics({refreshNodes}) {
         console.error("Retrieval failed: ", error);
     }
   }
+
+  const submittable = formData.topicInput.trim().length > 0;
+
   const AddMenu = (
     <Box sx={{ width: 450 }} role="presentation">
         <Button sx ={{my:1}} onClick={toggleDrawer(false)}> Back </Button>
@@ -73,6 +85,7 @@ export default function AddTopics({refreshNodes}) {
     <TextField name = "topicInput" sx ={{t:3}} fullWidth id="topicInput" label="Topic" variant="outlined" onChange = {handleChange}/>
     <FormControl fullWidth>
     <InputLabel>Edges</InputLabel>
+      {/* component that search and bring up a menu of close words */}
         <Select
             multiple
             name = "connections"
@@ -94,13 +107,15 @@ export default function AddTopics({refreshNodes}) {
             ))}
         </Select>
     </FormControl>
-    <Button variant="outlined" onClick={function(event){toggleDrawer(false); postNewNode(event)}}>Add</Button>
+    {submittable &&
+     <Button variant="outlined" onClick={function(event){toggleDrawer(false); postNewNode(event)}}>Add</Button>
+    }
     </Box>
   );
 
   return (
     <div className = "bottomleft">
-      <Button onClick={toggleDrawer(true)}>Add Topic</Button>
+      <Button onClick={toggleDrawer(true)}>Add / Edit Topic</Button>
       <Drawer open={open} onClose={toggleDrawer(false)}>
         {AddMenu}
       </Drawer>
