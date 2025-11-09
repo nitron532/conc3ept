@@ -97,12 +97,12 @@ def GetGraph():
     for topic, id in zip(topicNames,topicIds):
         nodes.append(
             {
-                "id": str(id), "position":{"x": 0, "y": 0}, "data": {"label": topic}
+                "id": str(id), "position":{"x": 0, "y": 0}, "data": {"label": topic}, "type":"custom"
             }
         )
         i+=1
     for tuple in sourcesToTargets:
-        edges.append(
+        edges.append( # can add type of edge 
                 {"id":f"{tuple[0]}-{tuple[1]}", "source": str(tuple[0]), "target": str(tuple[1])}
         )
     return jsonify({"nodes":nodes, "edges":edges})

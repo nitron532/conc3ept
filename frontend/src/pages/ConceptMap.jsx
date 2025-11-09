@@ -3,8 +3,10 @@ import Button from '@mui/material/Button';
 import { useCallback, useLayoutEffect , useEffect} from 'react';
 import axios from "axios"
 import AddEditTopics from '../components/AddEditTopics'
+import MiddleArrowEdge from '../components/MiddleArrowEdge';
+import CustomNode from '../components/CustomNode';
+
 import {
-  Background,
   ReactFlow,
   ReactFlowProvider,
   addEdge,
@@ -24,6 +26,7 @@ const elkOptions = {
   'elk.spacing.nodeNode': '80',
 };
 
+
 const getLayoutedElements = (nodes, edges, options = {}) => {
   const isHorizontal = options?.['elk.direction'] === 'RIGHT';
   const graph = {
@@ -35,7 +38,7 @@ const getLayoutedElements = (nodes, edges, options = {}) => {
       // direction.
       targetPosition: isHorizontal ? 'left' : 'top',
       sourcePosition: isHorizontal ? 'right' : 'bottom',
-
+      
       // Hardcode a width and height for elk to use when layouting.
       width: 150,
       height: 50,
@@ -51,6 +54,10 @@ const getLayoutedElements = (nodes, edges, options = {}) => {
         // React Flow expects a position property on the node instead of `x`
         // and `y` fields.
         position: { x: node.x, y: node.y },
+        data:{
+          layout: isHorizontal,
+          label: node.data.label
+        }
       })),
 
       edges: layoutedGraph.edges,
@@ -62,6 +69,16 @@ function ConceptMap() {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const { fitView } = useReactFlow();
+
+
+  const CustomEdge = ({ id, sourceX, sourceY, targetX, targetY, style }) => (
+  <path
+    d={`M${sourceX},${sourceY} C...`} // custom curved path
+    stroke="white"
+    fill="none"
+    markerMid="url(#arrow)" // middle arrow
+  />
+)
 
   const getGraph = async () =>{
     const response = await axios.get(
@@ -77,8 +94,22 @@ function ConceptMap() {
           'elk.direction': 'RIGHT',
           ...elkOptions,
         });
+        const edges = layouted.edges.map((e)=>({
+          ...e,
+          type:'middleArrow',
+          animated: true,
+        }));
+        // const nodes = responseData.nodes.map((n) => ({
+        //   ...n,
+        //   type: "custom", 
+        //   data: {
+        //     label: n.label,
+        //     layout: orientat, 
+        //   },
+        //   position: n.position,
+        // }));
         setNodes(layouted.nodes);
-        setEdges(layouted.edges);
+        setEdges(edges);
         requestAnimationFrame(() => fitView());
     }
     catch(Error){
@@ -113,6 +144,7 @@ function ConceptMap() {
     onLayout({ direction: 'DOWN'});
   }, []);
 
+
   return (
     <div style={{
       position: 'absolute',
@@ -124,23 +156,19 @@ function ConceptMap() {
       justifyContent: 'center',
       alignItems: 'center',
       }}>
-      <div style={{ width: '90vw', height: '90vh' }}>
+      <div style={{ width: '90vw', height: '90vh'}}>
         <ReactFlow
-          colorMode = "dark"
+          className="react-flow"
+          nodeTypes = {{custom: CustomNode}}
           nodes={nodes}
           edges={edges}
+          edgeTypes = {{middleArrow:MiddleArrowEdge}}
           onConnect={onConnect}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           fitView
         >
           <Panel position="top-right">
-            {/* <button
-              className="xy-theme__button"
-              onClick={() => onLayout({ direction: 'DOWN' })}
-            >
-              vertical layout
-            </button> */}
             <Button sx ={{my:1}} onClick={() => onLayout({direction:'DOWN'})}> Vertical </Button>
             <Button sx ={{my:1}} onClick={() => onLayout({direction:'RIGHT'})}> Horizontal </Button>
           </Panel>

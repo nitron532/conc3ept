@@ -32,3 +32,20 @@
   bottom: 10px;
   left: 20px;
 }
+.react-flow {
+  --xy-background-color: #121212; 
+  --xy-minimap-background-color-default: #242424;
+  --xy-node-background-color: #1e1e1e;
+  --xy-node-border-color: #888;
+  --xy-edge-stroke-default: #888;
+  --xy-handle-color: #aaa;
+  --xy-font-color: #eee;
+  text-align: center;         /* centers text horizontally */
+  justify-content: center;    /* centers text vertically */
+  align-items: center;
+  display: flex;
+}
+
+.react-flow__background {
+  background-color: #121212 !important;
+}
