@@ -97,7 +97,7 @@ def GetGraph():
     for topic, id in zip(topicNames,topicIds):
         nodes.append(
             {
-                "id": str(id), "position":{"x": 100*i+30, "y": 50*i+30}, "data": {"label": topic}
+                "id": str(id), "position":{"x": 0, "y": 0}, "data": {"label": topic}
             }
         )
         i+=1

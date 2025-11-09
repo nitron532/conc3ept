@@ -1,38 +1,85 @@
-import { useState, useCallback, useEffect } from 'react';
-import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge } from '@xyflow/react';
+import ELK from 'elkjs/lib/elk.bundled.js';
+import Button from '@mui/material/Button';
+import { useCallback, useLayoutEffect , useEffect} from 'react';
 import axios from "axios"
 import AddEditTopics from '../components/AddEditTopics'
+import {
+  Background,
+  ReactFlow,
+  ReactFlowProvider,
+  addEdge,
+  Panel,
+  useNodesState,
+  useEdgesState,
+  useReactFlow,
+} from '@xyflow/react';
+
 import '@xyflow/react/dist/style.css';
- 
-//wanna pass in course data, user data
-//initial positions could be updated via a save button after the user drags nodes around?
-//wanna have a course label on this page
 
-//wanna  make a search function to find a specific topic or edge
+const elk = new ELK();
 
+const elkOptions = {
+  'elk.algorithm': 'layered',
+  'elk.layered.spacing.nodeNodeBetweenLayers': '100',
+  'elk.spacing.nodeNode': '80',
+};
 
-const initialNodes = [
+const getLayoutedElements = (nodes, edges, options = {}) => {
+  const isHorizontal = options?.['elk.direction'] === 'RIGHT';
+  const graph = {
+    id: 'root',
+    layoutOptions: options,
+    children: nodes.map((node) => ({
+      ...node,
+      // Adjust the target and source handle positions based on the layout
+      // direction.
+      targetPosition: isHorizontal ? 'left' : 'top',
+      sourcePosition: isHorizontal ? 'right' : 'bottom',
 
-];
+      // Hardcode a width and height for elk to use when layouting.
+      width: 150,
+      height: 50,
+    })),
+    edges: edges,
+  };
 
-const initialEdges = [];
+  return elk
+    .layout(graph)
+    .then((layoutedGraph) => ({
+      nodes: layoutedGraph.children.map((node) => ({
+        ...node,
+        // React Flow expects a position property on the node instead of `x`
+        // and `y` fields.
+        position: { x: node.x, y: node.y },
+      })),
 
-const getGraph = async () =>{
-  const response = await axios.get(
-    `${import.meta.env.VITE_SERVER_URL}/GetGraph`
-  )
-  return response.data;
-}
- 
-export default function ConceptMap() {
-  const [nodes, setNodes] = useState(initialNodes);
-  const [edges, setEdges] = useState(initialEdges);
+      edges: layoutedGraph.edges,
+    }))
+    .catch(console.error);
+};
+
+function ConceptMap() {
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const { fitView } = useReactFlow();
+
+  const getGraph = async () =>{
+    const response = await axios.get(
+      `${import.meta.env.VITE_SERVER_URL}/GetGraph`
+    )
+    return response.data;
+  }
 
   const refreshNodes = useCallback (async (forceRefresh = false) =>{
     try{
         const responseData = await getGraph();
-        setNodes(responseData.nodes)
-        setEdges(responseData.edges)
+        const layouted = await getLayoutedElements(responseData.nodes, responseData.edges, {
+          'elk.direction': 'RIGHT',
+          ...elkOptions,
+        });
+        setNodes(layouted.nodes);
+        setEdges(layouted.edges);
+        requestAnimationFrame(() => fitView());
     }
     catch(Error){
       console.error("Failed to retrieve graph: ", Error);
@@ -42,47 +89,72 @@ export default function ConceptMap() {
   useEffect(()=>{
     refreshNodes();
   }, [refreshNodes])
- 
-  const onNodesChange = useCallback(
-    (changes) => setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)),
-    [],
+
+  const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), []);
+  const onLayout = useCallback(
+    ({direction}) => {
+      const opts = { 'elk.direction': direction, ...elkOptions };
+      const ns = nodes;
+      const es = edges;
+
+      getLayoutedElements(ns, es, opts).then(
+        ({ nodes: layoutedNodes, edges: layoutedEdges }) => {
+          setNodes(layoutedNodes);
+          setEdges(layoutedEdges);
+          fitView();
+        },
+      );
+    },
+    [nodes, edges],
   );
-  const onEdgesChange = useCallback(
-    (changes) => setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)),
-    [],
-  );
-  const onConnect = useCallback(
-    (params) => setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot)),
-    [],
-  );
- 
+
+  // Calculate the initial layout on mount.
+  useLayoutEffect(() => {
+    onLayout({ direction: 'DOWN'});
+  }, []);
+
   return (
-    <>
-        <div style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100vw',
-          height: '100vh',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}>
-        <div style={{ width: '90vw', height: '90vh' }}>
-          <ReactFlow
-            colorMode = "dark"
-            nodes={nodes}
-            edges={edges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onConnect={onConnect}
-            fitView
-            style={{ backgroundColor: '#0000' }}
-          />
-        </div>
+    <div style={{
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100vw',
+      height: '100vh',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      }}>
+      <div style={{ width: '90vw', height: '90vh' }}>
+        <ReactFlow
+          colorMode = "dark"
+          nodes={nodes}
+          edges={edges}
+          onConnect={onConnect}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          fitView
+        >
+          <Panel position="top-right">
+            {/* <button
+              className="xy-theme__button"
+              onClick={() => onLayout({ direction: 'DOWN' })}
+            >
+              vertical layout
+            </button> */}
+            <Button sx ={{my:1}} onClick={() => onLayout({direction:'DOWN'})}> Vertical </Button>
+            <Button sx ={{my:1}} onClick={() => onLayout({direction:'RIGHT'})}> Horizontal </Button>
+          </Panel>
+          {/* <Background /> */}
+        </ReactFlow>
+        <div className = "bottomleft"> <AddEditTopics refreshNodes = {refreshNodes}/> </div>
       </div>
-    <div className = "bottomleft"> <AddEditTopics refreshNodes = {refreshNodes}/> </div>
-    {/* pass prop containing which course */}
-    </>
+    </div>
   );
 }
+
+export default () => (
+  <ReactFlowProvider>
+    <ConceptMap />
+  </ReactFlowProvider>
+  
+);
