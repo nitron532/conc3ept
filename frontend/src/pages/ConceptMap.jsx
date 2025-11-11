@@ -181,7 +181,7 @@ function ConceptMap() {
           fitView
         >
         </ReactFlow>
-        <div className = "bottomleft"> <AddEditTopics getGraph = {getGraph}/> </div>
+        <div className = "bottomleft"> <AddEditTopics getGraph = {getGraph} baseNodes = {baseNodes}/> </div>
         <div className = "bottomright"><Appearance appearanceSettings = {appearanceSettings} 
                                         setAppearanceSettings={setAppearanceSettings}
                                         refreshNodes={refreshNodes}

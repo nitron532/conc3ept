@@ -103,14 +103,6 @@ def GetGraph():
         )
     return jsonify({"nodes":nodes, "edges":edges})
 
-    
-
-    
-
-
-    
-
-
 
 
 if __name__ == "__main__":

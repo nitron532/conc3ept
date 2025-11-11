@@ -10,11 +10,11 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import axios from "axios"
 
-export default function AddEditTopics({getGraph}) {
+export default function AddEditTopics({getGraph, baseNodes}) {
   const [open, setOpen] = useState(false);
   const initialState = {topicInput: "", connections : []}
   const [formData, setFormData] = useState(initialState) //to db
-  const [courseNodes, setCourseNodes] = useState([]) //from db
+  const [courseNodes, setCourseNodes] = useState([]) //from ConceptMap
 
   const handleChange = (e) =>{
     const {name, value} = e.target
@@ -25,7 +25,7 @@ export default function AddEditTopics({getGraph}) {
   }
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
-    if(newOpen) getNodes();
+    if(newOpen) setCourseNodes(baseNodes);
   };
 
   const patchNode = async (e) => {
@@ -56,23 +56,9 @@ export default function AddEditTopics({getGraph}) {
         )
         setFormData(initialState);
         getGraph();
-        //fetch new node stuff from supabase
     }
     catch(error){
         console.error("Submission failed: ", error);
-    }
-  }
-  //could just pass prop from conceptmapjsx to here containing the nodes
-  const getNodes = async (e) =>{
-    console.log("retrieving nodes")
-    try{
-        const response = await axios.get(
-            `${import.meta.env.VITE_SERVER_URL}/GetNodes`
-        );
-        setCourseNodes(response.data);
-    }
-    catch (error){
-        console.error("Retrieval failed: ", error);
     }
   }
 
@@ -92,15 +78,14 @@ export default function AddEditTopics({getGraph}) {
             label="Is prereq to: "
             onChange={handleChange}
             renderValue={(selected) => selected.map(
-            id => courseNodes.find(t => t.id === id)?.conceptName
+            id => courseNodes.find(t => t.id === id)?.data.label
             ).join(", ")}
         >
             <MenuItem value={"None"}> None </MenuItem>
             
-             {/* pull topics from DB */}
             {courseNodes.map((topic) => (
                 <MenuItem key={topic.id} value={topic.id}>
-                {topic.conceptName}
+                {topic.data.label}
                 </MenuItem>
             ))}
         </Select>
