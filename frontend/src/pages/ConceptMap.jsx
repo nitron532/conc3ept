@@ -92,7 +92,7 @@ function ConceptMap() {
     }
     catch (Error){
       console.log("Failed to retrieve graph: ", Error);
-      //retry after a certain amount of time?
+      setTimeout(() => getGraph(), 2000);
     }
   },[]);
 

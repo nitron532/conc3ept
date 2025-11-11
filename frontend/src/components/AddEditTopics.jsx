@@ -66,6 +66,7 @@ export default function AddEditTopics({getGraph, baseNodes, baseEdges}) {
     {submittable && add && <Button variant="outlined" onClick={function(event){toggleDrawer(false)(); postNewNode(event)}}>Add {formData.topicInput}</Button>}
     {submittable && !add && <Button variant="outlined" onClick={function(event){toggleDrawer(false)(); patchNode(event)}}>Edit {formData.topicInput}</Button>}
     </Box>
+    //have a section where available nodes/edges pop up, instead of overlapping the other input fields?
   );
 
   return (
