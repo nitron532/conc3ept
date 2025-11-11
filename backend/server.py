@@ -60,17 +60,6 @@ def EditTopic():
 #courseName/GetGraph to specify which topics to grab
 #only display nodes that belong in the course(so if they are linked to other things, dont show those other things)
 
-@app.route("/GetNodes", methods = ["GET"])
-def GetNodes():
-    getNodesResponse = (
-        supabase.table("Concepts")
-        .select("id, conceptName")
-        .execute()
-    )
-    nodes = [{"id": row["id"], "conceptName": row["conceptName"]} 
-             for row in getNodesResponse.data]
-    return jsonify(nodes)
-
 @app.route("/GetGraph", methods = ["GET"])
 def GetGraph():
     #query db for graph

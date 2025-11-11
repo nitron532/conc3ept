@@ -25,7 +25,7 @@ const elk = new ELK();
 const elkOptions = {
   'elk.algorithm': 'layered',
   'elk.layered.spacing.nodeNodeBetweenLayers': '100',
-  'elk.spacing.nodeNode': '80',
+  'elk.spacing.nodeNode': '100',
 };
 
 const getLayoutedElements = (nodes, edges, options = {}) => {
@@ -72,7 +72,7 @@ function ConceptMap() {
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [appearanceSettings, setAppearanceSettings] = useState({
     layoutDirection: "RIGHT",
-    nodeSpacing: 80,
+    nodeSpacing: 100,
     layerSpacing: 100,
     edgeType: "middleArrow",
     edgeAnimated: true,
