@@ -46,7 +46,7 @@ def AddTopic():
         {"sourceconceptid": preReqId, "targetconceptid": id, "linktype": "source_is_prereq_to_target"}
         for id in connections
     ]
-    responseLink = (
+    (
         supabase.table("conceptlinks")
         .insert(rows)
         .execute()
@@ -55,7 +55,40 @@ def AddTopic():
 
 @app.route("/EditTopic", methods = ["PATCH"])
 def EditTopic():
-    print("edit")
+    data = request.json
+    topicName: str = data["topicInput"]
+    connections: pydantic.List[str] = data["connections"]
+    topic = (
+        supabase.table("Concepts")
+        .select("id")
+        .eq("conceptName", topicName)
+        .execute()
+    )
+    topicId = topic.data[0]["id"]
+    (
+        supabase.table("conceptlinks")
+        .delete()
+        .eq("sourceconceptid", topicId)
+        .execute()
+    )
+    rows = [
+        {"sourceconceptid": topicId, "targetconceptid": id, "linktype": "source_is_prereq_to_target"}
+        for id in connections
+    ]
+    if rows:
+        (
+            supabase.table("conceptlinks")
+            .insert(rows)
+            .execute()
+        )
+    return "OK", 200
+
+@app.route("/DeleteTopic", methods = ["PATCH"]) #differnt method?
+def DeleteTopic():
+    print("delete")
+    
+    
+
 
 #courseName/GetGraph to specify which topics to grab
 #only display nodes that belong in the course(so if they are linked to other things, dont show those other things)

@@ -1,5 +1,4 @@
 import ELK from 'elkjs/lib/elk.bundled.js';
-import Button from '@mui/material/Button';
 import { useCallback, useLayoutEffect , useEffect, useState} from 'react';
 import axios from "axios";
 import AddEditTopics from '../components/AddEditTopics';
@@ -12,7 +11,6 @@ import {
   ReactFlow,
   ReactFlowProvider,
   addEdge,
-  Panel,
   useNodesState,
   useEdgesState,
   useReactFlow,
@@ -21,12 +19,6 @@ import {
 import '@xyflow/react/dist/style.css';
 
 const elk = new ELK();
-
-const elkOptions = {
-  'elk.algorithm': 'layered',
-  'elk.layered.spacing.nodeNodeBetweenLayers': '100',
-  'elk.spacing.nodeNode': '100',
-};
 
 const getLayoutedElements = (nodes, edges, options = {}) => {
   const isHorizontal = options?.['elk.direction'] === 'RIGHT';
@@ -75,13 +67,19 @@ function ConceptMap() {
     nodeSpacing: 100,
     layerSpacing: 100,
     edgeType: "middleArrow",
-    edgeAnimated: true,
+    edgeAnimated: false,
     nodeStyle:{
       backgroundColor: '#1f1f1f',
       color: '#fff',
       borderRadius: 12,
     }
   })
+  let elkOptionsWithState = {
+    'elk.algorithm': 'layered',
+    'elk.layered.spacing.nodeNodeBetweenLayers': appearanceSettings.layerSpacing.toString(),
+    'elk.spacing.nodeNode': appearanceSettings.nodeSpacing.toString(),
+    'elk.direction': appearanceSettings.layoutDirection
+  };
   const { fitView } = useReactFlow();
 
   const getGraph = useCallback(async () =>{
@@ -94,12 +92,13 @@ function ConceptMap() {
     }
     catch (Error){
       console.log("Failed to retrieve graph: ", Error);
+      //retry after a certain amount of time?
     }
   },[]);
 
   const refreshNodes = useCallback (async (forceRefresh = false) =>{
     try{
-      const elkOptionsWithState = {
+      elkOptionsWithState = {
         'elk.algorithm': 'layered',
         'elk.layered.spacing.nodeNodeBetweenLayers': appearanceSettings.layerSpacing.toString(),
         'elk.spacing.nodeNode': appearanceSettings.nodeSpacing.toString(),
@@ -129,6 +128,7 @@ function ConceptMap() {
   useEffect(()=>{
     getGraph();
   }, [getGraph]);
+
   useEffect(()=>{
   refreshNodes();
   }, [refreshNodes]);
@@ -136,10 +136,17 @@ function ConceptMap() {
   const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), []);
   const onLayout = useCallback(
     ({direction}) => {
-      const opts = { 'elk.direction': direction, ...elkOptions};
+      if(direction === appearanceSettings.layoutDirection){return;}
+      const newAppearanceSettings = { ...appearanceSettings, layoutDirection: direction };
+      setAppearanceSettings(newAppearanceSettings);
+      const opts = {
+        'elk.algorithm': 'layered',
+        'elk.layered.spacing.nodeNodeBetweenLayers': newAppearanceSettings.layerSpacing.toString(),
+        'elk.spacing.nodeNode': newAppearanceSettings.nodeSpacing.toString(),
+        'elk.direction': newAppearanceSettings.layoutDirection,
+      };
       const ns = nodes;
       const es = edges;
-
       getLayoutedElements(ns, es, opts).then(
         ({ nodes: layoutedNodes, edges: layoutedEdges }) => {
           setNodes(layoutedNodes);
@@ -181,7 +188,7 @@ function ConceptMap() {
           fitView
         >
         </ReactFlow>
-        <div className = "bottomleft"> <AddEditTopics getGraph = {getGraph} baseNodes = {baseNodes}/> </div>
+        <div className = "bottomleft"> <AddEditTopics getGraph = {getGraph} baseNodes = {baseNodes} baseEdges = {baseEdges}/> </div>
         <div className = "bottomright"><Appearance appearanceSettings = {appearanceSettings} 
                                         setAppearanceSettings={setAppearanceSettings}
                                         refreshNodes={refreshNodes}

@@ -2,11 +2,8 @@ import  {useState} from 'react'
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
 import MultipleStopIcon from '@mui/icons-material/MultipleStop';
 import ToggleButton from '@mui/material/ToggleButton';
-import axios from "axios"
-import {Panel} from '@xyflow/react'
 
 export default function Appearance({appearanceSettings, setAppearanceSettings, refreshNodes, onLayout}) {
     const [open, setOpen] = useState(false);

@@ -1,41 +1,31 @@
-import  {useState} from 'react'
-import Box from '@mui/material/Box';
-import Drawer from '@mui/material/Drawer';
-import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
-import TextField from '@mui/material/TextField';
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
+import  {useState, useEffect} from 'react'
+import {Box, Drawer, Button} from '@mui/material';
 import axios from "axios"
+import NodeSelector from './NodeSelector';
+import EdgesSelector from './EdgesSelector';
 
-export default function AddEditTopics({getGraph, baseNodes}) {
+export default function AddEditTopics({getGraph, baseNodes, baseEdges}) {
   const [open, setOpen] = useState(false);
   const initialState = {topicInput: "", connections : []}
   const [formData, setFormData] = useState(initialState) //to db
-  const [courseNodes, setCourseNodes] = useState([]) //from ConceptMap
+  const [submittable, setSubmittable] = useState(false);
+  const [add, setAdd] = useState(true); //boolean flipped?
 
-  const handleChange = (e) =>{
-    const {name, value} = e.target
-    setFormData({
-        ...formData,
-        [name] : value
-    });
-  }
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
-    if(newOpen) setCourseNodes(baseNodes);
+    setFormData(initialState)
   };
 
   const patchNode = async (e) => {
     e.preventDefault();
     try{
       await axios.patch(
-        `${import.meta.env.VITE_SERVER}/EditTopic`,
+        `${import.meta.env.VITE_SERVER_URL}/EditTopic`,
         formData,
         {headers:{"Content-Type": "application/json"}}
       )
+      setFormData(initialState);
+      getGraph();
     }
     catch (error){
       console.error("Failed to update: ", error);
@@ -62,37 +52,19 @@ export default function AddEditTopics({getGraph, baseNodes}) {
     }
   }
 
-  const submittable = formData.topicInput.trim().length > 0;
+  useEffect(() => {
+      setSubmittable(formData.topicInput?.trim().length > 0);
+      const addOrEdit = baseNodes?.some((n)=> n.data.label.trim().toLowerCase() === formData.topicInput.trim().toLowerCase());
+      setAdd(!addOrEdit);
+  }, [formData.topicInput]);
 
   const AddMenu = (
     <Box sx={{ width: 450 }} role="presentation">
-    <TextField name = "topicInput" sx ={{t:3}} fullWidth id="topicInput" label="Topic" variant="outlined" onChange = {handleChange}/>
-    <FormControl fullWidth>
-    <InputLabel>Edges</InputLabel>
-      {/* component that search and bring up a menu of close words */}
-        <Select
-            multiple
-            name = "connections"
-            id="connections"
-            value={formData.connections}
-            label="Is prereq to: "
-            onChange={handleChange}
-            renderValue={(selected) => selected.map(
-            id => courseNodes.find(t => t.id === id)?.data.label
-            ).join(", ")}
-        >
-            <MenuItem value={"None"}> None </MenuItem>
-            
-            {courseNodes.map((topic) => (
-                <MenuItem key={topic.id} value={topic.id}>
-                {topic.data.label}
-                </MenuItem>
-            ))}
-        </Select>
-    </FormControl>
-    {submittable &&
-     <Button variant="outlined" onClick={function(event){toggleDrawer(false)(); postNewNode(event)}}>Add</Button>
-    }
+      {/* add top padding for input fields  */}
+    <NodeSelector baseNodes = {baseNodes} formData = {formData} setFormData = {setFormData}/>
+    <EdgesSelector baseNodes = {baseNodes} formData = {formData} setFormData = {setFormData} add = {add} baseEdges = {baseEdges}/>
+    {submittable && add && <Button variant="outlined" onClick={function(event){toggleDrawer(false)(); postNewNode(event)}}>Add {formData.topicInput}</Button>}
+    {submittable && !add && <Button variant="outlined" onClick={function(event){toggleDrawer(false)(); patchNode(event)}}>Edit {formData.topicInput}</Button>}
     </Box>
   );
 
