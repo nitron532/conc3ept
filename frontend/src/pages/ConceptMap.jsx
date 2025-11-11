@@ -1,10 +1,12 @@
 import ELK from 'elkjs/lib/elk.bundled.js';
 import Button from '@mui/material/Button';
-import { useCallback, useLayoutEffect , useEffect} from 'react';
-import axios from "axios"
-import AddEditTopics from '../components/AddEditTopics'
+import { useCallback, useLayoutEffect , useEffect, useState} from 'react';
+import axios from "axios";
+import AddEditTopics from '../components/AddEditTopics';
 import MiddleArrowEdge from '../components/MiddleArrowEdge';
 import CustomNode from '../components/CustomNode';
+import Appearance from '../components/Appearance';
+
 
 import {
   ReactFlow,
@@ -25,7 +27,6 @@ const elkOptions = {
   'elk.layered.spacing.nodeNodeBetweenLayers': '100',
   'elk.spacing.nodeNode': '80',
 };
-
 
 const getLayoutedElements = (nodes, edges, options = {}) => {
   const isHorizontal = options?.['elk.direction'] === 'RIGHT';
@@ -59,72 +60,83 @@ const getLayoutedElements = (nodes, edges, options = {}) => {
           label: node.data.label
         }
       })),
-
       edges: layoutedGraph.edges,
     }))
     .catch(console.error);
 };
 
 function ConceptMap() {
+  const [baseNodes, setBaseNodes] = useState([]);
+  const [baseEdges, setBaseEdges] = useState([]);
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [appearanceSettings, setAppearanceSettings] = useState({
+    layoutDirection: "RIGHT",
+    nodeSpacing: 80,
+    layerSpacing: 100,
+    edgeType: "middleArrow",
+    edgeAnimated: true,
+    nodeStyle:{
+      backgroundColor: '#1f1f1f',
+      color: '#fff',
+      borderRadius: 12,
+    }
+  })
   const { fitView } = useReactFlow();
 
-
-  const CustomEdge = ({ id, sourceX, sourceY, targetX, targetY, style }) => (
-  <path
-    d={`M${sourceX},${sourceY} C...`} // custom curved path
-    stroke="white"
-    fill="none"
-    markerMid="url(#arrow)" // middle arrow
-  />
-)
-
-  const getGraph = async () =>{
-    const response = await axios.get(
-      `${import.meta.env.VITE_SERVER_URL}/GetGraph`
-    )
-    return response.data;
-  }
+  const getGraph = useCallback(async () =>{
+    try{
+      const response = await axios.get(
+        `${import.meta.env.VITE_SERVER_URL}/GetGraph`
+      )
+      setBaseNodes(response.data.nodes);
+      setBaseEdges(response.data.edges);
+    }
+    catch (Error){
+      console.log("Failed to retrieve graph: ", Error);
+    }
+  },[]);
 
   const refreshNodes = useCallback (async (forceRefresh = false) =>{
     try{
-        const responseData = await getGraph();
-        const layouted = await getLayoutedElements(responseData.nodes, responseData.edges, {
-          'elk.direction': 'RIGHT',
-          ...elkOptions,
+      const elkOptionsWithState = {
+        'elk.algorithm': 'layered',
+        'elk.layered.spacing.nodeNodeBetweenLayers': appearanceSettings.layerSpacing.toString(),
+        'elk.spacing.nodeNode': appearanceSettings.nodeSpacing.toString(),
+        'elk.direction': appearanceSettings.layoutDirection
+      };
+        const layouted = await getLayoutedElements(baseNodes, baseEdges, {
+          ...elkOptionsWithState,
         });
+        // const nodes = layouted.nodes.map( (n)=>({
+        //   ...n,
+        //   style: appearanceSettings.nodeStyle,
+        // }));
         const edges = layouted.edges.map((e)=>({
           ...e,
-          type:'middleArrow',
-          animated: true,
+          type:appearanceSettings.edgeType,
+          animated: Boolean(appearanceSettings.edgeAnimated),
         }));
-        // const nodes = responseData.nodes.map((n) => ({
-        //   ...n,
-        //   type: "custom", 
-        //   data: {
-        //     label: n.label,
-        //     layout: orientat, 
-        //   },
-        //   position: n.position,
-        // }));
         setNodes(layouted.nodes);
         setEdges(edges);
-        requestAnimationFrame(() => fitView());
+        setTimeout(() => fitView({ padding: 0.2, duration: 800 }), 50);
     }
     catch(Error){
       console.error("Failed to retrieve graph: ", Error);
     }
-  }, []);
+  }, [appearanceSettings, baseNodes, baseEdges]);
 
   useEffect(()=>{
-    refreshNodes();
-  }, [refreshNodes])
+    getGraph();
+  }, [getGraph]);
+  useEffect(()=>{
+  refreshNodes();
+  }, [refreshNodes]);
 
   const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), []);
   const onLayout = useCallback(
     ({direction}) => {
-      const opts = { 'elk.direction': direction, ...elkOptions };
+      const opts = { 'elk.direction': direction, ...elkOptions};
       const ns = nodes;
       const es = edges;
 
@@ -168,13 +180,14 @@ function ConceptMap() {
           onEdgesChange={onEdgesChange}
           fitView
         >
-          <Panel position="top-right">
-            <Button sx ={{my:1}} onClick={() => onLayout({direction:'DOWN'})}> Vertical </Button>
-            <Button sx ={{my:1}} onClick={() => onLayout({direction:'RIGHT'})}> Horizontal </Button>
-          </Panel>
-          {/* <Background /> */}
         </ReactFlow>
-        <div className = "bottomleft"> <AddEditTopics refreshNodes = {refreshNodes}/> </div>
+        <div className = "bottomleft"> <AddEditTopics getGraph = {getGraph}/> </div>
+        <div className = "bottomright"><Appearance appearanceSettings = {appearanceSettings} 
+                                        setAppearanceSettings={setAppearanceSettings}
+                                        refreshNodes={refreshNodes}
+                                        getLayoutedElements = {getLayoutedElements}
+                                        onLayout = {onLayout}/>
+                                        </div>
       </div>
     </div>
   );

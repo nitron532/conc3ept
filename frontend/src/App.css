@@ -32,6 +32,13 @@
   bottom: 10px;
   left: 20px;
 }
+
+.bottomright{
+  position: fixed;
+  bottom: 10px;
+  right: 20px;
+}
+
 .react-flow {
   --xy-background-color: #121212; 
   --xy-minimap-background-color-default: #242424;

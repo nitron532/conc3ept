@@ -10,7 +10,7 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import axios from "axios"
 
-export default function AddEditTopics({refreshNodes}) {
+export default function AddEditTopics({getGraph}) {
   const [open, setOpen] = useState(false);
   const initialState = {topicInput: "", connections : []}
   const [formData, setFormData] = useState(initialState) //to db
@@ -54,8 +54,8 @@ export default function AddEditTopics({refreshNodes}) {
             formData,
             {headers:{"Content-Type": "application/json"}}
         )
-        setFormData(initialState)
-        refreshNodes(true)
+        setFormData(initialState);
+        getGraph();
         //fetch new node stuff from supabase
     }
     catch(error){
@@ -80,8 +80,6 @@ export default function AddEditTopics({refreshNodes}) {
 
   const AddMenu = (
     <Box sx={{ width: 450 }} role="presentation">
-        <Button sx ={{my:1}} onClick={toggleDrawer(false)}> Back </Button>
-    <Divider/>
     <TextField name = "topicInput" sx ={{t:3}} fullWidth id="topicInput" label="Topic" variant="outlined" onChange = {handleChange}/>
     <FormControl fullWidth>
     <InputLabel>Edges</InputLabel>
@@ -108,13 +106,13 @@ export default function AddEditTopics({refreshNodes}) {
         </Select>
     </FormControl>
     {submittable &&
-     <Button variant="outlined" onClick={function(event){toggleDrawer(false); postNewNode(event)}}>Add</Button>
+     <Button variant="outlined" onClick={function(event){toggleDrawer(false)(); postNewNode(event)}}>Add</Button>
     }
     </Box>
   );
 
   return (
-    <div className = "bottomleft">
+    <div>
       <Button onClick={toggleDrawer(true)}>Add / Edit Topic</Button>
       <Drawer open={open} onClose={toggleDrawer(false)}>
         {AddMenu}

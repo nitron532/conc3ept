@@ -6,7 +6,6 @@ import json
 import os
 from supabase import create_client, Client
 from dotenv import load_dotenv
-from flask import g
 import pydantic
 
 app = Flask(__name__)
@@ -92,15 +91,12 @@ def GetGraph():
         sourcesToTargets.append((row["sourceconceptid"], row["targetconceptid"]))
     nodes = []
     edges = []
-    #need to implement auto layout feature (dagre bookmark in conc3ept folder)
-    i = 0
     for topic, id in zip(topicNames,topicIds):
         nodes.append(
             {
                 "id": str(id), "position":{"x": 0, "y": 0}, "data": {"label": topic}, "type":"custom"
             }
         )
-        i+=1
     for tuple in sourcesToTargets:
         edges.append( # can add type of edge 
                 {"id":f"{tuple[0]}-{tuple[1]}", "source": str(tuple[0]), "target": str(tuple[1])}
