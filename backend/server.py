@@ -1,8 +1,5 @@
 from flask import Flask, request, jsonify, Response
 from flask_cors import CORS
-import datetime
-import requests
-import json
 import os
 from supabase import create_client, Client
 from dotenv import load_dotenv
@@ -53,6 +50,32 @@ def AddTopic():
     )
     return "OK", 200
 
+@app.route("/DeleteTopic", methods = ["DELETE"])
+def DeleteTopic():
+    data = request.json
+    topicName: str = data["topicInput"]
+    topic = (
+        supabase.table("Concepts")
+        .select("id")
+        .eq("conceptName", topicName)
+        .execute()
+    )
+    topicId = topic.data[0]["id"]
+    (
+        supabase.table("conceptlinks")
+        .delete()
+        .or_(f"sourceconceptid.eq.{topicId},targetconceptid.eq.{topicId}")
+        .execute()
+    )
+    (
+        supabase.table("Concepts")
+        .delete()
+        .eq("id", topicId)
+        .execute()
+    )
+    #will need to delete from courses as well later
+    return "OK", 200
+
 @app.route("/EditTopic", methods = ["PATCH"])
 def EditTopic():
     data = request.json
@@ -82,11 +105,6 @@ def EditTopic():
             .execute()
         )
     return "OK", 200
-
-@app.route("/DeleteTopic", methods = ["PATCH"]) #differnt method?
-def DeleteTopic():
-    print("delete")
-    
     
 
 

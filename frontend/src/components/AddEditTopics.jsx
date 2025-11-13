@@ -13,10 +13,25 @@ export default function AddEditTopics({getGraph, baseNodes, baseEdges}) {
 
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
-    setFormData(initialState)
   };
 
-  const patchNode = async (e) => {
+  const deleteNode = async (e) =>{
+    e.preventDefault();
+    try{
+      await axios.delete(
+        `${import.meta.env.VITE_SERVER_URL}/DeleteTopic`,
+        {data: formData},
+        {headers:{"Content-Type" : "application/json"}}
+      )
+      setFormData(initialState);
+      getGraph();
+    }
+    catch(error){
+      console.log("Failed to delete: ", error)
+    }
+  }
+
+  const editNode = async (e) => {
     e.preventDefault();
     try{
       await axios.patch(
@@ -32,7 +47,7 @@ export default function AddEditTopics({getGraph, baseNodes, baseEdges}) {
     }
   }
 
-  const postNewNode = async (e) => {
+  const addNode = async (e) => {
     e.preventDefault();
     if(formData.connections.length === 0 && formData.topicInput.length === 0){
       //add warning saying it cant be empty?
@@ -63,8 +78,9 @@ export default function AddEditTopics({getGraph, baseNodes, baseEdges}) {
       {/* add top padding for input fields  */}
     <NodeSelector baseNodes = {baseNodes} formData = {formData} setFormData = {setFormData}/>
     <EdgesSelector baseNodes = {baseNodes} formData = {formData} setFormData = {setFormData} add = {add} baseEdges = {baseEdges}/>
-    {submittable && add && <Button variant="outlined" onClick={function(event){toggleDrawer(false)(); postNewNode(event)}}>Add {formData.topicInput}</Button>}
-    {submittable && !add && <Button variant="outlined" onClick={function(event){toggleDrawer(false)(); patchNode(event)}}>Edit {formData.topicInput}</Button>}
+    {submittable && add && <Button variant="outlined" onClick={function(event){toggleDrawer(false)(); addNode(event)}}>Add {formData.topicInput}</Button>}
+    {submittable && !add && <Button variant="outlined" onClick={function(event){toggleDrawer(false)(); editNode(event)}}>Edit {formData.topicInput}</Button>}
+    {submittable && !add && formData.connections.length === 0 && <Button variant="outlined" onClick={function(event){toggleDrawer(false)(); deleteNode(event)}}>Delete {formData.topicInput}</Button>}
     </Box>
     //have a section where available nodes/edges pop up, instead of overlapping the other input fields?
   );
