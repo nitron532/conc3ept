@@ -28,6 +28,7 @@ export default function NodeSelector({baseNodes, formData, setFormData}){
 
     return (
         <Autocomplete
+        value = {formData.topicInput}
         freeSolo
         options={filteredOptions} // list of matching nodes
         inputValue={searchQuery}

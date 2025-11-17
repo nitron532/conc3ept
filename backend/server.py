@@ -24,12 +24,13 @@ def LoadGraph():
 
 
 #need prevention of empty data
-@app.route("/AddTopic", methods = ["POST"])
+@app.route("/AddNode", methods = ["POST"])
 #add option in UI to allow topical cycles (?)
-def AddTopic():
+def AddNode():
     data = request.json
     topicName: str = data["topicInput"]
-    connections: pydantic.List[str] = data["connections"]
+    outgoingConnections: pydantic.List[str] = data["outgoingConnections"]
+    incomingConnections: pydantic.List[str] = data["incomingConnections"]
     #try
     responseConcept = (
         supabase.table("Concepts")
@@ -37,21 +38,27 @@ def AddTopic():
         .execute()
     )
     #if not exception:
-    preReqId: int = responseConcept.data[0]["id"]
+    topicId: int = responseConcept.data[0]["id"]
 
-    rows = [
-        {"sourceconceptid": preReqId, "targetconceptid": id, "linktype": "source_is_prereq_to_target"}
-        for id in connections
+    allRows = [
+        {"sourceconceptid": topicId, "targetconceptid": id, "linktype": "source_is_prereq_to_target"}
+        for id in outgoingConnections
     ]
-    (
-        supabase.table("conceptlinks")
-        .insert(rows)
-        .execute()
-    )
+    incomingRows = [
+        {"sourceconceptid": id, "targetconceptid": topicId, "linktype": "source_is_prereq_to_target"}
+        for id in incomingConnections
+    ]
+    allRows.extend(incomingRows)
+    if allRows:
+        (
+            supabase.table("conceptlinks")
+            .insert(allRows)
+            .execute()
+        )
     return "OK", 200
 
-@app.route("/DeleteTopic", methods = ["DELETE"])
-def DeleteTopic():
+@app.route("/DeleteNode", methods = ["DELETE"])
+def DeleteNode():
     data = request.json
     topicName: str = data["topicInput"]
     topic = (
@@ -76,11 +83,11 @@ def DeleteTopic():
     #will need to delete from courses as well later
     return "OK", 200
 
-@app.route("/EditTopic", methods = ["PATCH"])
-def EditTopic():
+@app.route("/EditNodeOutgoing", methods = ["PATCH"])
+def EditNodeOutgoing():
     data = request.json
     topicName: str = data["topicInput"]
-    connections: pydantic.List[str] = data["connections"]
+    outgoingConnections: pydantic.List[str] = data["outgoingConnections"]
     topic = (
         supabase.table("Concepts")
         .select("id")
@@ -96,7 +103,7 @@ def EditTopic():
     )
     rows = [
         {"sourceconceptid": topicId, "targetconceptid": id, "linktype": "source_is_prereq_to_target"}
-        for id in connections
+        for id in outgoingConnections
     ]
     if rows:
         (
@@ -106,6 +113,35 @@ def EditTopic():
         )
     return "OK", 200
     
+@app.route("/EditNodeIncoming", methods = ["PATCH"])
+def EditNodeIncoming():
+    data = request.json
+    topicName: str = data["topicInput"]
+    incomingConnections: pydantic.List[str] = data["incomingConnections"]
+    topic = (
+        supabase.table("Concepts")
+        .select("id")
+        .eq("conceptName", topicName)
+        .execute()
+    )
+    topicId = topic.data[0]["id"]
+    (
+        supabase.table("conceptlinks")
+        .delete()
+        .eq("targetconceptid", topicId)
+        .execute()
+    )
+    rows = [
+        {"sourceconceptid": id, "targetconceptid": topicId, "linktype": "source_is_prereq_to_target"}
+        for id in incomingConnections
+    ]
+    if rows:
+        (
+            supabase.table("conceptlinks")
+            .insert(rows)
+            .execute()
+        )
+    return "OK", 200
 
 
 #courseName/GetGraph to specify which topics to grab
