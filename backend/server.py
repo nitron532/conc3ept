@@ -69,12 +69,6 @@ def DeleteNode():
     )
     topicId = topic.data[0]["id"]
     (
-        supabase.table("conceptlinks")
-        .delete()
-        .or_(f"sourceconceptid.eq.{topicId},targetconceptid.eq.{topicId}")
-        .execute()
-    )
-    (
         supabase.table("Concepts")
         .delete()
         .eq("id", topicId)

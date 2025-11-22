@@ -89,7 +89,7 @@ export default function AddEditTopics({getGraph, baseNodes, baseEdges}) {
       setAdd(!addOrEdit);
   }, [formData.topicInput]);
 
-  const AddMenu = (
+  const AddEditMenu = (
     <Box sx={{ width: 450 }} role="presentation">
       {/* add top padding for input fields  */}
     <NodeSelector baseNodes = {baseNodes} formData = {formData} setFormData = {setFormData}/>
@@ -106,7 +106,7 @@ export default function AddEditTopics({getGraph, baseNodes, baseEdges}) {
     <div>
       <Button onClick={toggleDrawer(true)}>Add / Edit Topic</Button>
       <Drawer open={open} onClose={toggleDrawer(false)}>
-        {AddMenu}
+        {AddEditMenu}
       </Drawer>
     </div>
   );
