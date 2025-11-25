@@ -1,5 +1,6 @@
 import ELK from 'elkjs/lib/elk.bundled.js';
 import { useCallback, useLayoutEffect , useEffect, useState} from 'react';
+import {useParams} from "react-router-dom";
 import axios from "axios";
 import AddEditTopics from '../components/AddEditTopics';
 import MiddleArrowEdge from '../components/MiddleArrowEdge';
@@ -74,6 +75,7 @@ function ConceptMap() {
       borderRadius: 12,
     }
   })
+  const courseName = decodeURIComponent(useParams().course);
   let elkOptionsWithState = {
     'elk.algorithm': 'layered',
     'elk.layered.spacing.nodeNodeBetweenLayers': appearanceSettings.layerSpacing.toString(),
@@ -107,16 +109,19 @@ function ConceptMap() {
         const layouted = await getLayoutedElements(baseNodes, baseEdges, {
           ...elkOptionsWithState,
         });
-        // const nodes = layouted.nodes.map( (n)=>({
-        //   ...n,
-        //   style: appearanceSettings.nodeStyle,
-        // }));
+        const nodes = layouted.nodes.map( (n)=>({
+          ...n,
+          data:{
+            ...n.data,
+            course: courseName,
+          }
+        }));
         const edges = layouted.edges.map((e)=>({
           ...e,
           type:appearanceSettings.edgeType,
           animated: Boolean(appearanceSettings.edgeAnimated),
         }));
-        setNodes(layouted.nodes);
+        setNodes(nodes);
         setEdges(edges);
         setTimeout(() => fitView({ padding: 0.2, duration: 800 }), 50);
     }

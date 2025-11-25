@@ -1,9 +1,8 @@
 import { Handle, Position } from '@xyflow/react';
 import {useState} from "react"
-import {Link, useLocation, Outlet} from "react-router-dom"
+import {Link, Outlet} from "react-router-dom"
 export default function CustomNode({ data }) {
   const [hover, setHover] = useState(false);
-  const location = useLocation();
   const defaultStyle = {
         borderRadius: '12px',
         background: '#1f1f1f',
@@ -32,7 +31,7 @@ export default function CustomNode({ data }) {
       onMouseEnter={()=>{setHover(true)}}
       onMouseLeave={()=>{setHover(false)}}
     >
-      <Link style ={{color: '#fff'}} to={`/conceptmap/${encodeURIComponent(data.label)}`}>{data.label}</Link> 
+      <Link style ={{color: '#fff'}} to={`/conceptmap/${encodeURIComponent(data.course)}/${encodeURIComponent(data.label)}`}>{data.label}</Link> 
       <Outlet/>
     {data.layout ? (
             <>

@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
@@ -6,10 +5,10 @@ import Typography from '@mui/material/Typography';
 import CardActionArea from '@mui/material/CardActionArea';
 import { Link as RouterLink } from 'react-router-dom';
 
-export default function CourseCard() {
+export default function CourseCard({courseName}) {
   return (
     <Card sx={{ maxWidth: 345 }}>
-      <CardActionArea component = {RouterLink} to = "/conceptmap">
+      <CardActionArea component = {RouterLink} to = {`/conceptmap/${courseName}`}>
         {/* i would like to add a preview of the concept map as the image, link will probably need to have extra params for each course */}
         {/* <CardMedia
           component="img"
@@ -19,7 +18,7 @@ export default function CourseCard() {
         /> */}
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
-            CS16
+            {courseName}
           </Typography>
           {/* <Typography variant="body2" sx={{ color: 'text.secondary' }}>
             Lizards are a widespread group of squamate reptiles, with over 6,000

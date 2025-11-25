@@ -13,7 +13,6 @@ export default function AddEditTopics({getGraph, baseNodes, baseEdges}) {
 
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
-    // setFormData(initialState);
   };
 
   const deleteNode = async (e) =>{
@@ -96,7 +95,8 @@ export default function AddEditTopics({getGraph, baseNodes, baseEdges}) {
     <EdgesSelector baseNodes = {baseNodes} formData = {formData} setFormData = {setFormData} add = {add} baseEdges = {baseEdges} outgoing = {true}/>
     <EdgesSelector baseNodes = {baseNodes} formData = {formData} setFormData = {setFormData} add = {add} baseEdges = {baseEdges} outgoing = {false}/>
     {submittable && add && <Button variant="outlined" onClick={function(event){toggleDrawer(false)(); addNode(event)}}>Add {formData.topicInput}</Button>}
-    {submittable && !add && <Button variant="outlined" onClick={function(event){toggleDrawer(false)(); editNodeOutgoing(event)}}>Edit {formData.topicInput}</Button>}
+    {/* make it so that i dont call two functions if not needed? */}
+    {submittable && !add && <Button variant="outlined" onClick={function(event){toggleDrawer(false)(); editNodeOutgoing(event); editNodeIncoming(event);}}>Edit {formData.topicInput}</Button>}
     {submittable && !add && formData.outgoingConnections.length === 0 && formData.incomingConnections.length === 0 && <Button variant="outlined" onClick={function(event){toggleDrawer(false)(); deleteNode(event)}}>Delete {formData.topicInput}</Button>}
     </Box>
     //have a section where available nodes/edges pop up, instead of overlapping the other input fields?

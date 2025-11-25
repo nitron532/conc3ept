@@ -1,8 +1,7 @@
 import  {useState, useEffect} from 'react'
 import {Box, Drawer, Button} from '@mui/material';
 import axios from "axios"
-import NodeSelector from './NodeSelector';
-import EdgesSelector from './EdgesSelector';
+import CourseSelector from './CourseSelector';
 
 export default function AddEditCourses({getCourses, courses}) {
   const [open, setOpen] = useState(false);
@@ -60,7 +59,7 @@ export default function AddEditCourses({getCourses, courses}) {
             {headers:{"Content-Type": "application/json"}}
         )
         setFormData(initialState);
-        getGraph();
+        getCourses();
     }
     catch(error){
         console.error("Submission failed: ", error);
@@ -69,17 +68,17 @@ export default function AddEditCourses({getCourses, courses}) {
 
   useEffect(() => {
       setSubmittable(formData.courseInput?.trim().length > 0);
-      const addOrEdit = courses?.some((c)=> c.data.label.trim().toLowerCase() === formData.courseInput.trim().toLowerCase());
+      const addOrEdit = courses?.some((c)=> c[0].trim().toLowerCase() === formData.courseInput.trim().toLowerCase());
       setAdd(!addOrEdit);
-  }, [formData.topicInput]);
+  }, [formData.courseInput]);
 
   const AddEditMenu = (
     <Box sx={{ width: 450 }} role="presentation">
-      {/* add top padding for input fields  */}
-    <NodeSelector baseNodes = {courses} formData = {formData} setFormData = {setFormData}/>
+      {/* add top padding for input fields, should be course selector label*/}
+    <CourseSelector courses = {courses} formData = {formData} setFormData = {setFormData}/>
     {submittable && add && <Button variant="outlined" onClick={function(event){toggleDrawer(false)(); addCourse(event)}}>Add {formData.courseInput}</Button>}
     {submittable && !add && <Button variant="outlined" onClick={function(event){toggleDrawer(false)(); editCourse(event)}}>Edit {formData.courseInput}</Button>}
-    <Button variant="outlined" onClick={function(event){toggleDrawer(false)(); deleteCourse(event)}}>Delete {formData.courseInput}</Button>
+    {submittable && !add && formData.courseInput.length == 0 && <Button variant="outlined" onClick={function(event){toggleDrawer(false)(); deleteCourse(event)}}>Delete {formData.courseInput}</Button>}
     </Box>
   );
 

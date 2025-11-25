@@ -33,8 +33,8 @@ function App() {
           <Route path="/" element = {<Login/>}/>
           <Route path = "/home" element = {<Home/>}></Route>
           {/* user home page */}
-          <Route path = "/conceptmap" element = {<ConceptMap/>}></Route>
-          <Route path = "/conceptmap/:topic" element = {<NestedLevel/>}></Route>
+          <Route path = "/conceptmap/:course" element = {<ConceptMap/>}></Route>
+          <Route path = "/conceptmap/:course/:topic" element = {<NestedLevel/>}></Route>
           {/* user concept map */}
         </Routes>
       </ThemeProvider>

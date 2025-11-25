@@ -13,16 +13,6 @@ url: str = os.environ.get("SUPABASE_URL")
 key: str = os.environ.get("SUPABASE_KEY")
 supabase: Client = create_client(url,key)
 
-@app.route("/home")
-def fetchCourses():
-    print("yay")
-    #return json of user's courses
-
-@app.route("/LoadGraph", methods = ["GET"])
-def LoadGraph():
-    print("request graphs from supabase and return as json (maybe just request updated things perhaps?)")
-
-
 #need prevention of empty data
 @app.route("/AddNode", methods = ["POST"])
 #add option in UI to allow topical cycles (?)
@@ -173,6 +163,28 @@ def GetGraph():
         )
     return jsonify({"nodes":nodes, "edges":edges})
 
+
+@app.route("/AddCourse", methods = ["POST"])
+def AddCourse():
+    data = request.json
+    addCourseResponse = (
+        supabase.table("Courses")
+        .insert({"courseName":data["courseInput"]})
+        .execute()
+    )
+    return "OK", 200
+
+@app.route("/GetCourses", methods = ["GET"])
+def GetCourses():
+    courses = (
+        supabase.table("Courses")
+        .select("id","courseName")
+        .execute()
+    )
+    courseNamesList: pydantic.List[str] = [object["courseName"] for object in courses.data]
+    courseIdList: pydantic.List[int] = [object["id"] for object in courses.data]
+    nameId = list(zip(courseNamesList, courseIdList))
+    return jsonify({"courses":nameId})
 
 
 if __name__ == "__main__":
