@@ -31,7 +31,7 @@ export default function CustomNode({ data }) {
       onMouseEnter={()=>{setHover(true)}}
       onMouseLeave={()=>{setHover(false)}}
     >
-      <Link style ={{color: '#fff'}} to={`/conceptmap/${encodeURIComponent(data.course)}/${encodeURIComponent(data.label)}`}>{data.label}</Link> 
+      <Link style ={{color: '#fff'}} to={`/conceptmap/${encodeURIComponent(data.courseName)}/${encodeURIComponent(data.label)}`}>{data.label}</Link> 
       <Outlet/>
     {data.layout ? (
             <>

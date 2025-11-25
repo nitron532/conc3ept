@@ -1,6 +1,6 @@
 import ELK from 'elkjs/lib/elk.bundled.js';
 import { useCallback, useLayoutEffect , useEffect, useState} from 'react';
-import {useParams} from "react-router-dom";
+import {useParams, useLocation} from "react-router-dom";
 import axios from "axios";
 import AddEditTopics from '../components/AddEditTopics';
 import MiddleArrowEdge from '../components/MiddleArrowEdge';
@@ -76,6 +76,7 @@ function ConceptMap() {
     }
   })
   const courseName = decodeURIComponent(useParams().course);
+  const courseId = useLocation().state.courseId;
   let elkOptionsWithState = {
     'elk.algorithm': 'layered',
     'elk.layered.spacing.nodeNodeBetweenLayers': appearanceSettings.layerSpacing.toString(),
@@ -87,7 +88,7 @@ function ConceptMap() {
   const getGraph = useCallback(async () =>{
     try{
       const response = await axios.get(
-        `${import.meta.env.VITE_SERVER_URL}/GetGraph`
+        `${import.meta.env.VITE_SERVER_URL}/GetGraph?id=${courseId}`
       )
       setBaseNodes(response.data.nodes);
       setBaseEdges(response.data.edges);
@@ -113,7 +114,7 @@ function ConceptMap() {
           ...n,
           data:{
             ...n.data,
-            course: courseName,
+            courseName: courseName,
           }
         }));
         const edges = layouted.edges.map((e)=>({
@@ -193,7 +194,7 @@ function ConceptMap() {
           fitView
         >
         </ReactFlow>
-        <div className = "bottomleft"> <AddEditTopics getGraph = {getGraph} baseNodes = {baseNodes} baseEdges = {baseEdges}/> </div>
+        <div className = "bottomleft"> <AddEditTopics getGraph = {getGraph} courseId = {courseId} baseNodes = {baseNodes} baseEdges = {baseEdges}/> </div>
         <div className = "bottomright"><Appearance appearanceSettings = {appearanceSettings} 
                                         setAppearanceSettings={setAppearanceSettings}
                                         refreshNodes={refreshNodes}

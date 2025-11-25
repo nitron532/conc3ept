@@ -4,9 +4,9 @@ import axios from "axios"
 import NodeSelector from './NodeSelector';
 import EdgesSelector from './EdgesSelector';
 
-export default function AddEditTopics({getGraph, baseNodes, baseEdges}) {
+export default function AddEditTopics({getGraph, baseNodes, baseEdges, courseId}) {
   const [open, setOpen] = useState(false);
-  const initialState = {topicInput: "", outgoingConnections : [], incomingConnections :[]}
+  const initialState = {topicInput: "", outgoingConnections : [], incomingConnections :[], courseId: courseId}
   const [formData, setFormData] = useState(initialState) //to db
   const [submittable, setSubmittable] = useState(false);
   const [add, setAdd] = useState(true); //boolean flipped?

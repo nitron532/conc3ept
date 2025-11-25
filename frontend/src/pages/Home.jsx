@@ -24,7 +24,7 @@ export default function Home(){
     
     return(
         <>
-            {courses.map((course)=><CourseCard key = {course[1]} courseName = {course[0]}/>)}
+            {courses.map((course)=><CourseCard key = {course[1]} courseName = {course[0]} courseId = {course[1]}/>)}
            <div className = "bottomleft"> <AddEditCourses getCourses ={getCourses} courses = {courses}/> </div>
         </>
     )

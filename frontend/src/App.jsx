@@ -23,7 +23,6 @@ function App() {
     },
   });
   return (
-    <BrowserRouter>
       <ThemeProvider theme = {theme}>
         {/* menu contents depend on login state */}
         <SideMenu></SideMenu>
@@ -38,7 +37,6 @@ function App() {
           {/* user concept map */}
         </Routes>
       </ThemeProvider>
-    </BrowserRouter>
   )
 }
 
