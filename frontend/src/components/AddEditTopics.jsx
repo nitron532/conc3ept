@@ -24,7 +24,7 @@ export default function AddEditTopics({getGraph, baseNodes, baseEdges, courseId}
         {headers:{"Content-Type" : "application/json"}}
       )
       setFormData(initialState);
-      getGraph();
+      getGraph(courseId);
     }
     catch(error){
       console.log("Failed to delete: ", error)
@@ -40,7 +40,7 @@ export default function AddEditTopics({getGraph, baseNodes, baseEdges, courseId}
         {headers:{"Content-Type": "application/json"}}
       )
       setFormData(initialState);
-      getGraph();
+      getGraph(courseId);
     }
     catch (error){
       console.error("Failed to update: ", error);
@@ -55,7 +55,7 @@ export default function AddEditTopics({getGraph, baseNodes, baseEdges, courseId}
         {headers:{"Content-Type": "application/json"}}
       )
       setFormData(initialState);
-      getGraph();
+      getGraph(courseId);
     }
     catch (error){
       console.error("Failed to update: ", error);
@@ -75,7 +75,7 @@ export default function AddEditTopics({getGraph, baseNodes, baseEdges, courseId}
             {headers:{"Content-Type": "application/json"}}
         )
         setFormData(initialState);
-        getGraph();
+        getGraph(courseId);
     }
     catch(error){
         console.error("Submission failed: ", error);

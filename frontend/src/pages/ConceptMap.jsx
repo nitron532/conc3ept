@@ -76,7 +76,8 @@ function ConceptMap() {
     }
   })
   const courseName = decodeURIComponent(useParams().course);
-  const courseId = useLocation().state.courseId;
+  const [courseId, setCourseId] = useState(useLocation().state?.courseId)
+  // let courseId = useLocation().state?.courseId;
   let elkOptionsWithState = {
     'elk.algorithm': 'layered',
     'elk.layered.spacing.nodeNodeBetweenLayers': appearanceSettings.layerSpacing.toString(),
@@ -85,19 +86,39 @@ function ConceptMap() {
   };
   const { fitView } = useReactFlow();
 
-  const getGraph = useCallback(async () =>{
+  const getCourseId = useCallback(async () =>{
     try{
       const response = await axios.get(
-        `${import.meta.env.VITE_SERVER_URL}/GetGraph?id=${courseId}`
+        `${import.meta.env.VITE_SERVER_URL}/GetCourseId?courseName=${courseName}`
+      )
+      setCourseId(response.data.courseId);
+    }
+    catch (Error){
+      console.log("Couldn't find course id: ", Error);
+    }
+  })
+
+  const getGraph = useCallback(async (id) =>{
+    try{
+      const response = await axios.get(
+        `${import.meta.env.VITE_SERVER_URL}/GetGraph?id=${id}`
       )
       setBaseNodes(response.data.nodes);
       setBaseEdges(response.data.edges);
     }
     catch (Error){
       console.log("Failed to retrieve graph: ", Error);
-      setTimeout(() => getGraph(), 2000);
+      setTimeout(() => getGraph(id), 2000);
     }
   },[]);
+
+  useEffect(() => {
+    if (!courseId) {
+      getCourseId();
+    } else {
+      getGraph(courseId);
+    }
+  }, [courseId]);
 
   const refreshNodes = useCallback (async (forceRefresh = false) =>{
     try{
@@ -115,6 +136,7 @@ function ConceptMap() {
           data:{
             ...n.data,
             courseName: courseName,
+            courseId: courseId
           }
         }));
         const edges = layouted.edges.map((e)=>({
@@ -130,10 +152,6 @@ function ConceptMap() {
       console.error("Failed to retrieve graph: ", Error);
     }
   }, [appearanceSettings, baseNodes, baseEdges]);
-
-  useEffect(()=>{
-    getGraph();
-  }, [getGraph]);
 
   useEffect(()=>{
   refreshNodes();

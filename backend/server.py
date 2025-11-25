@@ -147,7 +147,10 @@ def EditNodeIncoming():
 @app.route("/GetGraph", methods = ["GET"])
 def GetGraph():
     #query db for graph
-    courseId: int = request.args.get("id")
+    courseId = request.args.get("id")
+    if not courseId:
+        return "Failed", 500
+    courseId = int(courseId)
     getConceptsResponse = (
         supabase.table("Concepts")
         .select("id,conceptName")
@@ -201,6 +204,17 @@ def GetCourses():
     courseIdList: pydantic.List[int] = [object["id"] for object in courses.data]
     nameId = list(zip(courseNamesList, courseIdList))
     return jsonify({"courses":nameId})
+
+@app.route("/GetCourseId", methods = ["GET"]) # TODO fallback if courseid is undefined. Needs error handling
+def GetCourseId():
+    courseName = request.args.get("courseName")
+    courseIdResponse = (
+        supabase.table("Courses")
+        .select("id")
+        .eq("courseName",courseName)
+        .execute()
+    )
+    return jsonify({"courseId": courseIdResponse.data[0]["id"]})
 
 
 if __name__ == "__main__":

@@ -1,7 +1,9 @@
 import { Handle, Position } from '@xyflow/react';
 import {useState} from "react"
-import {Link, Outlet} from "react-router-dom"
+import {Link, Outlet, useNavigate} from "react-router-dom"
+
 export default function CustomNode({ data }) {
+  const navigate = useNavigate();
   const [hover, setHover] = useState(false);
   const defaultStyle = {
         borderRadius: '12px',
@@ -23,6 +25,13 @@ export default function CustomNode({ data }) {
     background: '#085252ff'
   }
 
+  const handleClick = () => {
+    const courseId = data.courseId;
+    navigate(`/conceptmap/${encodeURIComponent(data.courseName)}/${encodeURIComponent(data.label)}`, {
+      state: {courseId}   // pass extra data without adding to URL
+    });
+  };
+
   return (
     <div
       style={
@@ -31,7 +40,8 @@ export default function CustomNode({ data }) {
       onMouseEnter={()=>{setHover(true)}}
       onMouseLeave={()=>{setHover(false)}}
     >
-      <Link style ={{color: '#fff'}} to={`/conceptmap/${encodeURIComponent(data.courseName)}/${encodeURIComponent(data.label)}`}>{data.label}</Link> 
+      {/* <Link style ={{color: '#fff'}} to={`/conceptmap/${encodeURIComponent(data.courseName)}/${encodeURIComponent(data.label)}`}>{data.label}</Link>  */}
+      <div style = {{color: '#fff'}} onClick = {handleClick}>{data.label}</div>
       <Outlet/>
     {data.layout ? (
             <>
