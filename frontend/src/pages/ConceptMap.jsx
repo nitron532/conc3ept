@@ -1,8 +1,9 @@
 import ELK from 'elkjs/lib/elk.bundled.js';
-import { useCallback, useLayoutEffect , useEffect, useState} from 'react';
+import { useCallback, useLayoutEffect , useEffect, useState,useMemo} from 'react';
 import {useParams, useLocation} from "react-router-dom";
 import axios from "axios";
 import AddEditTopics from '../components/AddEditTopics';
+import SelectedNodesMenu from '../components/SelectedNodesMenu';
 import MiddleArrowEdge from '../components/MiddleArrowEdge';
 import CustomNode from '../components/CustomNode';
 import Appearance from '../components/Appearance';
@@ -78,7 +79,10 @@ function ConceptMap() {
   const courseName = decodeURIComponent(useParams().course);
   const [courseId, setCourseId] = useState(useLocation().state?.courseId)
   const [selectedNodes, setSelectedNodes] = useState([]);
-  // let courseId = useLocation().state?.courseId;
+  // const customNode = useMemo( () =>({
+  //       custom: (props) => <CustomNode {...props} setSelectedNodes = {setSelectedNodes} selectedNodes = {selectedNodes} />
+  //       }),[],)
+  const customNode = {custom:(props) => <CustomNode {...props} setSelectedNodes = {setSelectedNodes} selectedNodes = {selectedNodes} />}
   let elkOptionsWithState = {
     'elk.algorithm': 'layered',
     'elk.layered.spacing.nodeNodeBetweenLayers': appearanceSettings.layerSpacing.toString(),
@@ -188,10 +192,6 @@ function ConceptMap() {
     onLayout({ direction: 'DOWN'});
   }, []);
 
-  const customNode = { custom: (props) => <CustomNode {...props} setSelectedNodes = {setSelectedNodes} selectedNodes = {selectedNodes} />};
-  const log = () =>{
-    console.log(selectedNodes);
-  }
   return (
     <div style={{
       position: 'absolute',
@@ -224,7 +224,7 @@ function ConceptMap() {
                                         onLayout = {onLayout}/>
                                         </div>
       </div>
-        <div onClick = {log} className = "bottomcenter">Selected Nodes</div>
+        {selectedNodes.length > 0 && <SelectedNodesMenu courseId = {courseId} selectedNodes = {selectedNodes} setSelectedNodes = {setSelectedNodes}/>}
     </div>
   );
 }

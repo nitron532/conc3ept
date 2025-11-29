@@ -89,7 +89,7 @@ export default function AddEditTopics({getGraph, baseNodes, baseEdges, courseId}
   }, [formData.topicInput]);
 
   const AddEditMenu = (
-    <Box sx={{ width: 450 }} role="presentation">
+    <Box sx={{ width: 300 }} role="presentation">
       {/* add top padding for input fields  */}
     <NodeSelector baseNodes = {baseNodes} formData = {formData} setFormData = {setFormData}/>
     <EdgesSelector baseNodes = {baseNodes} formData = {formData} setFormData = {setFormData} add = {add} baseEdges = {baseEdges} outgoing = {true}/>

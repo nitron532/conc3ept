@@ -6,6 +6,7 @@ import UserMenu from './components/UserMenu.jsx'
 import { useMediaQuery } from '@mui/material';
 import Home from './pages/Home'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import LessonPlan from './pages/LessonPlan.jsx'
 import ConceptMap from './pages/ConceptMap.jsx'
 import NestedLevel from './components/NestedLevel.jsx';
 import Login from './pages/Login.jsx'
@@ -34,6 +35,7 @@ function App() {
           {/* user home page */}
           <Route path = "/conceptmap/:course" element = {<ConceptMap/>}></Route>
           <Route path = "/conceptmap/:course/:topic" element = {<NestedLevel/>}></Route>
+          <Route path = "/conceptmap/:course/lessonplan" element = {<LessonPlan/>}></Route>
           {/* user concept map */}
         </Routes>
       </ThemeProvider>

@@ -9,7 +9,7 @@ export default function CourseCard({courseName, courseId}) {
   const navigate = useNavigate();
     const handleClick = () => {
       navigate(`/conceptmap/${courseName}`, {
-        state: { courseId }    // pass extra data without adding to URL
+        state: { courseId } 
       });
   };
   return (

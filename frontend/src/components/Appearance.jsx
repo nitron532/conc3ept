@@ -20,7 +20,7 @@ export default function Appearance({appearanceSettings, setAppearanceSettings, r
     };
 
     const AppearanceMenu = (
-            <Box sx={{ width: 450 }} role="presentation">
+            <Box sx={{ width: 300 }} role="presentation">
             <Button id = "DOWN" sx ={{my:1}} onClick={() => {onLayout({direction:'DOWN'})}}> Vertical </Button>
             <Button id = "RIGHT" sx ={{my:1}} onClick={() => {onLayout({direction:'RIGHT'})}}> Horizontal </Button>
             <ToggleButton value = "animate" selected = {appearanceSettings.edgeAnimated} onChange = {handleChangeAnimated}> <MultipleStopIcon/></ToggleButton>

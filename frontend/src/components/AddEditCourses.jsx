@@ -73,7 +73,7 @@ export default function AddEditCourses({getCourses, courses}) {
   }, [formData.courseInput]);
 
   const AddEditMenu = (
-    <Box sx={{ width: 450 }} role="presentation">
+    <Box sx={{ width: 300 }} role="presentation">
       {/* add top padding for input fields, should be course selector label*/}
     <CourseSelector courses = {courses} formData = {formData} setFormData = {setFormData}/>
     {submittable && add && <Button variant="outlined" onClick={function(event){toggleDrawer(false)(); addCourse(event)}}>Add {formData.courseInput}</Button>}
