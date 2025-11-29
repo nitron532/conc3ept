@@ -39,6 +39,11 @@
   right: 20px;
 }
 
+.bottomcenter{
+  position: fixed;
+  bottom: 10px;
+}
+
 .react-flow {
   --xy-background-color: #121212; 
   --xy-minimap-background-color-default: #242424;

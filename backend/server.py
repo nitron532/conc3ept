@@ -20,6 +20,7 @@ supabase: Client = create_client(url,key)
 #add option in UI to allow topical cycles (?)
 def AddNode():
     data = request.json
+    print(data)
     courseId: int = data["courseId"]
     topicName: str = data["topicInput"]
     outgoingConnections: pydantic.List[str] = data["outgoingConnections"]

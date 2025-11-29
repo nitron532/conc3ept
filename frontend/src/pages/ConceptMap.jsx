@@ -77,6 +77,7 @@ function ConceptMap() {
   })
   const courseName = decodeURIComponent(useParams().course);
   const [courseId, setCourseId] = useState(useLocation().state?.courseId)
+  const [selectedNodes, setSelectedNodes] = useState([]);
   // let courseId = useLocation().state?.courseId;
   let elkOptionsWithState = {
     'elk.algorithm': 'layered',
@@ -187,7 +188,10 @@ function ConceptMap() {
     onLayout({ direction: 'DOWN'});
   }, []);
 
-
+  const customNode = { custom: (props) => <CustomNode {...props} setSelectedNodes = {setSelectedNodes} selectedNodes = {selectedNodes} />};
+  const log = () =>{
+    console.log(selectedNodes);
+  }
   return (
     <div style={{
       position: 'absolute',
@@ -199,10 +203,10 @@ function ConceptMap() {
       justifyContent: 'center',
       alignItems: 'center',
       }}>
-      <div style={{ width: '90vw', height: '90vh'}}>
+      <div style={{ width: '85vw', height: '85vh'}}>
         <ReactFlow
           className="react-flow"
-          nodeTypes = {{custom: CustomNode}}
+          nodeTypes = {customNode}
           nodes={nodes}
           edges={edges}
           edgeTypes = {{middleArrow:MiddleArrowEdge}}
@@ -220,6 +224,7 @@ function ConceptMap() {
                                         onLayout = {onLayout}/>
                                         </div>
       </div>
+        <div onClick = {log} className = "bottomcenter">Selected Nodes</div>
     </div>
   );
 }

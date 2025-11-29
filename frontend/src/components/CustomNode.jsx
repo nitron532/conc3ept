@@ -2,12 +2,14 @@ import { Handle, Position } from '@xyflow/react';
 import {useState} from "react"
 import {Link, Outlet, useNavigate} from "react-router-dom"
 
-export default function CustomNode({ data }) {
+export default function CustomNode({ data, setSelectedNodes, selectedNodes }) {
   const navigate = useNavigate();
   const [hover, setHover] = useState(false);
+  const [selected, setSelected] = useState(selectedNodes.includes(data.label))
+  const defaultBackgroundColor = selected ? '#1f1f' : '#1f1f1f'
   const defaultStyle = {
         borderRadius: '12px',
-        background: '#1f1f1f',
+        background: defaultBackgroundColor,
         border: '1px solid #333',
         color: '#fff',
         padding: '10px 16px',
@@ -25,13 +27,24 @@ export default function CustomNode({ data }) {
     background: '#085252ff'
   }
 
-  const handleClick = () => {
-    const courseId = data.courseId;
-    navigate(`/conceptmap/${encodeURIComponent(data.courseName)}/${encodeURIComponent(data.label)}`, {
-      state: {courseId}   // pass extra data without adding to URL
-    });
+  const handleClickLink = (event) => {
+    if(!event.ctrlKey){
+      const courseId = data.courseId;
+      navigate(`/conceptmap/${encodeURIComponent(data.courseName)}/${encodeURIComponent(data.label)}`, {
+        state: {courseId}   // pass extra data without adding to URL
+      });
+  }
   };
-
+  const handleClickNode = (event) =>{
+    if(event.ctrlKey && !selected){
+      setSelectedNodes([...selectedNodes, data.label])
+      setSelected(true);
+    }
+    else{
+      setSelectedNodes(selectedNodes.filter(label => label != data.label))
+      setSelected(false);
+    }
+  };
   return (
     <div
       style={
@@ -39,9 +52,10 @@ export default function CustomNode({ data }) {
       }
       onMouseEnter={()=>{setHover(true)}}
       onMouseLeave={()=>{setHover(false)}}
+      onClick = {handleClickNode}
     >
       {/* <Link style ={{color: '#fff'}} to={`/conceptmap/${encodeURIComponent(data.courseName)}/${encodeURIComponent(data.label)}`}>{data.label}</Link>  */}
-      <div style = {{color: '#fff'}} onClick = {handleClick}>{data.label}</div>
+      <div style = {{color: '#fff'}} onClick = {handleClickLink}>{data.label}</div>
       <Outlet/>
     {data.layout ? (
             <>
