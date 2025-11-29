@@ -2,10 +2,10 @@ import { Handle, Position } from '@xyflow/react';
 import {useState} from "react"
 import {Link, Outlet, useNavigate} from "react-router-dom"
 
-export default function CustomNode({ data, setSelectedNodes, selectedNodes }) {
+export default function CustomNode({ data}) {
   const navigate = useNavigate();
   const [hover, setHover] = useState(false);
-  const [selected, setSelected] = useState(selectedNodes.includes(data.label))
+  const [selected, setSelected] = useState(data.selectedNodes.includes(data.label))
   const defaultBackgroundColor = selected ? '#1f1f' : '#1f1f1f'
   const defaultStyle = {
         borderRadius: '12px',
@@ -37,11 +37,11 @@ export default function CustomNode({ data, setSelectedNodes, selectedNodes }) {
   };
   const handleClickNode = (event) =>{
     if(event.ctrlKey && !selected){
-      setSelectedNodes([...selectedNodes, data.label])
+      data.setSelectedNodes([...data.selectedNodes, data.label])
       setSelected(true);
     }
     else{
-      setSelectedNodes(selectedNodes.filter(label => label != data.label))
+      data.setSelectedNodes(data.selectedNodes.filter(label => label != data.label))
       setSelected(false);
     }
   };

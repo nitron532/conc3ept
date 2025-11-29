@@ -7,6 +7,7 @@ import SelectedNodesMenu from '../components/SelectedNodesMenu';
 import MiddleArrowEdge from '../components/MiddleArrowEdge';
 import CustomNode from '../components/CustomNode';
 import Appearance from '../components/Appearance';
+import React from 'react'
 
 
 import {
@@ -79,10 +80,6 @@ function ConceptMap() {
   const courseName = decodeURIComponent(useParams().course);
   const [courseId, setCourseId] = useState(useLocation().state?.courseId)
   const [selectedNodes, setSelectedNodes] = useState([]);
-  // const customNode = useMemo( () =>({
-  //       custom: (props) => <CustomNode {...props} setSelectedNodes = {setSelectedNodes} selectedNodes = {selectedNodes} />
-  //       }),[],)
-  const customNode = {custom:(props) => <CustomNode {...props} setSelectedNodes = {setSelectedNodes} selectedNodes = {selectedNodes} />}
   let elkOptionsWithState = {
     'elk.algorithm': 'layered',
     'elk.layered.spacing.nodeNodeBetweenLayers': appearanceSettings.layerSpacing.toString(),
@@ -141,7 +138,9 @@ function ConceptMap() {
           data:{
             ...n.data,
             courseName: courseName,
-            courseId: courseId
+            courseId: courseId,
+            selectedNodes: selectedNodes,
+            setSelectedNodes: setSelectedNodes
           }
         }));
         const edges = layouted.edges.map((e)=>({
@@ -192,6 +191,21 @@ function ConceptMap() {
     onLayout({ direction: 'DOWN'});
   }, []);
 
+  const nodesWithState = useMemo(() => {
+    return nodes.map(n => ({
+      ...n,
+      data: {
+        ...n.data,
+        selectedNodes,
+        setSelectedNodes
+      }
+    }));
+  }, [nodes, selectedNodes]);
+
+  const nodeTypes = useMemo(() => ({
+    custom: CustomNode
+  }), []);
+
   return (
     <div style={{
       position: 'absolute',
@@ -206,8 +220,8 @@ function ConceptMap() {
       <div style={{ width: '85vw', height: '85vh'}}>
         <ReactFlow
           className="react-flow"
-          nodeTypes = {customNode}
-          nodes={nodes}
+          nodeTypes = {nodeTypes}
+          nodes={nodesWithState}
           edges={edges}
           edgeTypes = {{middleArrow:MiddleArrowEdge}}
           onConnect={onConnect}
