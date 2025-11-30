@@ -117,7 +117,7 @@ def EditNodeIncoming():
     topic = (
         supabase.table("Concepts")
         .select("id")
-        .eq("courseId",courseId)
+        .eq("courseid",courseId)
         .eq("conceptName", topicName)
         .execute()
     )
