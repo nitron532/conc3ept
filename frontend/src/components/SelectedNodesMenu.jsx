@@ -28,8 +28,9 @@ export default function SelectedNodesMenu({selectedNodes, setSelectedNodes, cour
 
   const clearAll = () =>{
     toggleDrawer(false);
-    setTimeout(() => {setSelectedNodes([]);}, 250);
-    //TODO isnt doing animation
+    setSelectedNodes([]);
+    // setTimeout(() => {setSelectedNodes([]);}, 250);
+    //TODO isnt doing animation, also green highlight isnt clearing
   }
 
   const handleClickPlan = () =>{
