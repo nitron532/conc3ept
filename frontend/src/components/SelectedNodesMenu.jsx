@@ -1,41 +1,46 @@
 import  {useState, useEffect} from 'react'
 import {Box, Drawer, Button} from '@mui/material';
 import {useNavigate} from 'react-router-dom';
+import DeleteAlert from './DeleteAlert';
 import axios from "axios"
 
 export default function SelectedNodesMenu({selectedNodes, setSelectedNodes, courseId}) {
   const [open, setOpen] = useState(false);
-  const [submittable, setSubmittable] = useState(false);
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
   };
   const navigate = useNavigate();
-  const deleteNode = async (e) =>{
+  const deleteSelectedNodes = async (e) =>{
     e.preventDefault();
+    const formData = {
+        "selectedNodes": selectedNodes,
+        "courseId" : courseId,
+    }
     try{
       await axios.delete(
-        `${import.meta.env.VITE_SERVER_URL}/DeleteNode`,
+        `${import.meta.env.VITE_SERVER_URL}/DeleteSelectedNodes`,
         {data: formData},
         {headers:{"Content-Type" : "application/json"}}
       )
-      setFormData(initialState);
-      getGraph(courseId);
+      setSelectedNodes([]);
+      //getGraph(courseId);
     }
     catch(error){
       console.log("Failed to delete: ", error)
     }
   }
 
+
   const clearAll = () =>{
     toggleDrawer(false);
     setSelectedNodes([]);
     // setTimeout(() => {setSelectedNodes([]);}, 250);
-    //TODO isnt doing animation, also green highlight isnt clearing
+    //TODO isnt doing animation
   }
 
   const handleClickPlan = () =>{
         navigate(`lessonplan`, {
-            state: { courseId:courseId, selectedNodes:selectedNodes }  ,  // pass extra data (by copy) without adding to URL
+            state: { courseId:courseId, selectedNodes:selectedNodes }  , //passing by copy
       });
   }
 
@@ -45,11 +50,12 @@ export default function SelectedNodesMenu({selectedNodes, setSelectedNodes, cour
 
         <Button onClick = {clearAll}>Clear Selections</Button>
         <Button onClick = {handleClickPlan} >Create Lesson Plan</Button>
+        <DeleteAlert deleteSelectedNodes={deleteSelectedNodes}/>
+
         <div>
         {selectedNodes.map((node)=>(
             <p key = {node}>{node}</p>
         ))}
-
 
         </div>
     

@@ -7,7 +7,7 @@ export default function NodeSelector({baseNodes, formData, setFormData}){
         setSearchQuery(newInputValue);
         setFormData((prev) => ({
         ...prev,
-        topicInput: newInputValue,
+        conceptInput: newInputValue,
         }));
     };
 
@@ -16,7 +16,7 @@ export default function NodeSelector({baseNodes, formData, setFormData}){
         setSearchQuery(value);
         setFormData((prev) => ({
         ...prev,
-        topicInput: value,
+        conceptInput: value,
         }));
     };
 
@@ -28,14 +28,14 @@ export default function NodeSelector({baseNodes, formData, setFormData}){
 
     return (
         <Autocomplete
-        value = {formData.topicInput}
+        value = {formData.conceptInput}
         freeSolo
         options={filteredOptions} // list of matching nodes
         inputValue={searchQuery}
         onInputChange={handleInputChange}
         onChange={handleSelectChange}
         renderInput={(params) => (
-            <TextField {...params} name = "topicInput" label="Topic" variant="outlined" fullWidth/>
+            <TextField {...params} name = "conceptInput" label="Concept" variant="outlined" fullWidth/>
         )}
         />
     );

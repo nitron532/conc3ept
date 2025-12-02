@@ -34,7 +34,7 @@ function App() {
           <Route path = "/home" element = {<Home/>}></Route>
           {/* user home page */}
           <Route path = "/conceptmap/:course" element = {<ConceptMap/>}></Route>
-          <Route path = "/conceptmap/:course/:topic" element = {<NestedLevel/>}></Route>
+          <Route path = "/conceptmap/:course/:concept" element = {<NestedLevel/>}></Route>
           <Route path = "/conceptmap/:course/lessonplan" element = {<LessonPlan/>}></Route>
           {/* user concept map */}
         </Routes>

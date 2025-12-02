@@ -4,9 +4,9 @@ import axios from "axios"
 import NodeSelector from './NodeSelector';
 import EdgesSelector from './EdgesSelector';
 
-export default function AddEditTopics({getGraph, baseNodes, baseEdges, courseId}) {
+export default function AddEditConcepts({getGraph, baseNodes, baseEdges, courseId}) {
   const [open, setOpen] = useState(false);
-  const initialState = {topicInput: "", outgoingConnections : [], incomingConnections :[], courseId: courseId}
+  const initialState = {conceptInput: "", outgoingConnections : [], incomingConnections :[], courseId: courseId}
   const [formData, setFormData] = useState(initialState) //to db
   const [submittable, setSubmittable] = useState(false);
   const [add, setAdd] = useState(true); //boolean flipped?
@@ -55,7 +55,7 @@ export default function AddEditTopics({getGraph, baseNodes, baseEdges, courseId}
         {headers:{"Content-Type": "application/json"}}
       )
       setFormData(initialState);
-      getGraph(courseId);
+      // getGraph(courseId);
     }
     catch (error){
       console.error("Failed to update: ", error);
@@ -64,7 +64,7 @@ export default function AddEditTopics({getGraph, baseNodes, baseEdges, courseId}
 
   const addNode = async (e) => {
     e.preventDefault();
-    if(formData.outgoingConnections.length === 0 && formData.topicInput.length === 0 && formData.incomingConnections){
+    if(formData.outgoingConnections.length === 0 && formData.conceptInput.length === 0 && formData.incomingConnections){
       //add warning saying it cant be empty?
       return
     }
@@ -75,7 +75,7 @@ export default function AddEditTopics({getGraph, baseNodes, baseEdges, courseId}
             {headers:{"Content-Type": "application/json"}}
         )
         setFormData(initialState);
-        getGraph(courseId);
+        // getGraph(courseId);
     }
     catch(error){
         console.error("Submission failed: ", error);
@@ -83,10 +83,10 @@ export default function AddEditTopics({getGraph, baseNodes, baseEdges, courseId}
   }
 
   useEffect(() => {
-      setSubmittable(formData.topicInput?.trim().length > 0);
-      const addOrEdit = baseNodes?.some((n)=> n.data.label.trim().toLowerCase() === formData.topicInput.trim().toLowerCase());
+      setSubmittable(formData.conceptInput?.trim().length > 0);
+      const addOrEdit = baseNodes?.some((n)=> n.data.label.trim().toLowerCase() === formData.conceptInput.trim().toLowerCase());
       setAdd(!addOrEdit);
-  }, [formData.topicInput]);
+  }, [formData.conceptInput]);
 
   const AddEditMenu = (
     <Box sx={{ width: 300 }} role="presentation">
@@ -94,17 +94,17 @@ export default function AddEditTopics({getGraph, baseNodes, baseEdges, courseId}
     <NodeSelector baseNodes = {baseNodes} formData = {formData} setFormData = {setFormData}/>
     <EdgesSelector baseNodes = {baseNodes} formData = {formData} setFormData = {setFormData} add = {add} baseEdges = {baseEdges} outgoing = {true}/>
     <EdgesSelector baseNodes = {baseNodes} formData = {formData} setFormData = {setFormData} add = {add} baseEdges = {baseEdges} outgoing = {false}/>
-    {submittable && add && <Button variant="outlined" onClick={function(event){toggleDrawer(false)(); addNode(event)}}>Add {formData.topicInput}</Button>}
+    {submittable && add && <Button variant="outlined" onClick={function(event){toggleDrawer(false)(); addNode(event)}}>Add {formData.conceptInput}</Button>}
     {/* make it so that i dont call two functions if not needed? */}
-    {submittable && !add && <Button variant="outlined" onClick={function(event){toggleDrawer(false)(); editNodeOutgoing(event); editNodeIncoming(event);}}>Edit {formData.topicInput}</Button>}
-    {submittable && !add && formData.outgoingConnections.length === 0 && formData.incomingConnections.length === 0 && <Button variant="outlined" onClick={function(event){toggleDrawer(false)(); deleteNode(event)}}>Delete {formData.topicInput}</Button>}
+    {submittable && !add && <Button variant="outlined" onClick={function(event){toggleDrawer(false)(); editNodeOutgoing(event); editNodeIncoming(event);}}>Edit {formData.conceptInput}</Button>}
+    {submittable && !add && formData.outgoingConnections.length === 0 && formData.incomingConnections.length === 0 && <Button variant="outlined" onClick={function(event){toggleDrawer(false)(); deleteNode(event)}}>Delete {formData.conceptInput}</Button>}
     </Box>
     //have a section where available nodes/edges pop up, instead of overlapping the other input fields?
   );
 
   return (
     <div>
-      <Button onClick={toggleDrawer(true)}>Add / Edit Topic</Button>
+      <Button onClick={toggleDrawer(true)}>Add / Edit Concept</Button>
       <Drawer open={open} onClose={toggleDrawer(false)}>
         {AddEditMenu}
       </Drawer>

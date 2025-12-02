@@ -29,6 +29,7 @@ export default function CustomNode({data}) {
   useEffect( ()=>{
     setSelected(data.selectedNodes.includes(data.label));
   }, [data.selectedNodes])
+
   const handleClickLink = (event) => {
     if(!event.ctrlKey){
       const courseId = data.courseId;

@@ -17,30 +17,30 @@ supabase: Client = create_client(url,key)
 
 #need prevention of empty data
 @app.route("/AddNode", methods = ["POST"])
-#add option in UI to allow topical cycles (?)
+#add option in UI to allow conceptal cycles (?)
 def AddNode():
     data = request.json
     print(data)
     courseId: int = data["courseId"]
-    topicName: str = data["topicInput"]
+    conceptName: str = data["conceptInput"]
     outgoingConnections: pydantic.List[str] = data["outgoingConnections"]
     incomingConnections: pydantic.List[str] = data["incomingConnections"]
 
     #try
     responseConcept = (
         supabase.table("Concepts")
-        .insert({"conceptName": topicName, "courseid": courseId})
+        .insert({"conceptName": conceptName, "courseid": courseId})
         .execute()
     )
     #if not exception:
-    topicId: int = responseConcept.data[0]["id"]
+    conceptId: int = responseConcept.data[0]["id"]
 
     allRows = [
-        {"sourceconceptid": topicId, "targetconceptid": id, "linktype": "source_is_prereq_to_target", "courseid":courseId}
+        {"sourceconceptid": conceptId, "targetconceptid": id, "linktype": "source_is_prereq_to_target", "courseid":courseId}
         for id in outgoingConnections
     ]
     incomingRows = [
-        {"sourceconceptid": id, "targetconceptid": topicId, "linktype": "source_is_prereq_to_target", "courseid":courseId}
+        {"sourceconceptid": id, "targetconceptid": conceptId, "linktype": "source_is_prereq_to_target", "courseid":courseId}
         for id in incomingConnections
     ]
     allRows.extend(incomingRows)
@@ -52,23 +52,47 @@ def AddNode():
         )
     return "OK", 200
 
+@app.route("/DeleteSelectedNodes", methods = ["DELETE"])
+def DeleteSelectedNodes():
+    data = request.json
+    courseId: int = data["courseId"]
+    conceptNames: pydantic.List[str] = data["selectedNodes"]
+    concepts = (
+        supabase.table("Concepts")
+        .select("id")
+        .eq("courseid", courseId)
+        .in_("conceptName", conceptNames)
+        .execute()
+    )
+
+    conceptIds = [t["id"] for t in concepts.data]
+
+    # Step 2: delete all in one batch
+    (supabase.table("Concepts")
+        .delete()
+        .in_("id", conceptIds)
+        .eq("courseid", courseId)
+        .execute()
+    )
+    return "OK", 200
+
 @app.route("/DeleteNode", methods = ["DELETE"])
 def DeleteNode():
     data = request.json
     courseId: int = data["courseId"]
-    topicName: str = data["topicInput"]
-    topic = (
+    conceptName: str = data["conceptInput"]
+    concept = (
         supabase.table("Concepts")
         .select("id")
-        .eq("conceptName", topicName)
+        .eq("conceptName", conceptName)
         .eq("courseid", courseId)
         .execute()
     )
-    topicId = topic.data[0]["id"]
+    conceptId = concept.data[0]["id"]
     (
         supabase.table("Concepts")
         .delete()
-        .eq("id", topicId)
+        .eq("id", conceptId)
         .eq("courseid", courseId)
         .execute()
     )
@@ -79,25 +103,25 @@ def DeleteNode():
 def EditNodeOutgoing():
     data = request.json
     courseId: int = data["courseId"]
-    topicName: str = data["topicInput"]
+    conceptName: str = data["conceptInput"]
     outgoingConnections: pydantic.List[int] = [int(id) for id in data["outgoingConnections"]]
-    topic = (
+    concept = (
         supabase.table("Concepts")
         .select("id")
         .eq("courseid", courseId)
-        .eq("conceptName", topicName)
+        .eq("conceptName", conceptName)
         .execute()
     )
-    topicId = topic.data[0]["id"]
+    conceptId = concept.data[0]["id"]
     (
         supabase.table("conceptlinks")
         .delete()
-        .eq("sourceconceptid", topicId)
+        .eq("sourceconceptid", conceptId)
         .eq("courseid",courseId)
         .execute()
     )
     rows = [
-        {"sourceconceptid": topicId, "targetconceptid": id, "linktype": "source_is_prereq_to_target","courseid":courseId}
+        {"sourceconceptid": conceptId, "targetconceptid": id, "linktype": "source_is_prereq_to_target","courseid":courseId}
         for id in outgoingConnections
     ]
     if rows:
@@ -112,25 +136,25 @@ def EditNodeOutgoing():
 def EditNodeIncoming():
     data = request.json
     courseId: int = data["courseId"]
-    topicName: str = data["topicInput"]
+    conceptName: str = data["conceptInput"]
     incomingConnections: pydantic.List[int] = [int(id) for id in data["incomingConnections"]]
-    topic = (
+    concept = (
         supabase.table("Concepts")
         .select("id")
         .eq("courseid",courseId)
-        .eq("conceptName", topicName)
+        .eq("conceptName", conceptName)
         .execute()
     )
-    topicId = topic.data[0]["id"]
+    conceptId = concept.data[0]["id"]
     (
         supabase.table("conceptlinks")
         .delete()
         .eq("courseid",courseId)
-        .eq("targetconceptid", topicId)
+        .eq("targetconceptid", conceptId)
         .execute()
     )
     rows = [
-        {"sourceconceptid": id, "targetconceptid": topicId, "linktype": "source_is_prereq_to_target", "courseid": courseId}
+        {"sourceconceptid": id, "targetconceptid": conceptId, "linktype": "source_is_prereq_to_target", "courseid": courseId}
         for id in incomingConnections
     ]
     if rows:
@@ -142,7 +166,7 @@ def EditNodeIncoming():
     return "OK", 200
 
 
-#courseName/GetGraph to specify which topics to grab
+#courseName/GetGraph to specify which concepts to grab
 #only display nodes that belong in the course(so if they are linked to other things, dont show those other things)
 
 @app.route("/GetGraph", methods = ["GET"])
@@ -158,8 +182,8 @@ def GetGraph():
         .eq("courseid",courseId)
         .execute()
     )
-    topicNames: pydantic.List[str] = [row["conceptName"] for row in getConceptsResponse.data]
-    topicIds: pydantic.List[int] = [row["id"] for row in getConceptsResponse.data]
+    conceptNames: pydantic.List[str] = [row["conceptName"] for row in getConceptsResponse.data]
+    conceptIds: pydantic.List[int] = [row["id"] for row in getConceptsResponse.data]
     getConnectionsResponse = (
         supabase.table("conceptlinks")
         .select("sourceconceptid, targetconceptid")
@@ -171,10 +195,10 @@ def GetGraph():
         sourcesToTargets.append((row["sourceconceptid"], row["targetconceptid"]))
     nodes = []
     edges = []
-    for topic, id in zip(topicNames,topicIds):
+    for concept, id in zip(conceptNames,conceptIds):
         nodes.append(
             {
-                "id": str(id), "position":{"x": 0, "y": 0}, "data": {"label": topic, "courseId": courseId}, "type":"custom"
+                "id": str(id), "position":{"x": 0, "y": 0}, "data": {"label": concept, "courseId": courseId}, "type":"custom"
             }
         )
     for tuple in sourcesToTargets:

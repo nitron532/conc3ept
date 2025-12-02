@@ -2,7 +2,7 @@ import ELK from 'elkjs/lib/elk.bundled.js';
 import { useCallback, useLayoutEffect , useEffect, useState,useMemo} from 'react';
 import {useParams, useLocation} from "react-router-dom";
 import axios from "axios";
-import AddEditTopics from '../components/AddEditTopics';
+import AddEditConcepts from '../components/AddEditConcepts';
 import SelectedNodesMenu from '../components/SelectedNodesMenu';
 import MiddleArrowEdge from '../components/MiddleArrowEdge';
 import CustomNode from '../components/CustomNode';
@@ -230,7 +230,7 @@ function ConceptMap() {
           fitView
         >
         </ReactFlow>
-        <div className = "bottomleft"> <AddEditTopics getGraph = {getGraph} courseId = {courseId} baseNodes = {baseNodes} baseEdges = {baseEdges}/> </div>
+        <div className = "bottomleft"> <AddEditConcepts getGraph = {getGraph} courseId = {courseId} baseNodes = {baseNodes} baseEdges = {baseEdges}/> </div>
         <div className = "bottomright"><Appearance appearanceSettings = {appearanceSettings} 
                                         setAppearanceSettings={setAppearanceSettings}
                                         refreshNodes={refreshNodes}

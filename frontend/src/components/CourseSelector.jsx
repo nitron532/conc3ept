@@ -14,10 +14,10 @@ export default function CourseSelector({courses, formData, setFormData}){
     const handleSelectChange = (event, newValue) => {
         const value = newValue || ''; // clear input if user removed selection
         setSearchQuery(value);
-        setFormData((prev) => ({
-        ...prev,
-        topicInput: value,
-        }));
+        // setFormData((prev) => ({
+        // ...prev,
+        // conceptInput: value,
+        // }));
     };
 
     const filteredOptions = 

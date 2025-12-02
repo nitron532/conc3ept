@@ -49,13 +49,13 @@ export default function EdgesSelector({baseNodes, formData, setFormData, add, ba
     };
 
     useEffect(() => {
-        if(formData.topicInput){
-            setOptions(baseNodes.map((n) => n.data.label).filter((label) => label !== formData.topicInput));
+        if(formData.conceptInput){
+            setOptions(baseNodes.map((n) => n.data.label).filter((label) => label !== formData.conceptInput));
         }
-    }, [formData.topicInput]);
+    }, [formData.conceptInput]);
 
     useEffect(() => {
-        if (!formData.topicInput){
+        if (!formData.conceptInput){
             setFormData({
                 ...formData,
                 incomingConnections: [],
@@ -63,18 +63,18 @@ export default function EdgesSelector({baseNodes, formData, setFormData, add, ba
             });
             setSelectedLabels([]);
         }
-        const topicNode = baseNodes.find(
-            (n) => n.data.label === formData.topicInput
+        const conceptNode = baseNodes.find(
+            (n) => n.data.label === formData.conceptInput
         );
-        if (!topicNode) return;
+        if (!conceptNode) return;
 
-        const topicId = topicNode.id;
+        const conceptId = conceptNode.id;
         if (add && outgoing) {
             // EDIT MODE: prefill outgoing edges
 
             // only edges where this node is the source
             const outgoingEdges = baseEdges.filter(
-            (edge) => edge.source === topicId
+            (edge) => edge.source === conceptId
             );
 
             // update parent formData with IDs of outgoing nodes
@@ -85,7 +85,7 @@ export default function EdgesSelector({baseNodes, formData, setFormData, add, ba
         } 
         else if (add && !outgoing){
             const incomingEdges = baseEdges.filter(
-                (edge) => edge.target === topicId
+                (edge) => edge.target === conceptId
             );
             setFormData( (prev)=>({
                 ...prev,
@@ -93,7 +93,7 @@ export default function EdgesSelector({baseNodes, formData, setFormData, add, ba
             }));
         }
         // ADD MODE: do not clear selectedLabels, let user select freely
-    }, [add, formData.topicInput, baseEdges, baseNodes, setFormData]);
+    }, [add, formData.conceptInput, baseEdges, baseNodes, setFormData]);
     const outgoingIngoing = outgoing ? "Outgoing Edges" : "Incoming Edges"
     return (
             <Autocomplete
