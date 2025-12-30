@@ -8,7 +8,7 @@ import Home from './pages/Home'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import LessonPlan from './pages/LessonPlan.jsx'
 import ConceptMap from './pages/ConceptMap.jsx'
-import NestedLevel from './components/NestedLevel.jsx';
+import NestedLevel from './pages/NestedLevel.jsx';
 import Login from './pages/Login.jsx'
 import { useState } from 'react';
 

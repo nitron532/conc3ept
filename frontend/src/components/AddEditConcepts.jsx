@@ -75,7 +75,7 @@ export default function AddEditConcepts({getGraph, baseNodes, baseEdges, courseI
             {headers:{"Content-Type": "application/json"}}
         )
         setFormData(initialState);
-        // getGraph(courseId);
+        getGraph(courseId);
     }
     catch(error){
         console.error("Submission failed: ", error);

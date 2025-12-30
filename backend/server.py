@@ -20,7 +20,6 @@ supabase: Client = create_client(url,key)
 #add option in UI to allow conceptal cycles (?)
 def AddNode():
     data = request.json
-    print(data)
     courseId: int = data["courseId"]
     conceptName: str = data["conceptInput"]
     outgoingConnections: pydantic.List[str] = data["outgoingConnections"]
@@ -208,10 +207,32 @@ def GetGraph():
     return jsonify({"nodes":nodes, "edges":edges})
 
 
+@app.route("/GetConceptIds", methods = ["GET"])
+def GetConceptIds():
+    courseId: int = int(request.args.get("id"))
+    conceptNames: pydantic.List[str] = []
+    conceptName: str = request.args.get("0")
+    i = 0
+    while(conceptName):
+        conceptNames.append(conceptName)
+        i+=1
+        conceptName = request.args.get(f"{i}")
+    conceptIdsResponse = (
+        supabase.table("Concepts")
+        .select("id")
+        .eq("courseid",courseId)
+        .in_("conceptName", conceptNames)
+        .execute()
+    )
+
+    return jsonify([id["id"] for id in conceptIdsResponse.data])
+
+
+
 @app.route("/AddCourse", methods = ["POST"])
 def AddCourse():
     data = request.json
-    addCourseResponse = (
+    (
         supabase.table("Courses")
         .insert({"courseName":data["courseInput"]})
         .execute()

@@ -4,7 +4,7 @@ import {useNavigate} from 'react-router-dom';
 import DeleteAlert from './DeleteAlert';
 import axios from "axios"
 
-export default function SelectedNodesMenu({selectedNodes, setSelectedNodes, courseId}) {
+export default function SelectedNodesMenu({selectedNodes, setSelectedNodes, courseId, baseEdges}) {
   const [open, setOpen] = useState(false);
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
@@ -23,7 +23,7 @@ export default function SelectedNodesMenu({selectedNodes, setSelectedNodes, cour
         {headers:{"Content-Type" : "application/json"}}
       )
       setSelectedNodes([]);
-      //getGraph(courseId);
+      getGraph(courseId);
     }
     catch(error){
       console.log("Failed to delete: ", error)
@@ -40,7 +40,7 @@ export default function SelectedNodesMenu({selectedNodes, setSelectedNodes, cour
 
   const handleClickPlan = () =>{
         navigate(`lessonplan`, {
-            state: { courseId:courseId, selectedNodes:selectedNodes }  , //passing by copy
+            state: {selectedNodes:selectedNodes, baseEdges:baseEdges }  , //passing by copy
       });
   }
 

@@ -7,7 +7,6 @@ import SelectedNodesMenu from '../components/SelectedNodesMenu';
 import MiddleArrowEdge from '../components/MiddleArrowEdge';
 import CustomNode from '../components/CustomNode';
 import Appearance from '../components/Appearance';
-import React from 'react'
 
 
 import {
@@ -80,12 +79,6 @@ function ConceptMap() {
   const courseName = decodeURIComponent(useParams().course);
   const [courseId, setCourseId] = useState(useLocation().state?.courseId)
   const [selectedNodes, setSelectedNodes] = useState([]);
-  let elkOptionsWithState = {
-    'elk.algorithm': 'layered',
-    'elk.layered.spacing.nodeNodeBetweenLayers': appearanceSettings.layerSpacing.toString(),
-    'elk.spacing.nodeNode': appearanceSettings.nodeSpacing.toString(),
-    'elk.direction': appearanceSettings.layoutDirection
-  };
   const { fitView } = useReactFlow();
 
   const getCourseId = useCallback(async () =>{
@@ -124,7 +117,7 @@ function ConceptMap() {
 
   const refreshNodes = useCallback (async (forceRefresh = false) =>{
     try{
-      elkOptionsWithState = {
+      let elkOptionsWithState = {
         'elk.algorithm': 'layered',
         'elk.layered.spacing.nodeNodeBetweenLayers': appearanceSettings.layerSpacing.toString(),
         'elk.spacing.nodeNode': appearanceSettings.nodeSpacing.toString(),
@@ -238,7 +231,7 @@ function ConceptMap() {
                                         onLayout = {onLayout}/>
                                         </div>
       </div>
-        {selectedNodes.length > 0 && <SelectedNodesMenu courseId = {courseId} selectedNodes = {selectedNodes} setSelectedNodes = {setSelectedNodes}/>}
+        {selectedNodes.length > 0 && <SelectedNodesMenu baseEdges = {baseEdges} courseId = {courseId} selectedNodes = {selectedNodes} setSelectedNodes = {setSelectedNodes}/>}
     </div>
   );
 }
