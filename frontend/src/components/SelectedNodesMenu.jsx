@@ -40,7 +40,7 @@ export default function SelectedNodesMenu({selectedNodes, setSelectedNodes, cour
 
   const handleClickPlan = () =>{
         navigate(`lessonplan`, {
-            state: {selectedNodes:selectedNodes, baseEdges:baseEdges }  , //passing by copy
+            state: {selectedNodes:selectedNodes, allEdges:baseEdges }  , //passing by copy
       });
   }
 

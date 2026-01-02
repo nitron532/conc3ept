@@ -8,7 +8,7 @@ import {useNavigate} from 'react-router-dom';
 export default function CourseCard({courseName, courseId}) {
   const navigate = useNavigate();
     const handleClick = () => {
-      navigate(`/conceptmap/${courseName}`, {
+      navigate(`/${courseName}`, {
         state: { courseId } 
       });
   };

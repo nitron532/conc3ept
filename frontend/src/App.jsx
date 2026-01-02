@@ -7,7 +7,7 @@ import { useMediaQuery } from '@mui/material';
 import Home from './pages/Home'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import LessonPlan from './pages/LessonPlan.jsx'
-import ConceptMap from './pages/ConceptMap.jsx'
+import CoursePage from './pages/CoursePage.jsx'
 import NestedLevel from './pages/NestedLevel.jsx';
 import Login from './pages/Login.jsx'
 import { useState } from 'react';
@@ -15,7 +15,7 @@ import { useState } from 'react';
 
 function App() {
   
-  const [login, setLogin] = useState(false)
+  const [login, setLogin] = useState(false) //global state thing 
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 
   const theme = createTheme({
@@ -33,9 +33,9 @@ function App() {
           <Route path="/" element = {<Login/>}/>
           <Route path = "/home" element = {<Home/>}></Route>
           {/* user home page */}
-          <Route path = "/conceptmap/:course" element = {<ConceptMap/>}></Route>
-          <Route path = "/conceptmap/:course/:concept" element = {<NestedLevel/>}></Route>
-          <Route path = "/conceptmap/:course/lessonplan" element = {<LessonPlan/>}></Route>
+          <Route path = "/:course" element = {<CoursePage/>}></Route>
+          <Route path = "/:course/:concept" element = {<NestedLevel/>}></Route>
+          <Route path = "/:course/lessonplan" element = {<LessonPlan/>}></Route>
           {/* user concept map */}
         </Routes>
       </ThemeProvider>

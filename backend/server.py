@@ -164,32 +164,43 @@ def EditNodeIncoming():
         )
     return "OK", 200
 
-
-#courseName/GetGraph to specify which concepts to grab
-#only display nodes that belong in the course(so if they are linked to other things, dont show those other things)
-
-@app.route("/GetGraph", methods = ["GET"])
-def GetGraph():
-    #query db for graph
-    courseId = request.args.get("id")
-    if not courseId:
-        return "Failed", 500
-    courseId = int(courseId)
-    getConceptsResponse = (
-        supabase.table("Concepts")
-        .select("id,conceptName")
-        .eq("courseid",courseId)
-        .execute()
-    )
-    conceptNames: pydantic.List[str] = [row["conceptName"] for row in getConceptsResponse.data]
-    conceptIds: pydantic.List[int] = [row["id"] for row in getConceptsResponse.data]
-    getConnectionsResponse = (
-        supabase.table("conceptlinks")
-        .select("sourceconceptid, targetconceptid")
-        .eq("courseid",courseId)
-        .execute()
-    )
-    sourcesToTargets: pydantic.List[pydantic.Tuple[int,int]] =[]
+def getGraphHelper(courseId:int, selectedNodes):
+    getConnectionsResponse = ()
+    getConnectionsResponse = ()
+    conceptNames: pydantic.List[str] = []
+    conceptIds: pydantic.List[int] = []
+    if len(selectedNodes) == 0: # fetch all nodes and connections from db
+        getConceptsResponse = (
+            supabase.table("Concepts")
+            .select("id,conceptName")
+            .eq("courseid",courseId)
+            .execute()
+        )
+        conceptNames: pydantic.List[str] = [row["conceptName"] for row in getConceptsResponse.data] #is this even needed
+        conceptIds: pydantic.List[int] = [row["id"] for row in getConceptsResponse.data]
+        getConnectionsResponse = (
+            supabase.table("conceptlinks")
+            .select("sourceconceptid, targetconceptid")
+            .eq("courseid",courseId)
+            .execute()
+        )
+    else: # fetch selected nodes and connections from db
+        getConceptsResponse = (
+            supabase.table("Concepts")
+            .select("id,conceptName")
+            .eq("courseid", courseId)
+            .in_("conceptName",conceptNames)
+            .execute()
+        )
+        conceptNames: pydantic.List[str] = [row["conceptName"] for row in getConceptsResponse.data] #is this even needed
+        conceptIds: pydantic.List[int] = [row["id"] for row in getConceptsResponse.data]
+        getConnectionsResponse = (
+            supabase.table("conceptlinks")
+            .select("sourceconceptid, targetconceptid")
+            .eq("courseid",courseId)
+            .execute()
+        )
+    sourcesToTargets: pydantic.List[pydantic.Tuple[int,int]] = []
     for row in getConnectionsResponse.data:
         sourcesToTargets.append((row["sourceconceptid"], row["targetconceptid"]))
     nodes = []
@@ -205,6 +216,15 @@ def GetGraph():
                 {"id":f"{tuple[0]}-{tuple[1]}", "source": str(tuple[0]), "target": str(tuple[1]),"courseId":courseId}
         )
     return jsonify({"nodes":nodes, "edges":edges})
+
+@app.route("/GetGraph", methods = ["GET"])
+def GetGraph():
+    #query db for graph
+    courseId = request.args.get("id")
+    if not courseId:
+        return "Failed", 500
+    courseId = int(courseId)
+    return getGraphHelper(courseId)
 
 
 @app.route("/GetConceptIds", methods = ["GET"])
@@ -253,7 +273,7 @@ def GetCourses():
 
 @app.route("/GetCourseId", methods = ["GET"]) # TODO fallback if courseid is undefined. Needs error handling
 def GetCourseId():
-    courseName = request.args.get("courseName")
+    courseName: str = request.args.get("courseName")
     courseIdResponse = (
         supabase.table("Courses")
         .select("id")
@@ -263,6 +283,17 @@ def GetCourseId():
     return jsonify({"courseId": courseIdResponse.data[0]["id"]})
 
 
-if __name__ == "__main__":
+@app.route("/GetConceptMapArguments", methods = ["GET"])
+def GetConceptMapArguments():
+    courseId: int = int(request.args.get("id"))
+    conceptNames: pydantic.List[str] = []
+    conceptName: str = request.args.get("0")
+    i = 0
+    while(conceptName):
+        conceptNames.append(conceptName)
+        i+=1
+        conceptName = request.args.get(f"{i}")
+    return getGraphHelper(courseId,conceptNames)
 
+if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

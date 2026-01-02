@@ -2,11 +2,11 @@ import ELK from 'elkjs/lib/elk.bundled.js';
 import { useCallback, useLayoutEffect , useEffect, useState,useMemo} from 'react';
 import {useParams, useLocation} from "react-router-dom";
 import axios from "axios";
-import AddEditConcepts from '../components/AddEditConcepts';
-import SelectedNodesMenu from '../components/SelectedNodesMenu';
-import MiddleArrowEdge from '../components/MiddleArrowEdge';
-import CustomNode from '../components/CustomNode';
-import Appearance from '../components/Appearance';
+import AddEditConcepts from './AddEditConcepts';
+import SelectedNodesMenu from './SelectedNodesMenu';
+import MiddleArrowEdge from './MiddleArrowEdge';
+import CustomNode from './CustomNode';
+import Appearance from './Appearance';
 
 
 import {
@@ -59,9 +59,7 @@ const getLayoutedElements = (nodes, edges, options = {}) => {
     .catch(console.error);
 };
 
-function ConceptMap() {
-  const [baseNodes, setBaseNodes] = useState([]);
-  const [baseEdges, setBaseEdges] = useState([]);
+function ConceptMap({baseNodes,baseEdges,courseId}) { //nodes, edges, selected nodes and set/get
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [appearanceSettings, setAppearanceSettings] = useState({
@@ -77,43 +75,12 @@ function ConceptMap() {
     }
   })
   const courseName = decodeURIComponent(useParams().course);
-  const [courseId, setCourseId] = useState(useLocation().state?.courseId)
   const [selectedNodes, setSelectedNodes] = useState([]);
   const { fitView } = useReactFlow();
 
-  const getCourseId = useCallback(async () =>{
-    try{
-      const response = await axios.get(
-        `${import.meta.env.VITE_SERVER_URL}/GetCourseId?courseName=${courseName}`
-      )
-      setCourseId(response.data.courseId);
-    }
-    catch (Error){
-      console.log("Couldn't find course id: ", Error);
-    }
+  const getGraph = useCallback(async()=>{
+    console.log("placeholder get graph to remove later")
   })
-
-  const getGraph = useCallback(async (id) =>{
-    try{
-      const response = await axios.get(
-        `${import.meta.env.VITE_SERVER_URL}/GetGraph?id=${id}`
-      )
-      setBaseNodes(response.data.nodes);
-      setBaseEdges(response.data.edges);
-    }
-    catch (Error){
-      console.log("Failed to retrieve graph: ", Error);
-      setTimeout(() => getGraph(id), 2000);
-    }
-  },[]);
-
-  useEffect(() => {
-    if (!courseId) {
-      getCourseId();
-    } else {
-      getGraph(courseId);
-    }
-  }, [courseId]);
 
   const refreshNodes = useCallback (async (forceRefresh = false) =>{
     try{
@@ -132,8 +99,8 @@ function ConceptMap() {
             ...n.data,
             courseName: courseName,
             courseId: courseId,
-            selectedNodes: selectedNodes,
-            setSelectedNodes: setSelectedNodes
+            // selectedNodes: selectedNodes,
+            // setSelectedNodes: setSelectedNodes
           }
         }));
         const edges = layouted.edges.map((e)=>({
@@ -154,7 +121,7 @@ function ConceptMap() {
   refreshNodes();
   }, [refreshNodes]);
 
-  const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), []);
+  const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), []); //TODO implement dragging edges to create them
   const onLayout = useCallback(
     ({direction}) => {
       if(direction === appearanceSettings.layoutDirection){return;}
@@ -210,7 +177,7 @@ function ConceptMap() {
       justifyContent: 'center',
       alignItems: 'center',
       }}>
-      <div style={{ width: '85vw', height: '85vh'}}>
+       <div style={{ width: '85vw', height: '85vh'}}>
         <ReactFlow
           className="react-flow"
           nodeTypes = {nodeTypes}
@@ -231,14 +198,16 @@ function ConceptMap() {
                                         onLayout = {onLayout}/>
                                         </div>
       </div>
-        {selectedNodes.length > 0 && <SelectedNodesMenu baseEdges = {baseEdges} courseId = {courseId} selectedNodes = {selectedNodes} setSelectedNodes = {setSelectedNodes}/>}
+        {selectedNodes.length > 0 && <SelectedNodesMenu baseEdges = {baseEdges} courseId = {courseId} selectedNodes = {selectedNodes} setSelectedNodes = {setSelectedNodes}/>} 
     </div>
   );
 }
 
-export default () => (
-  <ReactFlowProvider>
-    <ConceptMap />
-  </ReactFlowProvider>
+export default ConceptMap
+
+// export default () => (
+//   <ReactFlowProvider>
+//     <ConceptMap />
+//   </ReactFlowProvider>
   
-);
+// );
