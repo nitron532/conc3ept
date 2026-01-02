@@ -1,5 +1,6 @@
 import ConceptMap from "../components/ConceptMap";
-import { useCallback, useLayoutEffect , useEffect, useState,useMemo} from 'react';
+import AddEditConcepts from "../components/AddEditConcepts";
+import {useEffect, useState} from 'react';
 import {useParams, useLocation} from "react-router-dom";
 import axios from "axios"
 import {
@@ -10,17 +11,12 @@ import {
 function CoursePage(){
     const courseName = decodeURIComponent(useParams().course);
     const [courseId, setCourseId] = useState(useLocation().state?.courseId);
-    const [selectedNodesNames, setSelectedNodesNames] = useState([]);
-    const [selectedNodesObjects, setSelectedNodesObjects] = useState([]);
     const [baseNodes, setBaseNodes] = useState([]); //objects
     const [baseEdges, setBaseEdges] = useState([]); //objects
 
-    const getConceptMapArguments = async () =>{
+    const getConceptMapArguments = async (courseId) =>{
         try{
             let requestString = `${import.meta.env.VITE_SERVER_URL}/GetConceptMapArguments?id=${courseId}`
-            for(let i = 0; i < selectedNodesNames.length; i++){
-                requestString += `&${i}=${selectedNodesNames[i]}`
-            }
             const response = await axios.get(
                 requestString
             )
@@ -34,13 +30,17 @@ function CoursePage(){
 
     useEffect( ()=>{
         //if courseId?
-        getConceptMapArguments();
+        getConceptMapArguments(courseId);
     },[])
 
-    function RenderConceptMap({baseNodes, baseEdges, courseId}){
+    function RenderConceptMap({baseNodes, setBaseNodes, baseEdges, setBaseEdges, courseId}){
         if(baseNodes.length > 0){
-            console.log(baseNodes, "from inside rcm")
-            return <ReactFlowProvider><ConceptMap baseNodes = {baseNodes} baseEdges = {baseEdges} courseId = {courseId}/> </ReactFlowProvider>
+            return(
+            <>
+                <ReactFlowProvider><ConceptMap baseNodes = {baseNodes} baseEdges = {baseEdges} courseId = {courseId} setBaseNodes = {setBaseNodes} setBaseEdges = {setBaseEdges}/> </ReactFlowProvider>
+                <div className = "bottomleft"> <AddEditConcepts getConceptMapArguments = {getConceptMapArguments} courseId = {courseId} baseNodes = {baseNodes} baseEdges = {baseEdges}/> </div>
+            </>
+            )
         }
     }
 
@@ -51,7 +51,7 @@ function CoursePage(){
     return (
         <>
             <p>hi you are at {courseName}'s home page</p>
-            <RenderConceptMap baseNodes = {baseNodes} baseEdges = {baseEdges} courseId = {courseId} />
+            <RenderConceptMap baseNodes = {baseNodes} baseEdges = {baseEdges} courseId = {courseId} setBaseNodes = {setBaseNodes} setBaseEdges = {setBaseEdges} />
         </>
     )
 }

@@ -167,7 +167,7 @@ def EditNodeIncoming():
 def getGraphHelper(courseId:int, selectedNodes):
     getConnectionsResponse = ()
     getConnectionsResponse = ()
-    conceptNames: pydantic.List[str] = []
+    conceptNames: pydantic.List[str] = selectedNodes
     conceptIds: pydantic.List[int] = []
     if len(selectedNodes) == 0: # fetch all nodes and connections from db
         getConceptsResponse = (
@@ -176,7 +176,6 @@ def getGraphHelper(courseId:int, selectedNodes):
             .eq("courseid",courseId)
             .execute()
         )
-        conceptNames: pydantic.List[str] = [row["conceptName"] for row in getConceptsResponse.data] #is this even needed
         conceptIds: pydantic.List[int] = [row["id"] for row in getConceptsResponse.data]
         getConnectionsResponse = (
             supabase.table("conceptlinks")
@@ -192,12 +191,13 @@ def getGraphHelper(courseId:int, selectedNodes):
             .in_("conceptName",conceptNames)
             .execute()
         )
-        conceptNames: pydantic.List[str] = [row["conceptName"] for row in getConceptsResponse.data] #is this even needed
         conceptIds: pydantic.List[int] = [row["id"] for row in getConceptsResponse.data]
         getConnectionsResponse = (
             supabase.table("conceptlinks")
             .select("sourceconceptid, targetconceptid")
             .eq("courseid",courseId)
+            .in_("sourceconceptid", conceptIds)
+            .in_("targetconceptid", conceptIds)
             .execute()
         )
     sourcesToTargets: pydantic.List[pydantic.Tuple[int,int]] = []
@@ -224,7 +224,7 @@ def GetGraph():
     if not courseId:
         return "Failed", 500
     courseId = int(courseId)
-    return getGraphHelper(courseId)
+    return getGraphHelper(courseId, [])
 
 
 @app.route("/GetConceptIds", methods = ["GET"])
@@ -293,6 +293,7 @@ def GetConceptMapArguments():
         conceptNames.append(conceptName)
         i+=1
         conceptName = request.args.get(f"{i}")
+    print(conceptNames)
     return getGraphHelper(courseId,conceptNames)
 
 if __name__ == "__main__":

@@ -4,7 +4,7 @@ import axios from "axios"
 import NodeSelector from './NodeSelector';
 import EdgesSelector from './EdgesSelector';
 
-export default function AddEditConcepts({getGraph, baseNodes, baseEdges, courseId}) {
+export default function AddEditConcepts({getConceptMapArguments, baseNodes, baseEdges, courseId}) {
   const [open, setOpen] = useState(false);
   const initialState = {conceptInput: "", outgoingConnections : [], incomingConnections :[], courseId: courseId}
   const [formData, setFormData] = useState(initialState) //to db
@@ -24,7 +24,7 @@ export default function AddEditConcepts({getGraph, baseNodes, baseEdges, courseI
         {headers:{"Content-Type" : "application/json"}}
       )
       setFormData(initialState);
-      getGraph(courseId);
+      getConceptMapArguments(courseId);
     }
     catch(error){
       console.log("Failed to delete: ", error)
@@ -40,7 +40,7 @@ export default function AddEditConcepts({getGraph, baseNodes, baseEdges, courseI
         {headers:{"Content-Type": "application/json"}}
       )
       setFormData(initialState);
-      getGraph(courseId);
+      getConceptMapArguments(courseId);
     }
     catch (error){
       console.error("Failed to update: ", error);
@@ -55,7 +55,7 @@ export default function AddEditConcepts({getGraph, baseNodes, baseEdges, courseI
         {headers:{"Content-Type": "application/json"}}
       )
       setFormData(initialState);
-      // getGraph(courseId);
+      // getConceptMapArguments(courseId);
     }
     catch (error){
       console.error("Failed to update: ", error);
@@ -75,7 +75,7 @@ export default function AddEditConcepts({getGraph, baseNodes, baseEdges, courseI
             {headers:{"Content-Type": "application/json"}}
         )
         setFormData(initialState);
-        getGraph(courseId);
+        getConceptMapArguments(courseId);
     }
     catch(error){
         console.error("Submission failed: ", error);

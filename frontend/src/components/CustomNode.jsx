@@ -33,7 +33,7 @@ export default function CustomNode({data}) {
   const handleClickLink = (event) => {
     if(!event.ctrlKey){
       const courseId = data.courseId;
-      navigate(`/conceptmap/${encodeURIComponent(data.courseName)}/${encodeURIComponent(data.label)}`, {
+      navigate(`${encodeURIComponent(data.label)}`, {
         state: {courseId}   // pass extra data without adding to URL
       });
   }

@@ -59,7 +59,7 @@ const getLayoutedElements = (nodes, edges, options = {}) => {
     .catch(console.error);
 };
 
-function ConceptMap({baseNodes,baseEdges,courseId}) { //nodes, edges, selected nodes and set/get
+function ConceptMap({baseNodes,setBaseNodes, baseEdges,setBaseEdges, courseId}) { //nodes, edges, selected nodes and set/get
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [appearanceSettings, setAppearanceSettings] = useState({
@@ -78,9 +78,19 @@ function ConceptMap({baseNodes,baseEdges,courseId}) { //nodes, edges, selected n
   const [selectedNodes, setSelectedNodes] = useState([]);
   const { fitView } = useReactFlow();
 
-  const getGraph = useCallback(async()=>{
-    console.log("placeholder get graph to remove later")
-  })
+  const getGraph = async(courseId) =>{
+    try{
+      const response = await axios.get(
+        `${import.meta.env.VITE_SERVER_URL}/GetGraph?id=${courseId}`
+      )
+      setBaseNodes(response.data.nodes);
+      setBaseEdges(response.data.edges);
+    }
+    catch (Error){
+      console.log("Failed to retrieve graph: ", Error);
+      setTimeout(() => getGraph(courseId), 2000);
+    }
+  };
 
   const refreshNodes = useCallback (async (forceRefresh = false) =>{
     try{
@@ -190,7 +200,6 @@ function ConceptMap({baseNodes,baseEdges,courseId}) { //nodes, edges, selected n
           fitView
         >
         </ReactFlow>
-        <div className = "bottomleft"> <AddEditConcepts getGraph = {getGraph} courseId = {courseId} baseNodes = {baseNodes} baseEdges = {baseEdges}/> </div>
         <div className = "bottomright"><Appearance appearanceSettings = {appearanceSettings} 
                                         setAppearanceSettings={setAppearanceSettings}
                                         refreshNodes={refreshNodes}
@@ -198,16 +207,10 @@ function ConceptMap({baseNodes,baseEdges,courseId}) { //nodes, edges, selected n
                                         onLayout = {onLayout}/>
                                         </div>
       </div>
-        {selectedNodes.length > 0 && <SelectedNodesMenu baseEdges = {baseEdges} courseId = {courseId} selectedNodes = {selectedNodes} setSelectedNodes = {setSelectedNodes}/>} 
+        {selectedNodes.length > 0 && <SelectedNodesMenu baseEdges = {baseEdges} courseId = {courseId} selectedNodes = {selectedNodes} setSelectedNodes = {setSelectedNodes} getGraph = {getGraph}/>} 
     </div>
   );
 }
 
 export default ConceptMap
 
-// export default () => (
-//   <ReactFlowProvider>
-//     <ConceptMap />
-//   </ReactFlowProvider>
-  
-// );

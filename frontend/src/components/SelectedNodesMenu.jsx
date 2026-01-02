@@ -4,7 +4,7 @@ import {useNavigate} from 'react-router-dom';
 import DeleteAlert from './DeleteAlert';
 import axios from "axios"
 
-export default function SelectedNodesMenu({selectedNodes, setSelectedNodes, courseId, baseEdges}) {
+export default function SelectedNodesMenu({selectedNodes, setSelectedNodes, courseId, getGraph}) {
   const [open, setOpen] = useState(false);
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
@@ -40,7 +40,7 @@ export default function SelectedNodesMenu({selectedNodes, setSelectedNodes, cour
 
   const handleClickPlan = () =>{
         navigate(`lessonplan`, {
-            state: {selectedNodes:selectedNodes, allEdges:baseEdges }  , //passing by copy
+            state: {selectedNodesNames:selectedNodes, courseId:courseId}  , //passing by copy
       });
   }
 
