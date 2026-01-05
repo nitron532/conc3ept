@@ -59,9 +59,11 @@ const getLayoutedElements = (nodes, edges, options = {}) => {
     .catch(console.error);
 };
 
-function ConceptMap({baseNodes,setBaseNodes, baseEdges,setBaseEdges, courseId}) { //nodes, edges, selected nodes and set/get
+function ConceptMap({baseNodes,setBaseNodes, baseEdges,setBaseEdges, courseId, lessonPlanStatus}) { //nodes, edges, selected nodes and set/get
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const courseName = decodeURIComponent(useParams().course);
+  const [selectedNodes, setSelectedNodes] = useState([]);
   const [appearanceSettings, setAppearanceSettings] = useState({
     layoutDirection: "RIGHT",
     nodeSpacing: 100,
@@ -74,8 +76,6 @@ function ConceptMap({baseNodes,setBaseNodes, baseEdges,setBaseEdges, courseId}) 
       borderRadius: 12,
     }
   })
-  const courseName = decodeURIComponent(useParams().course);
-  const [selectedNodes, setSelectedNodes] = useState([]);
   const { fitView } = useReactFlow();
 
   const getGraph = async(courseId) =>{
@@ -207,7 +207,7 @@ function ConceptMap({baseNodes,setBaseNodes, baseEdges,setBaseEdges, courseId}) 
                                         onLayout = {onLayout}/>
                                         </div>
       </div>
-        {selectedNodes.length > 0 && <SelectedNodesMenu baseEdges = {baseEdges} courseId = {courseId} selectedNodes = {selectedNodes} setSelectedNodes = {setSelectedNodes} getGraph = {getGraph}/>} 
+        {selectedNodes.length > 0 && !lessonPlanStatus && <SelectedNodesMenu baseEdges = {baseEdges} courseId = {courseId} selectedNodes = {selectedNodes} setSelectedNodes = {setSelectedNodes} getGraph = {getGraph}/>} 
     </div>
   );
 }

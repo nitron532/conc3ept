@@ -37,7 +37,7 @@ function CoursePage(){
         if(baseNodes.length > 0){
             return(
             <>
-                <ReactFlowProvider><ConceptMap baseNodes = {baseNodes} baseEdges = {baseEdges} courseId = {courseId} setBaseNodes = {setBaseNodes} setBaseEdges = {setBaseEdges}/> </ReactFlowProvider>
+                <ReactFlowProvider><ConceptMap baseNodes = {baseNodes} baseEdges = {baseEdges} courseId = {courseId} setBaseNodes = {setBaseNodes} setBaseEdges = {setBaseEdges} lessonPlanStatus={false}/> </ReactFlowProvider>
                 <div className = "bottomleft"> <AddEditConcepts getConceptMapArguments = {getConceptMapArguments} courseId = {courseId} baseNodes = {baseNodes} baseEdges = {baseEdges}/> </div>
             </>
             )

@@ -36,7 +36,7 @@ function LessonPlan(){
     },[])
     function RenderConceptMap({baseNodes, baseEdges, courseId, setBaseNodes, setBaseEdges}){
         if(baseNodes.length > 0){
-            return <ReactFlowProvider><ConceptMap baseNodes = {baseNodes} baseEdges = {baseEdges} courseId = {courseId} setBaseNodes = {setBaseNodes} setBaseEdges = {setBaseEdges}/> </ReactFlowProvider>
+            return <ReactFlowProvider><ConceptMap baseNodes = {baseNodes} baseEdges = {baseEdges} courseId = {courseId} setBaseNodes = {setBaseNodes} setBaseEdges = {setBaseEdges} lessonPlanStatus={true}/> </ReactFlowProvider>
         }
     }
     return (

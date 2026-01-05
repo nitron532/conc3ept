@@ -165,7 +165,7 @@ def EditNodeIncoming():
     return "OK", 200
 
 def getGraphHelper(courseId:int, selectedNodes):
-    getConnectionsResponse = ()
+    getConceptsResponse = ()
     getConnectionsResponse = ()
     conceptNames: pydantic.List[str] = selectedNodes
     conceptIds: pydantic.List[int] = []
@@ -176,7 +176,8 @@ def getGraphHelper(courseId:int, selectedNodes):
             .eq("courseid",courseId)
             .execute()
         )
-        conceptIds: pydantic.List[int] = [row["id"] for row in getConceptsResponse.data]
+        conceptIds = [row["id"] for row in getConceptsResponse.data]
+        conceptNames = [row["conceptName"] for row in getConceptsResponse.data]
         getConnectionsResponse = (
             supabase.table("conceptlinks")
             .select("sourceconceptid, targetconceptid")
@@ -215,6 +216,7 @@ def getGraphHelper(courseId:int, selectedNodes):
         edges.append( # can add type of edge 
                 {"id":f"{tuple[0]}-{tuple[1]}", "source": str(tuple[0]), "target": str(tuple[1]),"courseId":courseId}
         )
+    
     return jsonify({"nodes":nodes, "edges":edges})
 
 @app.route("/GetGraph", methods = ["GET"])
@@ -293,7 +295,6 @@ def GetConceptMapArguments():
         conceptNames.append(conceptName)
         i+=1
         conceptName = request.args.get(f"{i}")
-    print(conceptNames)
     return getGraphHelper(courseId,conceptNames)
 
 if __name__ == "__main__":
