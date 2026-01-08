@@ -109,8 +109,6 @@ function ConceptMap({baseNodes,setBaseNodes, baseEdges,setBaseEdges, courseId, l
             ...n.data,
             courseName: courseName,
             courseId: courseId,
-            // selectedNodes: selectedNodes,
-            // setSelectedNodes: setSelectedNodes
           }
         }));
         const edges = layouted.edges.map((e)=>({

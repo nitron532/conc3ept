@@ -169,6 +169,7 @@ def getGraphHelper(courseId:int, selectedNodes):
     getConnectionsResponse = ()
     conceptNames: pydantic.List[str] = selectedNodes
     conceptIds: pydantic.List[int] = []
+    nameId: pydantic.List[pydantic.Tuple[str,int]] = []
     if len(selectedNodes) == 0: # fetch all nodes and connections from db
         getConceptsResponse = (
             supabase.table("Concepts")
@@ -177,7 +178,7 @@ def getGraphHelper(courseId:int, selectedNodes):
             .execute()
         )
         conceptIds = [row["id"] for row in getConceptsResponse.data]
-        conceptNames = [row["conceptName"] for row in getConceptsResponse.data]
+        nameId = [(concept["conceptName"], concept["id"]) for concept in getConceptsResponse.data]
         getConnectionsResponse = (
             supabase.table("conceptlinks")
             .select("sourceconceptid, targetconceptid")
@@ -192,7 +193,8 @@ def getGraphHelper(courseId:int, selectedNodes):
             .in_("conceptName",conceptNames)
             .execute()
         )
-        conceptIds: pydantic.List[int] = [row["id"] for row in getConceptsResponse.data]
+        conceptIds: pydantic.List[int] = [concept["id"] for concept in getConceptsResponse.data]
+        nameId = [(concept["conceptName"], concept["id"]) for concept in getConceptsResponse.data]
         getConnectionsResponse = (
             supabase.table("conceptlinks")
             .select("sourceconceptid, targetconceptid")
@@ -206,10 +208,10 @@ def getGraphHelper(courseId:int, selectedNodes):
         sourcesToTargets.append((row["sourceconceptid"], row["targetconceptid"]))
     nodes = []
     edges = []
-    for concept, id in zip(conceptNames,conceptIds):
+    for conceptTuple in nameId:
         nodes.append(
             {
-                "id": str(id), "position":{"x": 0, "y": 0}, "data": {"label": concept, "courseId": courseId}, "type":"custom"
+                "id": str(conceptTuple[1]), "position":{"x": 0, "y": 0}, "data": {"label": conceptTuple[0], "courseId": courseId}, "type":"custom"
             }
         )
     for tuple in sourcesToTargets:

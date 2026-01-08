@@ -10,10 +10,6 @@ function LessonPlan(){
     const [baseNodes, setBaseNodes] = useState([]);
     const [baseEdges, setBaseEdges] = useState([]);
 
-
-// TODO don't allow creating a lesson plan from within a lesson plan
-
-
     const getConceptMapArgumentsPlan = async (courseId) =>{
         try{
             let requestString = `${import.meta.env.VITE_SERVER_URL}/GetConceptMapArguments?id=${courseId}`
@@ -41,10 +37,6 @@ function LessonPlan(){
     }
     return (
     <>
-        <p>testing lesson plan</p>
-        {baseNodes.map((node)=>{
-            <p>{node.data.label}</p>
-        })}
         <RenderConceptMap baseNodes = {baseNodes} baseEdges = {baseEdges} courseId = {courseId} setBaseNodes = {setBaseNodes} setBaseEdges = {setBaseEdges}/>
     </>
     )

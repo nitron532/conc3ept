@@ -50,7 +50,7 @@ function CoursePage(){
     */
     return (
         <>
-            <p>hi you are at {courseName}'s home page</p>
+            <p>Loading {courseName}...</p>
             <RenderConceptMap baseNodes = {baseNodes} baseEdges = {baseEdges} courseId = {courseId} setBaseNodes = {setBaseNodes} setBaseEdges = {setBaseEdges} />
         </>
     )
