@@ -32,11 +32,11 @@ function App() {
         <Routes>
           <Route path="/" element = {<Login/>}/>
           <Route path = "/home" element = {<Home/>}></Route>
-          {/* user home page */}
           <Route path = "/:course" element = {<CoursePage/>}></Route>
-          <Route path = "/:course/:concept" element = {<NestedLevel/>}></Route>
+          <Route path = "/:course/:concept" element = {<NestedLevel lessonPlanStatus={false}/>}></Route>
           <Route path = "/:course/lessonplan" element = {<LessonPlan/>}></Route>
-          {/* user concept map */}
+          <Route path = "/:course/lessonplan/:concept" element = {<NestedLevel lessonPlanStatus={true}/>}></Route>
+          <Route path = "/:course/:concept/lessonplan" element = {<NestedLevel lessonPlanStatus={true}/>}></Route>
         </Routes>
       </ThemeProvider>
   )
