@@ -2,16 +2,14 @@ import ELK from 'elkjs/lib/elk.bundled.js';
 import { useCallback, useLayoutEffect , useEffect, useState,useMemo} from 'react';
 import {useParams, useLocation} from "react-router-dom";
 import axios from "axios";
-import AddEditConcepts from './AddEditConcepts';
 import SelectedNodesMenu from './SelectedNodesMenu';
 import MiddleArrowEdge from './MiddleArrowEdge';
 import CustomNode from './CustomNode';
 import Appearance from './Appearance';
-
+import GenerateLessonPlan from './GenerateLessonPlan';
 
 import {
   ReactFlow,
-  ReactFlowProvider,
   addEdge,
   useNodesState,
   useEdgesState,
@@ -59,7 +57,7 @@ const getLayoutedElements = (nodes, edges, options = {}) => {
     .catch(console.error);
 };
 
-function ConceptMap({baseNodes,setBaseNodes, baseEdges,setBaseEdges, courseId, lessonPlanStatus}) { //nodes, edges, selected nodes and set/get
+function ConceptMap({baseNodes,setBaseNodes, baseEdges,setBaseEdges, courseId, lessonPlanStatus,level}) { //nodes, edges, selected nodes and set/get
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const courseName = decodeURIComponent(useParams().course);
@@ -165,7 +163,8 @@ function ConceptMap({baseNodes,setBaseNodes, baseEdges,setBaseEdges, courseId, l
       data: {
         ...n.data,
         selectedNodes,
-        setSelectedNodes
+        setSelectedNodes,
+        level
       }
     }));
   }, [nodes, selectedNodes]);
@@ -206,6 +205,7 @@ function ConceptMap({baseNodes,setBaseNodes, baseEdges,setBaseEdges, courseId, l
                                         </div>
       </div>
         {selectedNodes.length > 0 && !lessonPlanStatus && <SelectedNodesMenu baseEdges = {baseEdges} courseId = {courseId} selectedNodes = {selectedNodes} setSelectedNodes = {setSelectedNodes} getGraph = {getGraph}/>} 
+        {lessonPlanStatus && <GenerateLessonPlan formData = {{nodes:nodes, edges:edges,courseId:courseId}}></GenerateLessonPlan>}
     </div>
   );
 }

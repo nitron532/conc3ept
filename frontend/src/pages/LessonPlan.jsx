@@ -3,6 +3,7 @@ import { ReactFlowProvider } from "@xyflow/react";
 import {useLocation } from "react-router-dom";
 import { useState,useEffect} from "react";
 import axios from "axios";
+import GenerateLessonPlan from "../components/GenerateLessonPlan";
 
 function LessonPlan(){
     const location = useLocation();
@@ -32,7 +33,11 @@ function LessonPlan(){
     },[])
     function RenderConceptMap({baseNodes, baseEdges, courseId, setBaseNodes, setBaseEdges}){
         if(baseNodes.length > 0){
-            return <ReactFlowProvider><ConceptMap baseNodes = {baseNodes} baseEdges = {baseEdges} courseId = {courseId} setBaseNodes = {setBaseNodes} setBaseEdges = {setBaseEdges} lessonPlanStatus={true}/> </ReactFlowProvider>
+            return (
+            <>
+                <ReactFlowProvider><ConceptMap baseNodes = {baseNodes} baseEdges = {baseEdges} courseId = {courseId} setBaseNodes = {setBaseNodes} setBaseEdges = {setBaseEdges} lessonPlanStatus={true} level = {"c"}/> </ReactFlowProvider>
+            </>
+            )
         }
     }
     return (

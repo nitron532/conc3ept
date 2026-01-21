@@ -2,6 +2,8 @@ import { Handle, Position } from '@xyflow/react';
 import {useState, useEffect} from "react"
 import {Link, Outlet, useNavigate} from "react-router-dom"
 
+// should have some state in data to determine what level of nesting it's in: concept map, taxonomy, or questions view
+
 export default function CustomNode({data}) {
   const navigate = useNavigate();
   const [hover, setHover] = useState(false);
@@ -57,9 +59,11 @@ export default function CustomNode({data}) {
       onMouseLeave={()=>{setHover(false)}}
       onClick = {handleClickNode}
     >
-      {/* <Link style ={{color: '#fff'}} to={`/conceptmap/${encodeURIComponent(data.courseName)}/${encodeURIComponent(data.label)}`}>{data.label}</Link>  */}
+
       <div style = {{color: '#fff'}} onClick = {handleClickLink}>{data.label}</div>
       <Outlet/>
+      {/* {data.level === "t" && <div>i am in taxonomy</div>}
+      {data.level === "c" && <div>i am in conceptmap</div>} */}
     {data.layout ? (
             <>
               <Handle

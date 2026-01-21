@@ -4,7 +4,7 @@ import os
 from supabase import create_client, Client
 from dotenv import load_dotenv
 import pydantic
-import lessonplan
+from lessonplan import createLessonPlan
 
 #eventually should eliminate the need to query db for concept id, since we can just pass it with concept name data
 
@@ -300,10 +300,15 @@ def GetConceptMapArguments():
         conceptName = request.args.get(f"{i}")
     return getGraphHelper(courseId,conceptNames)
 
-@app.route("/SendLessonPlanArguments", methods = ["POST"])
-def SendLessonPlanArguments():
+@app.route("/GenerateLessonPlan", methods = ["POST"])
+def GenerateLessonPlan():
     #send posted nodes to lesson plan to form the spreadsheet
-    print("lessonplanargs")
+    data = request.json
+    courseName = data[0]["courseName"]
+    courseId = data[0]["courseId"]
+    #clean data of unnecesary data like concept map positioning
+    print(data)
+    return "OK", 200
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
