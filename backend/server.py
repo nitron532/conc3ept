@@ -18,7 +18,7 @@ supabase: Client = create_client(url,key)
 
 #need prevention of empty data
 @app.route("/AddNode", methods = ["POST"])
-#add option in UI to allow conceptal cycles (?)
+
 def AddNode():
     data = request.json
     courseId: int = data["courseId"]
@@ -99,7 +99,7 @@ def DeleteNode():
     #will need to delete from courses as well later
     return "OK", 200
 
-@app.route("/EditNodeOutgoing", methods = ["PATCH"]) #could rewrite this to encomposs both editnodeoutgoingandincoming
+@app.route("/EditNodeOutgoing", methods = ["PATCH"]) #could rewrite this to encompass both editnodeoutgoingandincoming
 def EditNodeOutgoing():
     data = request.json
     courseId: int = data["courseId"]
@@ -302,12 +302,14 @@ def GetConceptMapArguments():
 
 @app.route("/GenerateLessonPlan", methods = ["POST"])
 def GenerateLessonPlan():
-    #send posted nodes to lesson plan to form the spreadsheet
     data = request.json
-    courseName = data[0]["courseName"]
-    courseId = data[0]["courseId"]
-    #clean data of unnecesary data like concept map positioning
-    print(data)
+    courseName:str = data["courseName"]
+    courseId:str = data["courseId"]
+    nodes: pydantic.List[pydantic.Tuple[int,str]] = [(int(concept["id"]),concept["label"]) for concept in data["nodes"]]
+    edges: pydantic.List[pydantic.Tuple] = [(int(edge["source"]),int(edge["target"])) for edge in data["edges"]]
+    data = {"courseName":courseName, "courseId": courseId, "nodes":nodes, "edges": edges}
+    createLessonPlan(data)
+
     return "OK", 200
 
 if __name__ == "__main__":

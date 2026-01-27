@@ -3,7 +3,6 @@ import { ReactFlowProvider } from "@xyflow/react";
 import {useLocation } from "react-router-dom";
 import { useState,useEffect} from "react";
 import axios from "axios";
-import GenerateLessonPlan from "../components/GenerateLessonPlan";
 
 function LessonPlan(){
     const location = useLocation();
@@ -20,7 +19,6 @@ function LessonPlan(){
             const response = await axios.get(
                 requestString
             )
-            console.log(response)
             setBaseNodes(response.data.nodes)
             setBaseEdges(response.data.edges)
         }
@@ -31,6 +29,9 @@ function LessonPlan(){
     useEffect(() =>{
         getConceptMapArgumentsPlan(courseId);
     },[])
+    
+    //TODO selected taxonomy levels need to be considered in lesson plan generation.
+
     function RenderConceptMap({baseNodes, baseEdges, courseId, setBaseNodes, setBaseEdges}){
         if(baseNodes.length > 0){
             return (

@@ -205,7 +205,7 @@ function ConceptMap({baseNodes,setBaseNodes, baseEdges,setBaseEdges, courseId, l
                                         </div>
       </div>
         {selectedNodes.length > 0 && !lessonPlanStatus && <SelectedNodesMenu baseEdges = {baseEdges} courseId = {courseId} selectedNodes = {selectedNodes} setSelectedNodes = {setSelectedNodes} getGraph = {getGraph}/>} 
-        {lessonPlanStatus && <GenerateLessonPlan formData = {{nodes:nodes, edges:edges,courseId:courseId}}></GenerateLessonPlan>}
+        {lessonPlanStatus && <GenerateLessonPlan data = {{nodes:nodes, edges:edges,courseId:courseId}}></GenerateLessonPlan>}
     </div>
   );
 }

@@ -3,6 +3,7 @@ import os
 from dotenv import load_dotenv
 from googleapiclient.discovery import build
 from multiprocessing import Process
+import pydantic
 
 load_dotenv()
 
@@ -58,7 +59,36 @@ credentials = {
         "redirect_uris": ["http://localhost"]
     }
 }
-def authorizeAndCreate(result):
+
+def dfs(adjacencyList,preAndPost, visited,node,clock):
+    visited.append(node)
+    preAndPost[node].append(clock)
+    clock+=1
+    for neighbor in adjacencyList[node]:
+        if neighbor not in visited:
+            clock = dfs(adjacencyList, preAndPost, visited, neighbor,clock)
+    preAndPost[node].append(clock)
+    clock+=1
+    return clock
+
+def topologicalSort(nodes,edges): # add typing
+    adjacencyList: pydantic.Dict[int,pydantic.List[int]] = {node: [] for node in nodes}
+    preAndPost: pydantic.Dict[int,pydantic.List[int]] = {node: [] for node in nodes}
+    for edge in edges:
+        adjacencyList[edge[0]].append(edge[1])
+    visited: pydantic.List[int] = []
+    clock: int = 0
+    for node in nodes:
+        if node not in visited:
+            clock = dfs(adjacencyList, preAndPost, visited,node,clock)
+    orderedList = [(node,tuple[0],tuple[1]) for node,tuple in preAndPost.items()]
+    orderedList.sort(key = lambda x: x[2], reverse=True)
+    orderedList = [node[0] for node in orderedList]
+    return orderedList
+
+
+
+def authorizeAndCreate(result,orderedData):
     try:
         gc, authorized_user = gspread.oauth_from_dict(
             credentials,
@@ -96,6 +126,13 @@ def authorizeAndCreate(result):
         worksheet.update_acell("D1", "Slides")
         worksheet.update_acell("E1", "Discussion Topic")
         worksheet.update_acell("F1", "Objectives")
+        i = 1
+        while i < len(orderedData)+1:
+            worksheet.update_acell(f"F{i+1}", f"{orderedData[i-1]}")
+            worksheet.update_acell(f"B{i+1}", f"0:0{i+1}")
+            i+=1
+        worksheet.update_acell(f"A{i}", "TOTAL")
+        worksheet.update_acell(f"B{i}", "sum")
 
         # print(lp.url)
         result["success"] = "json describing success, url of lesson plan too"
@@ -110,7 +147,14 @@ def authorizeAndCreate(result):
 
 def createLessonPlan(data):
     result = {"success": "", "error": ""}
-    p = Process(target = authorizeAndCreate, args = (result,))
+    idToName = {}
+    for i in range(len(data["nodes"])):
+        idToName[int(data["nodes"][i][0])] = data["nodes"][i][1]
+
+    orderedIds = topologicalSort([node[0] for node in data["nodes"]],data["edges"])
+    orderedLabels = [idToName[id] for id in orderedIds]
+    # print(orderedIds, orderedLabels)
+    p = Process(target = authorizeAndCreate, args = (result,orderedLabels,))
     p.start()
     p.join(timeout=45)
     if p.is_alive():

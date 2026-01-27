@@ -1,10 +1,10 @@
-import  {useState, useEffect} from 'react'
+import  {useState,useEffect} from 'react'
 import {Box, Drawer, Button} from '@mui/material';
 import axios from "axios"
 
 
-function GenerateLessonPlan({formData}){
-
+function GenerateLessonPlan({data}){
+    const [formData, setFormData] = useState({});
     const sendLessonPlan = async()=>{
         try{
             console.log(formData)
@@ -22,6 +22,31 @@ function GenerateLessonPlan({formData}){
         }
     }
 
+    //clean data
+    useEffect(function(){
+        if(data.nodes.length>0){
+            let edgesList = [];
+            let nodesList = [];
+            for(let i = 0; i < data.edges.length; i++){
+                edgesList.push({
+                    source: data.edges[i].source,
+                    target: data.edges[i].target
+                })
+            }
+            for(let i = 0; i < data.nodes.length; i++){
+                nodesList.push({
+                    id: data.nodes[i].id,
+                    label: data.nodes[i].data.label
+                })
+            }
+            setFormData({
+                courseId: data.courseId,
+                courseName: data.nodes[0].data.courseName,
+                edges: edgesList,
+                nodes: nodesList
+            })
+    }
+    },[data])
 
     return(
     <div className = "bottomcenter">
@@ -31,29 +56,6 @@ function GenerateLessonPlan({formData}){
 
 
 }
-
-/*
-  const addNode = async (e) => {
-    e.preventDefault();
-    if(formData.outgoingConnections.length === 0 && formData.conceptInput.length === 0 && formData.incomingConnections){
-      //add warning saying it cant be empty?
-      return
-    }
-    try{
-        await axios.post(
-            `${import.meta.env.VITE_SERVER_URL}/AddNode`,
-            formData,
-            {headers:{"Content-Type": "application/json"}}
-        )
-        setFormData(initialState);
-        getConceptMapArguments(courseId);
-    }
-    catch(error){
-        console.error("Submission failed: ", error);
-    }
-  }
-
-*/
 
 
 export default GenerateLessonPlan
