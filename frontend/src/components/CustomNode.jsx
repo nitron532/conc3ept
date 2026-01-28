@@ -28,6 +28,7 @@ export default function CustomNode({data}) {
     ...defaultStyle,
     background: '#085252ff'
   }
+
   useEffect( ()=>{
     setSelected(data.selectedNodes.includes(data.label));
   }, [data.selectedNodes])
@@ -42,10 +43,17 @@ export default function CustomNode({data}) {
   };
   const handleClickNode = (event) =>{
     if(event.ctrlKey && !selected){
-      data.setSelectedNodes([...data.selectedNodes, data.label])
+      // if(data.level === "t"){
+      //   let concept = data.label.substring(0,data.label.lastIndexOf(" ")) + "@" + data.label.substring(data.label.lastIndexOf(" ")+1);
+      //   data.setSelectedNodes([... data.selectedNodes, concept])
+      //   console.log(data.selectedNodes)
+      // }
+      // else{
+        data.setSelectedNodes([...data.selectedNodes, data.label])
+      // }
       setSelected(true);
     }
-    else{
+    else if (event.ctrlKey && selected){
       data.setSelectedNodes(data.selectedNodes.filter(label => label != data.label))
       setSelected(false);
     }

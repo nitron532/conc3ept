@@ -3,7 +3,7 @@ import os
 from dotenv import load_dotenv
 from googleapiclient.discovery import build
 from multiprocessing import Process
-import pydantic
+from graph import topologicalSort
 
 load_dotenv()
 
@@ -59,32 +59,6 @@ credentials = {
         "redirect_uris": ["http://localhost"]
     }
 }
-
-def dfs(adjacencyList,preAndPost, visited,node,clock):
-    visited.append(node)
-    preAndPost[node].append(clock)
-    clock+=1
-    for neighbor in adjacencyList[node]:
-        if neighbor not in visited:
-            clock = dfs(adjacencyList, preAndPost, visited, neighbor,clock)
-    preAndPost[node].append(clock)
-    clock+=1
-    return clock
-
-def topologicalSort(nodes,edges): # add typing
-    adjacencyList: pydantic.Dict[int,pydantic.List[int]] = {node: [] for node in nodes}
-    preAndPost: pydantic.Dict[int,pydantic.List[int]] = {node: [] for node in nodes}
-    for edge in edges:
-        adjacencyList[edge[0]].append(edge[1])
-    visited: pydantic.List[int] = []
-    clock: int = 0
-    for node in nodes:
-        if node not in visited:
-            clock = dfs(adjacencyList, preAndPost, visited,node,clock)
-    orderedList = [(node,tuple[0],tuple[1]) for node,tuple in preAndPost.items()]
-    orderedList.sort(key = lambda x: x[2], reverse=True)
-    orderedList = [node[0] for node in orderedList]
-    return orderedList
 
 
 
@@ -153,7 +127,6 @@ def createLessonPlan(data):
 
     orderedIds = topologicalSort([node[0] for node in data["nodes"]],data["edges"])
     orderedLabels = [idToName[id] for id in orderedIds]
-    # print(orderedIds, orderedLabels)
     p = Process(target = authorizeAndCreate, args = (result,orderedLabels,))
     p.start()
     p.join(timeout=45)

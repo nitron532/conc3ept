@@ -16,7 +16,7 @@ function CoursePage(){
 
     const getConceptMapArguments = async (courseId) =>{
         try{
-            let requestString = `${import.meta.env.VITE_SERVER_URL}/GetConceptMapArguments?id=${courseId}`
+            let requestString = `${import.meta.env.VITE_SERVER_URL}/GetConceptMapArguments?id=${courseId}&lessonPlan=0`
             const response = await axios.get(
                 requestString
             )

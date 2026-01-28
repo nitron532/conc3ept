@@ -16,6 +16,7 @@ function LessonPlan(){
             for(let i = 0; i < selectedNodesNames.length; i++){
                 requestString += `&${i}=${selectedNodesNames[i]}`
             }
+            requestString += "&lessonPlan=1";
             const response = await axios.get(
                 requestString
             )

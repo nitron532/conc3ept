@@ -1,10 +1,12 @@
 from flask import Flask, request, jsonify, Response
+import json
 from flask_cors import CORS
 import os
 from supabase import create_client, Client
 from dotenv import load_dotenv
 import pydantic
 from lessonplan import createLessonPlan
+from graph import verifyLessonPlan
 
 #eventually should eliminate the need to query db for concept id, since we can just pass it with concept name data
 
@@ -165,6 +167,36 @@ def EditNodeIncoming():
         )
     return "OK", 200
 
+@app.route("/GetGraph", methods = ["GET"])
+def GetGraph():
+    #query db for graph
+    courseId = request.args.get("id")
+    if not courseId:
+        return "Failed", 500
+    courseId = int(courseId)
+    return getGraphHelper(courseId, [])
+
+
+@app.route("/GetConceptIds", methods = ["GET"])
+def GetConceptIds():
+    courseId: int = int(request.args.get("id"))
+    conceptNames: pydantic.List[str] = []
+    conceptName: str = request.args.get("0")
+    i = 0
+    while(conceptName):
+        conceptNames.append(conceptName)
+        i+=1
+        conceptName = request.args.get(f"{i}")
+    conceptIdsResponse = (
+        supabase.table("Concepts")
+        .select("id")
+        .eq("courseid",courseId)
+        .in_("conceptName", conceptNames)
+        .execute()
+    )
+
+    return jsonify([id["id"] for id in conceptIdsResponse.data])
+
 def getGraphHelper(courseId:int, selectedNodes):
     getConceptsResponse = ()
     getConnectionsResponse = ()
@@ -222,38 +254,6 @@ def getGraphHelper(courseId:int, selectedNodes):
     
     return jsonify({"nodes":nodes, "edges":edges})
 
-@app.route("/GetGraph", methods = ["GET"])
-def GetGraph():
-    #query db for graph
-    courseId = request.args.get("id")
-    if not courseId:
-        return "Failed", 500
-    courseId = int(courseId)
-    return getGraphHelper(courseId, [])
-
-
-@app.route("/GetConceptIds", methods = ["GET"])
-def GetConceptIds():
-    courseId: int = int(request.args.get("id"))
-    conceptNames: pydantic.List[str] = []
-    conceptName: str = request.args.get("0")
-    i = 0
-    while(conceptName):
-        conceptNames.append(conceptName)
-        i+=1
-        conceptName = request.args.get(f"{i}")
-    conceptIdsResponse = (
-        supabase.table("Concepts")
-        .select("id")
-        .eq("courseid",courseId)
-        .in_("conceptName", conceptNames)
-        .execute()
-    )
-
-    return jsonify([id["id"] for id in conceptIdsResponse.data])
-
-
-
 @app.route("/AddCourse", methods = ["POST"])
 def AddCourse():
     data = request.json
@@ -293,12 +293,23 @@ def GetConceptMapArguments():
     courseId: int = int(request.args.get("id"))
     conceptNames: pydantic.List[str] = []
     conceptName: str = request.args.get("0")
+    lessonPlan:int = int(request.args.get("lessonPlan"))
+    #needs extra param to see if im creating a lessonplan, so i know if i need to verify it
     i = 0
     while(conceptName):
         conceptNames.append(conceptName)
         i+=1
         conceptName = request.args.get(f"{i}")
-    return getGraphHelper(courseId,conceptNames)
+    subGraphJSON = getGraphHelper(courseId, conceptNames)
+    responseObject = {"graph": subGraphJSON, "message": ""}#store subgraphjson and message
+    if lessonPlan == 1:
+        wholeGraph = json.loads(getGraphHelper(courseId, []).data.decode('utf-8'))
+        subGraph = json.loads(subGraphJSON.data.decode('utf-8'))
+        missedPrereqs = verifyLessonPlan(subGraph, wholeGraph)
+        
+    # return jsonify(responseObject)
+    return subGraphJSON
+
 
 @app.route("/GenerateLessonPlan", methods = ["POST"])
 def GenerateLessonPlan():
