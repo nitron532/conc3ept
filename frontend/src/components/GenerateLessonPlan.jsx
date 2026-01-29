@@ -7,7 +7,6 @@ function GenerateLessonPlan({data}){
     const [formData, setFormData] = useState({});
     const sendLessonPlan = async()=>{
         try{
-            console.log(formData)
             const response = await axios.post(
                 `${import.meta.env.VITE_SERVER_URL}/GenerateLessonPlan`,
                 formData,
@@ -27,6 +26,7 @@ function GenerateLessonPlan({data}){
         if(data.nodes.length>0){
             let edgesList = [];
             let nodesList = [];
+            let subNodesObject = {};
             for(let i = 0; i < data.edges.length; i++){
                 edgesList.push({
                     source: data.edges[i].source,
@@ -34,16 +34,34 @@ function GenerateLessonPlan({data}){
                 })
             }
             for(let i = 0; i < data.nodes.length; i++){
-                nodesList.push({
-                    id: data.nodes[i].id,
-                    label: data.nodes[i].data.label
-                })
+                let concept = data.nodes[i].data.label;
+                let lastIndex = concept.lastIndexOf(" ");
+                let firstIndex = concept.indexOf(" ");
+                    switch (concept.substring(lastIndex+1)){
+                        case "Remember":
+                        case "Understand":
+                        case "Apply":
+                        case "Analyze":
+                        case "Evaluate":
+                        case "Create":
+                            data.nodes[i].data.parentConcept in subNodesObject 
+                            ? subNodesObject[data.nodes[i].data.parentConcept].push(data.nodes[i].data.label)
+                            : subNodesObject[data.nodes[i].data.parentConcept] = [data.nodes[i].data.label]
+                            break;
+                        default:
+                            nodesList.push({
+                                id: data.nodes[i].id,
+                                label: data.nodes[i].data.label
+                            });
+                            break;
+                    }
             }
             setFormData({
                 courseId: data.courseId,
                 courseName: data.nodes[0].data.courseName,
                 edges: edgesList,
-                nodes: nodesList
+                nodes: nodesList,
+                subNodes: subNodesObject
             })
     }
     },[data])

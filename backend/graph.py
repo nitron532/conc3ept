@@ -55,4 +55,5 @@ def verifyLessonPlan(subGraph,wholeGraph): #adjacency list is entire graph
     for node in selectedNodes:
         if node not in visited:
             trackDFSTree(adjacencyList, visited, node, [], selectedNodes, missedPrereqs,node)
+    print(missedPrereqs)
     return missedPrereqs

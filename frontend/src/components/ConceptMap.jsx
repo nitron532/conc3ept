@@ -7,6 +7,7 @@ import MiddleArrowEdge from './MiddleArrowEdge';
 import CustomNode from './CustomNode';
 import Appearance from './Appearance';
 import GenerateLessonPlan from './GenerateLessonPlan';
+import { useSelectedNodesStore } from '../states/SelectedNodesStore';
 
 import {
   ReactFlow,
@@ -61,7 +62,7 @@ function ConceptMap({baseNodes,setBaseNodes, baseEdges,setBaseEdges, courseId, l
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const courseName = decodeURIComponent(useParams().course);
-  const [selectedNodes, setSelectedNodes] = useState([]);
+  const selectedNodes = useSelectedNodesStore(state => state.selectedNodes)
   const [appearanceSettings, setAppearanceSettings] = useState({
     layoutDirection: "RIGHT",
     nodeSpacing: 100,
@@ -162,8 +163,6 @@ function ConceptMap({baseNodes,setBaseNodes, baseEdges,setBaseEdges, courseId, l
       ...n,
       data: {
         ...n.data,
-        selectedNodes,
-        setSelectedNodes,
         level
       }
     }));
@@ -204,7 +203,7 @@ function ConceptMap({baseNodes,setBaseNodes, baseEdges,setBaseEdges, courseId, l
                                         onLayout = {onLayout}/>
                                         </div>
       </div>
-        {selectedNodes.length > 0 && !lessonPlanStatus && <SelectedNodesMenu baseEdges = {baseEdges} courseId = {courseId} selectedNodes = {selectedNodes} setSelectedNodes = {setSelectedNodes} getGraph = {getGraph}/>} 
+        {selectedNodes.length > 0 && !lessonPlanStatus && level !== "l" && level !== "t" && <SelectedNodesMenu baseEdges = {baseEdges} courseId = {courseId} getGraph = {getGraph}/>} 
         {lessonPlanStatus && <GenerateLessonPlan data = {{nodes:nodes, edges:edges,courseId:courseId}}></GenerateLessonPlan>}
     </div>
   );

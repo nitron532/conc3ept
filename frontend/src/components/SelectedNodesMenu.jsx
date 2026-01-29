@@ -3,15 +3,19 @@ import {Box, Drawer, Button} from '@mui/material';
 import {useNavigate} from 'react-router-dom';
 import DeleteAlert from './DeleteAlert';
 import axios from "axios"
+import { useSelectedNodesStore } from '../states/SelectedNodesStore';
 
-export default function SelectedNodesMenu({selectedNodes, setSelectedNodes, courseId, getGraph}) {
+export default function SelectedNodesMenu({courseId, getGraph}) {
   const [open, setOpen] = useState(false);
+  const selectedNodes = useSelectedNodesStore(state=> state.selectedNodes)
+  const clearSelectedNodes = useSelectedNodesStore(state=> state.clear)
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
   };
   const navigate = useNavigate();
   const deleteSelectedNodes = async (e) =>{
     e.preventDefault();
+    
     const formData = {
         "selectedNodes": selectedNodes,
         "courseId" : courseId,
@@ -22,7 +26,7 @@ export default function SelectedNodesMenu({selectedNodes, setSelectedNodes, cour
         {data: formData},
         {headers:{"Content-Type" : "application/json"}}
       )
-      setSelectedNodes([]);
+      clearSelectedNodes();
       getGraph(courseId);
     }
     catch(error){
@@ -33,14 +37,14 @@ export default function SelectedNodesMenu({selectedNodes, setSelectedNodes, cour
 
   const clearAll = () =>{
     toggleDrawer(false);
-    setSelectedNodes([]);
+    clearSelectedNodes();
     // setTimeout(() => {setSelectedNodes([]);}, 250);
     //TODO isnt doing animation
   }
 
   const handleClickPlan = () =>{
         navigate(`lessonplan`, {
-            state: {selectedNodesNames:selectedNodes, courseId:courseId}  , //passing by copy
+            state: {courseId:courseId}  , //passing by copy
       });
   }
 

@@ -1,14 +1,17 @@
 import { Handle, Position } from '@xyflow/react';
 import {useState, useEffect} from "react"
-import {Link, Outlet, useNavigate} from "react-router-dom"
-
-// should have some state in data to determine what level of nesting it's in: concept map, taxonomy, or questions view
+import {Outlet, useNavigate} from "react-router-dom"
+import { useSelectedNodesStore } from '../states/SelectedNodesStore';
 
 export default function CustomNode({data}) {
   const navigate = useNavigate();
   const [hover, setHover] = useState(false);
   const [selected, setSelected] = useState(false)
   const defaultBackgroundColor = selected ? '#1f1f' : '#1f1f1f'
+  const selectedNodes = useSelectedNodesStore(state => state.selectedNodes);
+  const addSelectedNode = useSelectedNodesStore(state => state.addNode);
+  const removeSelectedNode = useSelectedNodesStore(state => state.removeNode);
+
   const defaultStyle = {
         borderRadius: '12px',
         background: defaultBackgroundColor,
@@ -30,31 +33,25 @@ export default function CustomNode({data}) {
   }
 
   useEffect( ()=>{
-    setSelected(data.selectedNodes.includes(data.label));
-  }, [data.selectedNodes])
+    setSelected(selectedNodes.includes(data.label));
+  }, [selectedNodes])
 
   const handleClickLink = (event) => {
-    if(!event.ctrlKey){
+    if(!event.ctrlKey && data.level !== "t"){
       const courseId = data.courseId;
+      const conceptId = data.id;
       navigate(`${encodeURIComponent(data.label)}`, {
-        state: {courseId}   // pass extra data without adding to URL
+        state: {courseId, conceptId}   // pass extra data without adding to URL
       });
   }
   };
   const handleClickNode = (event) =>{
-    if(event.ctrlKey && !selected){
-      // if(data.level === "t"){
-      //   let concept = data.label.substring(0,data.label.lastIndexOf(" ")) + "@" + data.label.substring(data.label.lastIndexOf(" ")+1);
-      //   data.setSelectedNodes([... data.selectedNodes, concept])
-      //   console.log(data.selectedNodes)
-      // }
-      // else{
-        data.setSelectedNodes([...data.selectedNodes, data.label])
-      // }
+    if(event.ctrlKey && !selected && data.level !== "l"){
+      addSelectedNode(data.label)
       setSelected(true);
     }
-    else if (event.ctrlKey && selected){
-      data.setSelectedNodes(data.selectedNodes.filter(label => label != data.label))
+    else if (event.ctrlKey && selected && data.level !== "l"){
+      removeSelectedNode(data.label);
       setSelected(false);
     }
   };
@@ -70,8 +67,6 @@ export default function CustomNode({data}) {
 
       <div style = {{color: '#fff'}} onClick = {handleClickLink}>{data.label}</div>
       <Outlet/>
-      {/* {data.level === "t" && <div>i am in taxonomy</div>}
-      {data.level === "c" && <div>i am in conceptmap</div>} */}
     {data.layout ? (
             <>
               <Handle

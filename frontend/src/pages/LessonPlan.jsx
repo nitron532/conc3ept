@@ -3,18 +3,42 @@ import { ReactFlowProvider } from "@xyflow/react";
 import {useLocation } from "react-router-dom";
 import { useState,useEffect} from "react";
 import axios from "axios";
+import BackButton from "../components/BackButton";
+import { useSelectedNodesStore } from "../states/SelectedNodesStore";
 
 function LessonPlan(){
     const location = useLocation();
-    const {selectedNodesNames, courseId} = location.state || {};
+    const {courseId} = location.state || {};
     const [baseNodes, setBaseNodes] = useState([]);
     const [baseEdges, setBaseEdges] = useState([]);
+    const selectedNodes = useSelectedNodesStore(state => state.selectedNodes);
 
     const getConceptMapArgumentsPlan = async (courseId) =>{
         try{
+            let selectedNodesList = Array.from(selectedNodes);
+            
+            // Remove sub level concepts from the request string.
+            for(let i = 0; i < selectedNodesList.length; i++){
+                let concept = selectedNodesList[i];
+                let lastIndex = concept.lastIndexOf(" ");
+                let firstIndex = concept.indexOf(" ");
+                if (firstIndex == lastIndex || lastIndex == concept.length-1){continue;}
+                switch (concept.substring(lastIndex+1)){
+                    case "Remember":
+                    case "Understand":
+                    case "Apply":
+                    case "Analyze":
+                    case "Evaluate":
+                    case "Create":
+                        selectedNodesList.splice(i, 1);
+                        break;
+                    default:
+                        break;
+                }
+            }
             let requestString = `${import.meta.env.VITE_SERVER_URL}/GetConceptMapArguments?id=${courseId}`
-            for(let i = 0; i < selectedNodesNames.length; i++){
-                requestString += `&${i}=${selectedNodesNames[i]}`
+            for(let i = 0; i < selectedNodesList.length; i++){
+                requestString += `&${i}=${selectedNodesList[i]}`
             }
             requestString += "&lessonPlan=1";
             const response = await axios.get(
@@ -37,7 +61,7 @@ function LessonPlan(){
         if(baseNodes.length > 0){
             return (
             <>
-                <ReactFlowProvider><ConceptMap baseNodes = {baseNodes} baseEdges = {baseEdges} courseId = {courseId} setBaseNodes = {setBaseNodes} setBaseEdges = {setBaseEdges} lessonPlanStatus={true} level = {"c"}/> </ReactFlowProvider>
+                <ReactFlowProvider><ConceptMap baseNodes = {baseNodes} baseEdges = {baseEdges} courseId = {courseId} setBaseNodes = {setBaseNodes} setBaseEdges = {setBaseEdges} lessonPlanStatus={true} level = {"l"}/> </ReactFlowProvider>
             </>
             )
         }
@@ -45,6 +69,7 @@ function LessonPlan(){
     return (
     <>
         <RenderConceptMap baseNodes = {baseNodes} baseEdges = {baseEdges} courseId = {courseId} setBaseNodes = {setBaseNodes} setBaseEdges = {setBaseEdges}/>
+        <BackButton position={"bottomleft"}/>
     </>
     )
 }

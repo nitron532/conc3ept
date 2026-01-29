@@ -294,7 +294,6 @@ def GetConceptMapArguments():
     conceptNames: pydantic.List[str] = []
     conceptName: str = request.args.get("0")
     lessonPlan:int = int(request.args.get("lessonPlan"))
-    #needs extra param to see if im creating a lessonplan, so i know if i need to verify it
     i = 0
     while(conceptName):
         conceptNames.append(conceptName)
@@ -307,6 +306,7 @@ def GetConceptMapArguments():
         subGraph = json.loads(subGraphJSON.data.decode('utf-8'))
         missedPrereqs = verifyLessonPlan(subGraph, wholeGraph)
         
+
     # return jsonify(responseObject)
     return subGraphJSON
 
@@ -317,8 +317,9 @@ def GenerateLessonPlan():
     courseName:str = data["courseName"]
     courseId:str = data["courseId"]
     nodes: pydantic.List[pydantic.Tuple[int,str]] = [(int(concept["id"]),concept["label"]) for concept in data["nodes"]]
-    edges: pydantic.List[pydantic.Tuple] = [(int(edge["source"]),int(edge["target"])) for edge in data["edges"]]
-    data = {"courseName":courseName, "courseId": courseId, "nodes":nodes, "edges": edges}
+    edges: pydantic.List[pydantic.Tuple[int,int]] = [(int(edge["source"]),int(edge["target"])) for edge in data["edges"]]
+    subNodes = pydantic.Dict[int,pydantic.List[str]] = [(int(id),list) for id, list in data["subNodes"].items()]
+    data = {"courseName":courseName, "courseId": courseId, "nodes":nodes, "edges": edges,"subNodes": subNodes}
     createLessonPlan(data)
 
     return "OK", 200

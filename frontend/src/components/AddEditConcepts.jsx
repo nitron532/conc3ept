@@ -69,6 +69,7 @@ export default function AddEditConcepts({getConceptMapArguments, baseNodes, base
       return
     }
     try{
+        formData.conceptInput = formData.conceptInput.trim();
         await axios.post(
             `${import.meta.env.VITE_SERVER_URL}/AddNode`,
             formData,

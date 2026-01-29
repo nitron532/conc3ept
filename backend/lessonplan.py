@@ -62,7 +62,7 @@ credentials = {
 
 
 
-def authorizeAndCreate(result,orderedData):
+def authorizeAndCreate(result,orderedData, subNodes):
     try:
         gc, authorized_user = gspread.oauth_from_dict(
             credentials,
@@ -127,7 +127,7 @@ def createLessonPlan(data):
 
     orderedIds = topologicalSort([node[0] for node in data["nodes"]],data["edges"])
     orderedLabels = [idToName[id] for id in orderedIds]
-    p = Process(target = authorizeAndCreate, args = (result,orderedLabels,))
+    p = Process(target = authorizeAndCreate, args = (result,orderedLabels,data["subNodes"],))
     p.start()
     p.join(timeout=45)
     if p.is_alive():
