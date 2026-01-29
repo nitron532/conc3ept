@@ -1,4 +1,3 @@
-import pydantic
 from copy import deepcopy
 
 def dfs(adjacencyList,preAndPost, visited,node,clock):
@@ -13,11 +12,11 @@ def dfs(adjacencyList,preAndPost, visited,node,clock):
     return clock
 
 def topologicalSort(nodes,edges): # add typing, nodes has ids of int, edges has source, target int concept ids
-    adjacencyList: pydantic.Dict[int,pydantic.List[int]] = {node: [] for node in nodes}
-    preAndPost: pydantic.Dict[int,pydantic.List[int]] = {node: [] for node in nodes}
+    adjacencyList: dict[int,list[int]] = {node: [] for node in nodes}
+    preAndPost: dict[int,list[int]] = {node: [] for node in nodes}
     for edge in edges:
         adjacencyList[edge[0]].append(edge[1])
-    visited: pydantic.List[int] = []
+    visited: list[int] = []
     clock: int = 0
     for node in nodes:
         if node not in visited:
@@ -44,14 +43,14 @@ def trackDFSTree(adjacencyList,visited,node,currentPath, selectedNodes,missedPre
 
 
 def verifyLessonPlan(subGraph,wholeGraph): #adjacency list is entire graph
-    selectedNodes: pydantic.List[int] = [int(node["id"]) for node in subGraph["nodes"]]
-    allNodes: pydantic.List[int] = [int(node["id"]) for node in wholeGraph["nodes"]] #could request whole graph once then find selected
-    allEdges: pydantic.List[pydantic.Tuple[int,int]] = [(int(edge["source"]), int(edge["target"])) for edge in wholeGraph["edges"]]
-    adjacencyList: pydantic.Dict[int,pydantic.List[int]] = {node: [] for node in allNodes}
-    missedPrereqs: pydantic.List[int] = []
+    selectedNodes: list[int] = [int(node["id"]) for node in subGraph["nodes"]]
+    allNodes: list[int] = [int(node["id"]) for node in wholeGraph["nodes"]] #could request whole graph once then find selected
+    allEdges: list[tuple[int,int]] = [(int(edge["source"]), int(edge["target"])) for edge in wholeGraph["edges"]]
+    adjacencyList: dict[int,list[int]] = {node: [] for node in allNodes}
+    missedPrereqs: list[int] = []
     for edge in allEdges:
         adjacencyList[edge[0]].append(edge[1])
-    visited: pydantic.List[int] = []
+    visited: list[int] = []
     for node in selectedNodes:
         if node not in visited:
             trackDFSTree(adjacencyList, visited, node, [], selectedNodes, missedPrereqs,node)

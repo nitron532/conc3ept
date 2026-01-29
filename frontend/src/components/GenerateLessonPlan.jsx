@@ -1,9 +1,11 @@
 import  {useState,useEffect} from 'react'
 import {Box, Drawer, Button} from '@mui/material';
+import { useSelectedNodesStore } from '../states/SelectedNodesStore';
 import axios from "axios"
 
 
 function GenerateLessonPlan({data}){
+    const selectedNodes = useSelectedNodesStore(state => state.selectedNodes);
     const [formData, setFormData] = useState({});
     const sendLessonPlan = async()=>{
         try{
@@ -33,10 +35,9 @@ function GenerateLessonPlan({data}){
                     target: data.edges[i].target
                 })
             }
-            for(let i = 0; i < data.nodes.length; i++){
-                let concept = data.nodes[i].data.label;
+            for(let i = 0; i < selectedNodes.length; i++){
+                let concept = selectedNodes[i];
                 let lastIndex = concept.lastIndexOf(" ");
-                let firstIndex = concept.indexOf(" ");
                     switch (concept.substring(lastIndex+1)){
                         case "Remember":
                         case "Understand":
@@ -44,17 +45,20 @@ function GenerateLessonPlan({data}){
                         case "Analyze":
                         case "Evaluate":
                         case "Create":
-                            data.nodes[i].data.parentConcept in subNodesObject 
-                            ? subNodesObject[data.nodes[i].data.parentConcept].push(data.nodes[i].data.label)
-                            : subNodesObject[data.nodes[i].data.parentConcept] = [data.nodes[i].data.label]
+                            concept.substring(0,lastIndex) in subNodesObject 
+                            ? subNodesObject[concept.substring(0,lastIndex)].push(concept.substring(lastIndex))
+                            : subNodesObject[concept.substring(0,lastIndex)] = [concept.substring(lastIndex)];
                             break;
                         default:
-                            nodesList.push({
-                                id: data.nodes[i].id,
-                                label: data.nodes[i].data.label
-                            });
                             break;
                     }
+            }
+            //ideally we want to avoid looping over the same nodes twice
+            for(let i = 0; i < data.nodes.length; i++){
+                nodesList.push({
+                    id: data.nodes[i].id,
+                    label: data.nodes[i].data.label
+                });
             }
             setFormData({
                 courseId: data.courseId,

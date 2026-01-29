@@ -100,13 +100,22 @@ def authorizeAndCreate(result,orderedData, subNodes):
         worksheet.update_acell("D1", "Slides")
         worksheet.update_acell("E1", "Discussion Topic")
         worksheet.update_acell("F1", "Objectives")
-        i = 1
-        while i < len(orderedData)+1:
-            worksheet.update_acell(f"F{i+1}", f"{orderedData[i-1]}")
-            worksheet.update_acell(f"B{i+1}", f"0:0{i+1}")
-            i+=1
-        worksheet.update_acell(f"A{i}", "TOTAL")
-        worksheet.update_acell(f"B{i}", "sum")
+        row = 2
+        for concept in orderedData:
+            if concept in subNodes:
+                worksheet.update_acell(f"F{row}", f"{concept} intro")
+                worksheet.update_acell(f"B{row}", f"0:0{row}")
+                row +=1
+                for cogProc in subNodes[concept]:
+                    worksheet.update_acell(f"F{row}", f"{cogProc} {concept}")
+                    worksheet.update_acell(f"B{row}", f"0:0{row}")
+                    row+=1
+            else:
+                worksheet.update_acell(f"F{row}", f"{concept}")
+                worksheet.update_acell(f"B{row}", f"0:0{row}")
+                row+=1
+        worksheet.update_acell(f"A{row}", "TOTAL")
+        worksheet.update_acell(f"B{row}", "sum")
 
         # print(lp.url)
         result["success"] = "json describing success, url of lesson plan too"

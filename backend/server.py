@@ -4,7 +4,6 @@ from flask_cors import CORS
 import os
 from supabase import create_client, Client
 from dotenv import load_dotenv
-import pydantic
 from lessonplan import createLessonPlan
 from graph import verifyLessonPlan
 
@@ -25,8 +24,8 @@ def AddNode():
     data = request.json
     courseId: int = data["courseId"]
     conceptName: str = data["conceptInput"]
-    outgoingConnections: pydantic.List[str] = data["outgoingConnections"]
-    incomingConnections: pydantic.List[str] = data["incomingConnections"]
+    outgoingConnections: list[str] = data["outgoingConnections"]
+    incomingConnections: list[str] = data["incomingConnections"]
 
     #try
     responseConcept = (
@@ -58,7 +57,7 @@ def AddNode():
 def DeleteSelectedNodes():
     data = request.json
     courseId: int = data["courseId"]
-    conceptNames: pydantic.List[str] = data["selectedNodes"]
+    conceptNames: list[str] = data["selectedNodes"]
     concepts = (
         supabase.table("Concepts")
         .select("id")
@@ -106,7 +105,7 @@ def EditNodeOutgoing():
     data = request.json
     courseId: int = data["courseId"]
     conceptName: str = data["conceptInput"]
-    outgoingConnections: pydantic.List[int] = [int(id) for id in data["outgoingConnections"]]
+    outgoingConnections: list[int] = [int(id) for id in data["outgoingConnections"]]
     concept = (
         supabase.table("Concepts")
         .select("id")
@@ -139,7 +138,7 @@ def EditNodeIncoming():
     data = request.json
     courseId: int = data["courseId"]
     conceptName: str = data["conceptInput"]
-    incomingConnections: pydantic.List[int] = [int(id) for id in data["incomingConnections"]]
+    incomingConnections: list[int] = [int(id) for id in data["incomingConnections"]]
     concept = (
         supabase.table("Concepts")
         .select("id")
@@ -180,7 +179,7 @@ def GetGraph():
 @app.route("/GetConceptIds", methods = ["GET"])
 def GetConceptIds():
     courseId: int = int(request.args.get("id"))
-    conceptNames: pydantic.List[str] = []
+    conceptNames: list[str] = []
     conceptName: str = request.args.get("0")
     i = 0
     while(conceptName):
@@ -200,9 +199,9 @@ def GetConceptIds():
 def getGraphHelper(courseId:int, selectedNodes):
     getConceptsResponse = ()
     getConnectionsResponse = ()
-    conceptNames: pydantic.List[str] = selectedNodes
-    conceptIds: pydantic.List[int] = []
-    nameId: pydantic.List[pydantic.Tuple[str,int]] = []
+    conceptNames: list[str] = selectedNodes
+    conceptIds: list[int] = []
+    nameId: list[tuple[str,int]] = []
     if len(selectedNodes) == 0: # fetch all nodes and connections from db
         getConceptsResponse = (
             supabase.table("Concepts")
@@ -226,7 +225,7 @@ def getGraphHelper(courseId:int, selectedNodes):
             .in_("conceptName",conceptNames)
             .execute()
         )
-        conceptIds: pydantic.List[int] = [concept["id"] for concept in getConceptsResponse.data]
+        conceptIds: list[int] = [concept["id"] for concept in getConceptsResponse.data]
         nameId = [(concept["conceptName"], concept["id"]) for concept in getConceptsResponse.data]
         getConnectionsResponse = (
             supabase.table("conceptlinks")
@@ -236,7 +235,7 @@ def getGraphHelper(courseId:int, selectedNodes):
             .in_("targetconceptid", conceptIds)
             .execute()
         )
-    sourcesToTargets: pydantic.List[pydantic.Tuple[int,int]] = []
+    sourcesToTargets: list[tuple[int,int]] = []
     for row in getConnectionsResponse.data:
         sourcesToTargets.append((row["sourceconceptid"], row["targetconceptid"]))
     nodes = []
@@ -271,8 +270,8 @@ def GetCourses():
         .select("id","courseName")
         .execute()
     )
-    courseNamesList: pydantic.List[str] = [object["courseName"] for object in courses.data]
-    courseIdList: pydantic.List[int] = [object["id"] for object in courses.data]
+    courseNamesList: list[str] = [object["courseName"] for object in courses.data]
+    courseIdList: list[int] = [object["id"] for object in courses.data]
     nameId = list(zip(courseNamesList, courseIdList))
     return jsonify({"courses":nameId})
 
@@ -291,7 +290,7 @@ def GetCourseId():
 @app.route("/GetConceptMapArguments", methods = ["GET"])
 def GetConceptMapArguments():
     courseId: int = int(request.args.get("id"))
-    conceptNames: pydantic.List[str] = []
+    conceptNames: list[str] = []
     conceptName: str = request.args.get("0")
     lessonPlan:int = int(request.args.get("lessonPlan"))
     i = 0
@@ -305,7 +304,7 @@ def GetConceptMapArguments():
         wholeGraph = json.loads(getGraphHelper(courseId, []).data.decode('utf-8'))
         subGraph = json.loads(subGraphJSON.data.decode('utf-8'))
         missedPrereqs = verifyLessonPlan(subGraph, wholeGraph)
-        
+        #need to return missed prereqs message
 
     # return jsonify(responseObject)
     return subGraphJSON
@@ -314,11 +313,12 @@ def GetConceptMapArguments():
 @app.route("/GenerateLessonPlan", methods = ["POST"])
 def GenerateLessonPlan():
     data = request.json
+    print(data)
     courseName:str = data["courseName"]
     courseId:str = data["courseId"]
-    nodes: pydantic.List[pydantic.Tuple[int,str]] = [(int(concept["id"]),concept["label"]) for concept in data["nodes"]]
-    edges: pydantic.List[pydantic.Tuple[int,int]] = [(int(edge["source"]),int(edge["target"])) for edge in data["edges"]]
-    subNodes = pydantic.Dict[int,pydantic.List[str]] = [(int(id),list) for id, list in data["subNodes"].items()]
+    nodes: list[tuple[int,str]] = [(int(concept["id"]),concept["label"]) for concept in data["nodes"]]
+    edges: list[tuple[int,int]] = [(int(edge["source"]),int(edge["target"])) for edge in data["edges"]]
+    subNodes: dict[str,list[str]] = {parent:list for parent, list in data["subNodes"].items()}
     data = {"courseName":courseName, "courseId": courseId, "nodes":nodes, "edges": edges,"subNodes": subNodes}
     createLessonPlan(data)
 

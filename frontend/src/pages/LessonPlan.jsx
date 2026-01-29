@@ -21,8 +21,6 @@ function LessonPlan(){
             for(let i = 0; i < selectedNodesList.length; i++){
                 let concept = selectedNodesList[i];
                 let lastIndex = concept.lastIndexOf(" ");
-                let firstIndex = concept.indexOf(" ");
-                if (firstIndex == lastIndex || lastIndex == concept.length-1){continue;}
                 switch (concept.substring(lastIndex+1)){
                     case "Remember":
                     case "Understand":
@@ -31,6 +29,7 @@ function LessonPlan(){
                     case "Evaluate":
                     case "Create":
                         selectedNodesList.splice(i, 1);
+                        i--;
                         break;
                     default:
                         break;
