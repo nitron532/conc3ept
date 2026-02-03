@@ -5,11 +5,12 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import UserMenu from './components/UserMenu.jsx'
 import { useMediaQuery } from '@mui/material';
 import Home from './pages/Home'
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import LessonPlan from './pages/LessonPlan.jsx'
 import CoursePage from './pages/CoursePage.jsx'
 import NestedLevel from './pages/NestedLevel.jsx';
 import Login from './pages/Login.jsx'
+import Questions from './pages/Questions.jsx';
 import { useState } from 'react';
 
 
@@ -37,6 +38,7 @@ function App() {
           <Route path = "/:course/lessonplan" element = {<LessonPlan/>}></Route>
           <Route path = "/:course/lessonplan/:concept" element = {<NestedLevel lessonPlanStatus={true}/>}></Route>
           <Route path = "/:course/:concept/lessonplan" element = {<NestedLevel lessonPlanStatus={true}/>}></Route>
+          <Route path = "/:course/:concept/:level" element = {<Questions/>}></Route>
         </Routes>
       </ThemeProvider>
   )

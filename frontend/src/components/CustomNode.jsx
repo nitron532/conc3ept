@@ -40,10 +40,19 @@ export default function CustomNode({data}) {
     if(!event.ctrlKey && data.level !== "t"){
       const courseId = data.courseId;
       const conceptId = data.id;
+      console.log(conceptId, "upperlevel nested ")
       navigate(`${encodeURIComponent(data.label)}`, {
-        state: {courseId, conceptId}   // pass extra data without adding to URL
+        state: {courseId, conceptId}  
       });
-  }
+    }
+    else if(!event.ctrlKey && data.level === "t"){
+      const courseId = data.courseId;
+      const conceptId = data.id;
+      const conceptLevel = data.label.substring(data.label.lastIndexOf(" ")+1);
+      navigate(`${encodeURIComponent(conceptLevel)}`,{
+        state: {courseId, conceptId, conceptLevel}
+      });
+    }
   };
   const handleClickNode = (event) =>{
     if(event.ctrlKey && !selected && data.level !== "l"){

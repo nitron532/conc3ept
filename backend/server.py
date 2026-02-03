@@ -299,13 +299,18 @@ def GetConceptMapArguments():
         i+=1
         conceptName = request.args.get(f"{i}")
     subGraphJSON = getGraphHelper(courseId, conceptNames)
-    responseObject = {"graph": subGraphJSON, "message": ""}#store subgraphjson and message
+    responseObject = {"graph": subGraphJSON.get_json(), "message": ""}#store subgraphjson and message
     if lessonPlan == 1:
         wholeGraph = json.loads(getGraphHelper(courseId, []).data.decode('utf-8'))
         subGraph = json.loads(subGraphJSON.data.decode('utf-8'))
-        missedPrereqs = verifyLessonPlan(subGraph, wholeGraph)
-        #need to return missed prereqs message
-
+        missedPrereqs: list[int] = verifyLessonPlan(subGraph, wholeGraph) #ids
+        responseObject["message"] = "Your current lesson plan skips the following prerequisite topics: "
+        if(missedPrereqs):
+            for concept in wholeGraph["nodes"]:
+                if int(concept["id"]) in missedPrereqs:
+                    responseObject["message"] += f"{concept["data"]["label"]}, "
+        responseObject["message"] = responseObject["message"][:-2]
+    print(responseObject["message"])
     # return jsonify(responseObject)
     return subGraphJSON
 
@@ -313,7 +318,6 @@ def GetConceptMapArguments():
 @app.route("/GenerateLessonPlan", methods = ["POST"])
 def GenerateLessonPlan():
     data = request.json
-    print(data)
     courseName:str = data["courseName"]
     courseId:str = data["courseId"]
     nodes: list[tuple[int,str]] = [(int(concept["id"]),concept["label"]) for concept in data["nodes"]]

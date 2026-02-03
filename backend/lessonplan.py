@@ -133,7 +133,6 @@ def createLessonPlan(data):
     idToName = {}
     for i in range(len(data["nodes"])):
         idToName[int(data["nodes"][i][0])] = data["nodes"][i][1]
-
     orderedIds = topologicalSort([node[0] for node in data["nodes"]],data["edges"])
     orderedLabels = [idToName[id] for id in orderedIds]
     p = Process(target = authorizeAndCreate, args = (result,orderedLabels,data["subNodes"],))

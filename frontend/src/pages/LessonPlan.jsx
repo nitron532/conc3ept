@@ -53,8 +53,6 @@ function LessonPlan(){
     useEffect(() =>{
         getConceptMapArgumentsPlan(courseId);
     },[])
-    
-    //TODO selected taxonomy levels need to be considered in lesson plan generation.
 
     function RenderConceptMap({baseNodes, baseEdges, courseId, setBaseNodes, setBaseEdges}){
         if(baseNodes.length > 0){

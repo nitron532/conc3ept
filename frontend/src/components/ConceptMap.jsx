@@ -39,18 +39,15 @@ const getLayoutedElements = (nodes, edges, options = {}) => {
     })),
     edges: edges,
   };
-
   return elk
     .layout(graph)
     .then((layoutedGraph) => ({
       nodes: layoutedGraph.children.map((node) => ({
         ...node,
-        // React Flow expects a position property on the node instead of `x`
-        // and `y` fields.
         position: { x: node.x, y: node.y },
         data:{
           layout: isHorizontal,
-          label: node.data.label
+          label: node.data.label,
         }
       })),
       edges: layoutedGraph.edges,
@@ -58,7 +55,7 @@ const getLayoutedElements = (nodes, edges, options = {}) => {
     .catch(console.error);
 };
 
-function ConceptMap({baseNodes,setBaseNodes, baseEdges,setBaseEdges, courseId, lessonPlanStatus,level}) { //nodes, edges, selected nodes and set/get
+function ConceptMap({baseNodes,setBaseNodes, baseEdges,setBaseEdges, courseId, lessonPlanStatus,level, parentConcept}) {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const courseName = decodeURIComponent(useParams().course);
@@ -106,6 +103,7 @@ function ConceptMap({baseNodes,setBaseNodes, baseEdges,setBaseEdges, courseId, l
           ...n,
           data:{
             ...n.data,
+            id:level === "t" ? parentConcept : n.id,
             courseName: courseName,
             courseId: courseId,
           }
