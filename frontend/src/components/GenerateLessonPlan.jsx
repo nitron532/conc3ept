@@ -17,6 +17,8 @@ function GenerateLessonPlan({data}){
             // setFormData(initialState);
             // load lesson plan in embedded viewer? or just save it to a path?
             // hide button afterwards
+
+            //add loading animation for generation, cancel button, go back to map when it's done
         }
         catch (Error){
             console.error("Couldn't generate lesson plan: ", Error);
@@ -36,7 +38,7 @@ function GenerateLessonPlan({data}){
                 })
             }
             for(let i = 0; i < selectedNodes.length; i++){
-                let concept = selectedNodes[i];
+                let concept = selectedNodes[i].label;
                 let lastIndex = concept.lastIndexOf(" ");
                     switch (concept.substring(lastIndex+1)){
                         case "Remember":

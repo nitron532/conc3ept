@@ -13,13 +13,15 @@ function LessonPlan(){
     const [baseEdges, setBaseEdges] = useState([]);
     const selectedNodes = useSelectedNodesStore(state => state.selectedNodes);
 
+
+    //could eventually just pass entire top level nodes in with edges to avoid extra backend communication
     const getConceptMapArgumentsPlan = async (courseId) =>{
         try{
             let selectedNodesList = Array.from(selectedNodes);
             
             // Remove sub level concepts from the request string.
             for(let i = 0; i < selectedNodesList.length; i++){
-                let concept = selectedNodesList[i];
+                let concept = selectedNodesList[i].label;
                 let lastIndex = concept.lastIndexOf(" ");
                 switch (concept.substring(lastIndex+1)){
                     case "Remember":
@@ -37,7 +39,7 @@ function LessonPlan(){
             }
             let requestString = `${import.meta.env.VITE_SERVER_URL}/GetConceptMapArguments?id=${courseId}`
             for(let i = 0; i < selectedNodesList.length; i++){
-                requestString += `&${i}=${selectedNodesList[i]}`
+                requestString += `&${i}=${selectedNodesList[i].label}`
             }
             requestString += "&lessonPlan=1";
             const response = await axios.get(

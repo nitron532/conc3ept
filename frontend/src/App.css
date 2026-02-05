@@ -23,6 +23,12 @@
   top: 10px;
   right: 20px;
 }
+
+.topcenter{
+  position: fixed;
+  top: 10px;
+}
+
 .graphContainer{
   border: none !important;
   outline: none !important;

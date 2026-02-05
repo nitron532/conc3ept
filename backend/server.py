@@ -243,7 +243,7 @@ def getGraphHelper(courseId:int, selectedNodes):
     for conceptTuple in nameId:
         nodes.append(
             {
-                "id": str(conceptTuple[1]), "position":{"x": 0, "y": 0}, "data": {"label": conceptTuple[0], "courseId": courseId}, "type":"custom"
+                "id": str(conceptTuple[1]), "position":{"x": 0, "y": 0}, "data": {"label": conceptTuple[0], "courseId": courseId, "conceptId": conceptTuple[1]}, "type":"custom"
             }
         )
     for tuple in sourcesToTargets:
@@ -299,7 +299,7 @@ def GetConceptMapArguments():
         i+=1
         conceptName = request.args.get(f"{i}")
     subGraphJSON = getGraphHelper(courseId, conceptNames)
-    responseObject = {"graph": subGraphJSON.get_json(), "message": ""}#store subgraphjson and message
+    responseObject = {"graph": subGraphJSON.get_json(), "message": ""}
     if lessonPlan == 1:
         wholeGraph = json.loads(getGraphHelper(courseId, []).data.decode('utf-8'))
         subGraph = json.loads(subGraphJSON.data.decode('utf-8'))
@@ -310,8 +310,6 @@ def GetConceptMapArguments():
                 if int(concept["id"]) in missedPrereqs:
                     responseObject["message"] += f"{concept["data"]["label"]}, "
         responseObject["message"] = responseObject["message"][:-2]
-    print(responseObject["message"])
-    # return jsonify(responseObject)
     return subGraphJSON
 
 
@@ -327,6 +325,15 @@ def GenerateLessonPlan():
     createLessonPlan(data)
 
     return "OK", 200
+
+
+"""
+@app.route("/RequestOldRepo)
+    node has field
+    {id; , position, ... data:{oldrepoid, concept(s), taxonomy(s)?}}
+
+"""
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

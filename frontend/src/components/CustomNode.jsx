@@ -31,16 +31,24 @@ export default function CustomNode({data}) {
     ...defaultStyle,
     background: '#085252ff'
   }
+  
+  useEffect(()=>{
+    let found = false;
+    for(const node of selectedNodes){
+      if(data.label === node.label){
+        found = true;
+        break;
+      }
+    }
+    setSelected(found)
+  },[selectedNodes])
 
-  useEffect( ()=>{
-    setSelected(selectedNodes.includes(data.label));
-  }, [selectedNodes])
+
 
   const handleClickLink = (event) => {
     if(!event.ctrlKey && data.level !== "t"){
       const courseId = data.courseId;
       const conceptId = data.id;
-      console.log(conceptId, "upperlevel nested ")
       navigate(`${encodeURIComponent(data.label)}`, {
         state: {courseId, conceptId}  
       });
@@ -56,11 +64,11 @@ export default function CustomNode({data}) {
   };
   const handleClickNode = (event) =>{
     if(event.ctrlKey && !selected && data.level !== "l"){
-      addSelectedNode(data.label)
+      addSelectedNode(data)
       setSelected(true);
     }
     else if (event.ctrlKey && selected && data.level !== "l"){
-      removeSelectedNode(data.label);
+      removeSelectedNode(data);
       setSelected(false);
     }
   };

@@ -17,7 +17,7 @@ export default function SelectedNodesMenu({courseId, getGraph}) {
     e.preventDefault();
     
     const formData = {
-        "selectedNodes": selectedNodes,
+        "selectedNodes": selectedNodes.map(node => node.label),
         "courseId" : courseId,
     }
     try{
@@ -58,7 +58,7 @@ export default function SelectedNodesMenu({courseId, getGraph}) {
 
         <div>
         {selectedNodes.map((node)=>(
-            <p key = {node}>{node}</p>
+            <p key = {node.label}>{node.label}</p>
         ))}
 
         </div>

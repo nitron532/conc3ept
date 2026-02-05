@@ -3,14 +3,14 @@ import { create } from "zustand";
 export const useSelectedNodesStore = create(set => ({
   selectedNodes: [],
 
-  addNode: label =>
+  addNode: nodeObject =>
     set(state => ({
-      selectedNodes: [...new Set([...state.selectedNodes, label])]
+      selectedNodes: [...new Set([...state.selectedNodes, nodeObject])]
     })),
 
-  removeNode: label =>
+  removeNode: nodeObject =>
     set(state => ({
-      selectedNodes: state.selectedNodes.filter(l => l !== label)
+      selectedNodes: state.selectedNodes.filter(o => o.label !== nodeObject.label)
     })),
 
   clear: () => set({ selectedNodes: [] })
