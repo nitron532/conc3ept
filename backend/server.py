@@ -310,7 +310,8 @@ def GetConceptMapArguments():
                 if int(concept["id"]) in missedPrereqs:
                     responseObject["message"] += f"{concept["data"]["label"]}, "
         responseObject["message"] = responseObject["message"][:-2]
-    return subGraphJSON
+    # return subGraphJSON
+    return jsonify(responseObject)
 
 
 @app.route("/GenerateLessonPlan", methods = ["POST"])

@@ -4,6 +4,7 @@ import {useLocation } from "react-router-dom";
 import { useState,useEffect} from "react";
 import axios from "axios";
 import BackButton from "../components/BackButton";
+import MissedPrereqsAlert from "../components/MissedPrereqsAlert";
 import { useSelectedNodesStore } from "../states/SelectedNodesStore";
 
 function LessonPlan(){
@@ -11,6 +12,7 @@ function LessonPlan(){
     const {courseId} = location.state || {};
     const [baseNodes, setBaseNodes] = useState([]);
     const [baseEdges, setBaseEdges] = useState([]);
+    const [missedPrereqs, setMissedPrereqs] = useState("initialState");
     const selectedNodes = useSelectedNodesStore(state => state.selectedNodes);
 
 
@@ -45,8 +47,9 @@ function LessonPlan(){
             const response = await axios.get(
                 requestString
             )
-            setBaseNodes(response.data.nodes)
-            setBaseEdges(response.data.edges)
+            setBaseNodes(response.data.graph.nodes)
+            setBaseEdges(response.data.graph.edges)
+            setMissedPrereqs(response.data.message)
         }
             catch (Error){
             console.log("Couldn't get concept map arguments: ", Error);
@@ -69,6 +72,7 @@ function LessonPlan(){
     <>
         <RenderConceptMap baseNodes = {baseNodes} baseEdges = {baseEdges} courseId = {courseId} setBaseNodes = {setBaseNodes} setBaseEdges = {setBaseEdges}/>
         <BackButton position={"bottomleft"}/>
+       {baseNodes && missedPrereqs !== "initialState" && <MissedPrereqsAlert message = {missedPrereqs}/> }
     </>
     )
 }

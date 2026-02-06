@@ -20,8 +20,8 @@ function CoursePage(){
             const response = await axios.get(
                 requestString
             )
-            setBaseNodes(response.data.nodes)
-            setBaseEdges(response.data.edges)
+            setBaseNodes(response.data.graph.nodes)
+            setBaseEdges(response.data.graph.edges)
         }
             catch (Error){
             console.log("Couldn't get concept map arguments: ", Error);
