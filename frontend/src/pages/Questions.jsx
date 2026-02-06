@@ -18,7 +18,7 @@ function Questions(){
     const conceptName = useParams().concept;
 
 
-    //get associated questions
+    //get oldrepo questions
     // const getConceptMapArguments = async (courseId) =>{
     //     try{
     //         let requestString = `${import.meta.env.VITE_SERVER_URL}/GetConceptMapArguments?id=${courseId}&lessonPlan=0`
@@ -67,7 +67,7 @@ function Questions(){
         <>
             <p>Loading questions...</p>
             <RenderConceptMap baseNodes = {baseNodes} baseEdges = {baseEdges} courseId = {courseId} setBaseNodes = {setBaseNodes} setBaseEdges = {setBaseEdges}/>
-            <div class = "topcenter">{conceptName} {conceptLevel}</div>
+            <div className = "topcenter">{conceptName} {conceptLevel}</div>
             <BackButton position = {"bottomleft"}></BackButton>
         </>
     )

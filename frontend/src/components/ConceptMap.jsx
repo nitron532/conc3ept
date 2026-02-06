@@ -1,6 +1,6 @@
 import ELK from 'elkjs/lib/elk.bundled.js';
 import { useCallback, useLayoutEffect , useEffect, useState,useMemo} from 'react';
-import {useParams, useLocation} from "react-router-dom";
+import {useParams} from "react-router-dom";
 import axios from "axios";
 import SelectedNodesMenu from './SelectedNodesMenu';
 import MiddleArrowEdge from './MiddleArrowEdge';

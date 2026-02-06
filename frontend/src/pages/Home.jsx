@@ -2,10 +2,19 @@ import CourseCard from "../components/CourseCard"
 import axios from 'axios'
 import {useState, useEffect, useCallback} from 'react'
 import AddEditCourses from "../components/AddEditCourses";
+import { useCourseNodesStore } from "../states/CourseNodesStore";
+import { useCourseEdgesStore } from "../states/CourseEdgesStore";
+import { useCoursesStore } from "../states/CoursesStore";
+
 
 export default function Home(){
 // add header that says "welcome, username"
-    const [courses, setCourses] = useState([]);
+    const clearNodes = useCourseNodesStore(state => state.clear)
+    const clearEdges = useCourseEdgesStore(state => state.clear)
+    const setCourses = useCoursesStore(state => state.setCourses)
+    const courses = useCoursesStore(state => state.courseList)
+    const [renderReady, setRenderReady] = useState(false)
+
     const getCourses = useCallback(async () =>{
         try{
         const response = await axios.get(
@@ -19,13 +28,28 @@ export default function Home(){
         }
     },[]);
     useEffect(()=>{
-        getCourses();
-    }, [getCourses]);
+        clearNodes();
+        clearEdges();
+        if(courses.length === 0){
+            getCourses();
+        }
+        setRenderReady(true);
+    }, []);
+
+    function RenderCourseList(){
+        if(renderReady){
+            return(
+                <>
+                    {courses.map((course)=><CourseCard key = {course[1]} courseName = {course[0]} courseId = {course[1]}/>)}
+                    <div className = "bottomleft"> <AddEditCourses getCourses ={getCourses} courses = {courses}/> </div>
+                </>
+            );
+        }
+    }
     
     return(
         <>
-            {courses.map((course)=><CourseCard key = {course[1]} courseName = {course[0]} courseId = {course[1]}/>)}
-           <div className = "bottomleft"> <AddEditCourses getCourses ={getCourses} courses = {courses}/> </div>
+            <RenderCourseList/>
         </>
     )
 
