@@ -16,7 +16,7 @@ function LessonPlan(){
     const selectedNodes = useSelectedNodesStore(state => state.selectedNodes);
 
 
-    //could eventually just pass entire top level nodes in with edges to avoid extra backend communication
+    //could eventually just pass entire top level nodes in with edges to avoid extra backend communication USE ZUSTAND
     const getConceptMapArgumentsPlan = async (courseId) =>{
         try{
             let selectedNodesList = Array.from(selectedNodes);

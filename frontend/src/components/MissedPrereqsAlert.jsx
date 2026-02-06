@@ -24,7 +24,7 @@ export default function MissedPrereqsAlert({message}) {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          {"Missing prerequisite topics from current lesson plan!"}
+          {"Missing these prerequisite topics from this lesson plan:"}
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">

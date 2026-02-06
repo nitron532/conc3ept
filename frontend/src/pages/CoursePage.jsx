@@ -42,8 +42,8 @@ function CoursePage(){
     useEffect( ()=>{
         if(courseNodes.length == 0 || (nodesCourseId == -1 || nodesCourseId !== courseId)){
             getConceptMapArguments(courseId);
-            setRenderReady(true);
         }
+        setRenderReady(true);
     },[courseNodes])
 
     function RenderConceptMap({courseId}){

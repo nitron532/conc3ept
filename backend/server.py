@@ -304,8 +304,8 @@ def GetConceptMapArguments():
         wholeGraph = json.loads(getGraphHelper(courseId, []).data.decode('utf-8'))
         subGraph = json.loads(subGraphJSON.data.decode('utf-8'))
         missedPrereqs: list[int] = verifyLessonPlan(subGraph, wholeGraph) #ids
-        responseObject["message"] = "Your current lesson plan skips the following prerequisite topics: "
         if(missedPrereqs):
+            responseObject["message"] = "Your current lesson plan skips the following prerequisite topics: "
             for concept in wholeGraph["nodes"]:
                 if int(concept["id"]) in missedPrereqs:
                     responseObject["message"] += f"{concept["data"]["label"]}, "

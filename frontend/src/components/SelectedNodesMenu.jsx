@@ -5,7 +5,7 @@ import DeleteAlert from './DeleteAlert';
 import axios from "axios"
 import { useSelectedNodesStore } from '../states/SelectedNodesStore';
 
-export default function SelectedNodesMenu({courseId, getGraph}) {
+export default function SelectedNodesMenu({courseId, }) {
   const [open, setOpen] = useState(false);
   const selectedNodes = useSelectedNodesStore(state=> state.selectedNodes)
   const clearSelectedNodes = useSelectedNodesStore(state=> state.clear)
@@ -27,7 +27,7 @@ export default function SelectedNodesMenu({courseId, getGraph}) {
         {headers:{"Content-Type" : "application/json"}}
       )
       clearSelectedNodes();
-      getGraph(courseId);
+      (courseId);
     }
     catch(error){
       console.log("Failed to delete: ", error)

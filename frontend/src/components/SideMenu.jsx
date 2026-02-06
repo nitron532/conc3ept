@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useState } from 'react';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import Button from '@mui/material/Button';
@@ -11,10 +11,12 @@ import ListItemText from '@mui/material/ListItemText';
 import HomeIcon from '@mui/icons-material/Home';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ListSubheader from '@mui/material/ListSubheader';
+import { useCoursesStore } from '../states/CoursesStore';
 import { Link as RouterLink } from 'react-router-dom';
 
 export default function SideMenu() {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const courses = useCoursesStore(state => state.courseList);
 
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
@@ -36,19 +38,12 @@ export default function SideMenu() {
         ))}
       </List>
       <Divider />
-      {/* <ListSubheader>This Course</ListSubheader>
-      {/* <List>
-        {['Add Topics'].map((text, index) => (
-            <ListItem key={text} disablePadding>
-                <ListItemButton component = {RouterLink} to ={`/add-topics`}>
-                <ListItemIcon>
-                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-                </ListItemButton>
-            </ListItem>
-        ))}
-      </List> */}
+      <List>
+        {courses.map((courseObject,index)=>{
+          //simulate clicking the course card button (pass courseId from the object, set node&edge stores to correct course by requesting backend,
+          // then route to coursepage )
+        })}
+      </List>
     </Box>
   );
 
