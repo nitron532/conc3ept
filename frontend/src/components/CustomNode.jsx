@@ -1,16 +1,20 @@
 import { Handle, Position } from '@xyflow/react';
 import {useState, useEffect} from "react"
 import {Outlet, useNavigate} from "react-router-dom"
+import QuestionPreview from './QuestionPreview';
 import { useSelectedNodesStore } from '../states/SelectedNodesStore';
+import { useQuestionStore } from '../states/QuestionStore';
 
 export default function CustomNode({data}) {
   const navigate = useNavigate();
   const [hover, setHover] = useState(false);
   const [selected, setSelected] = useState(false)
+  const [showQuestion, setShowQuestion] = useState(false);
   const defaultBackgroundColor = selected ? '#1f1f' : '#1f1f1f'
   const selectedNodes = useSelectedNodesStore(state => state.selectedNodes);
   const addSelectedNode = useSelectedNodesStore(state => state.addNode);
   const removeSelectedNode = useSelectedNodesStore(state => state.removeNode);
+  const setQuestion = useQuestionStore(state => state.setQuestion);
 
   const defaultStyle = {
         borderRadius: '12px',
@@ -46,7 +50,12 @@ export default function CustomNode({data}) {
 
 
   const handleClickLink = (event) => {
-    if(!event.ctrlKey && data.level !== "t"){
+    if(!event.ctrlKey && data.level === "q"){
+      setQuestion(data)
+      //TODO want to navigate to oldrepo itself to that specific question of qID
+      //want to do pdf preview? or just a component that pops up
+    }
+    else if(!event.ctrlKey && data.level !== "t"){
       const courseId = data.courseId;
       const conceptId = data.id;
       navigate(`${encodeURIComponent(data.label)}`, {
@@ -55,10 +64,11 @@ export default function CustomNode({data}) {
     }
     else if(!event.ctrlKey && data.level === "t"){
       const courseId = data.courseId;
-      const conceptId = data.id;
+      const parentConceptId = data.id;
       const conceptLevel = data.label.substring(data.label.lastIndexOf(" ")+1);
+      // const conceptLevel = data.levelId
       navigate(`${encodeURIComponent(conceptLevel)}`,{
-        state: {courseId, conceptId, conceptLevel}
+        state: {courseId, parentConceptId, conceptLevel}
       });
     }
   };
@@ -83,6 +93,7 @@ export default function CustomNode({data}) {
     >
 
       <div style = {{color: '#fff'}} onClick = {handleClickLink}>{data.label}</div>
+  
       <Outlet/>
     {data.layout ? (
             <>

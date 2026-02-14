@@ -58,6 +58,7 @@ def DeleteSelectedNodes():
     data = request.json
     courseId: int = data["courseId"]
     conceptNames: list[str] = data["selectedNodes"]
+    #TODO pass ids to remove extra supabase query
     concepts = (
         supabase.table("Concepts")
         .select("id")
@@ -77,11 +78,13 @@ def DeleteSelectedNodes():
     )
     return "OK", 200
 
+#TODO get rid of this and just use delete selected nodes
 @app.route("/DeleteNode", methods = ["DELETE"])
 def DeleteNode():
     data = request.json
     courseId: int = data["courseId"]
     conceptName: str = data["conceptInput"]
+    #TODO Pass id to remove instead
     concept = (
         supabase.table("Concepts")
         .select("id")
@@ -105,6 +108,7 @@ def EditNodeOutgoing():
     data = request.json
     courseId: int = data["courseId"]
     conceptName: str = data["conceptInput"]
+    #TODO pass conceptID
     outgoingConnections: list[int] = [int(id) for id in data["outgoingConnections"]]
     concept = (
         supabase.table("Concepts")
@@ -138,6 +142,7 @@ def EditNodeIncoming():
     data = request.json
     courseId: int = data["courseId"]
     conceptName: str = data["conceptInput"]
+    #TODO pass concept ID to avoid extra request
     incomingConnections: list[int] = [int(id) for id in data["incomingConnections"]]
     concept = (
         supabase.table("Concepts")
@@ -200,6 +205,7 @@ def getGraphHelper(courseId:int, selectedNodes):
     getConceptsResponse = ()
     getConnectionsResponse = ()
     conceptNames: list[str] = selectedNodes
+    #TODO pass ids to selected Nodes (whole object) instead of names to avoid extra db request
     conceptIds: list[int] = []
     nameId: list[tuple[str,int]] = []
     if len(selectedNodes) == 0: # fetch all nodes and connections from db
@@ -291,6 +297,7 @@ def GetCourseId():
 def GetConceptMapArguments():
     courseId: int = int(request.args.get("id"))
     conceptNames: list[str] = []
+    #TODO pass IDs instead of names to avoid extra request for ids
     conceptName: str = request.args.get("0")
     lessonPlan:int = int(request.args.get("lessonPlan"))
     i = 0
@@ -334,6 +341,26 @@ def GenerateLessonPlan():
 
 """
 
+@app.route("/RequestOldRepo", methods = ["GET"])
+def RequestOldRepo():
+    conceptId: int = int(request.args.get("conceptId"))
+    conceptLevel: int = int(request.args.get("conceptLevel"))
+    courseId: int = int(request.args.get("courseId"))
+    # request...
+    
+    #following is for testing only
+    questions = json.load(open("test.json")) # this would be json returned from EQUAL or oldrepo
+    matched = []
+    qId = 0
+    print(f"concept level:{conceptLevel}, conceptId: {conceptId}")
+    for q in questions["questions"]: #wont need to search since it will have been requested via concept keyword and level
+        print(q["classification"]["level"], q["classification"]["id"])
+        if q["classification"]["level"] == (conceptLevel+1) and q["classification"]["id"] == conceptId:
+            matched.append({
+                "id":str(qId), "position": {"x":0,"y":0}, "data":{"label": str(qId), "courseId": courseId, "conceptId": conceptId, "conceptLevel": conceptLevel, "questionText":q["question_text"]}, "type": "custom"
+            })
+            qId +=1
+    return jsonify(matched)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

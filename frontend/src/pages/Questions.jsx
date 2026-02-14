@@ -2,11 +2,13 @@ import ConceptMap from "../components/ConceptMap";
 import {useEffect, useState} from 'react';
 import {useParams, useLocation} from "react-router-dom";
 import BackButton from "../components/BackButton";
+import QuestionPreview from "../components/QuestionPreview";
 import axios from "axios"
 import {
   ReactFlowProvider,
 } from '@xyflow/react';
 import { useSelectedNodesStore } from "../states/SelectedNodesStore";
+import { useQuestionStore } from "../states/QuestionStore";
 
 
 function Questions(){
@@ -15,37 +17,52 @@ function Questions(){
     const [courseId, setCourseId] = useState(useLocation().state?.courseId);
     const [baseNodes, setBaseNodes] = useState([]); //objects
     const [baseEdges, setBaseEdges] = useState([]); //objects
+    const question = useQuestionStore(state => state.question);
+    const clearQuestion = useQuestionStore(state=> state.clearQuestion);
     const conceptName = useParams().concept;
-
-
+    let levelId = 0;
+    //try {}
+    switch (conceptLevel){
+        case "Remember":
+            levelId = 0;
+            break;
+        case "Understand":
+            levelId = 1;
+            break;
+        case "Apply":
+            levelId = 2;
+            break;
+        case "Analyze":
+            levelId = 3;
+            break;
+        case "Evaluate":
+            levelId = 4;
+            break;
+        case "Create":
+            levelId = 5;
+            break;
+        default:
+            break; //throw exception?
+    }
     //get oldrepo questions
-    // const getConceptMapArguments = async (courseId) =>{
-    //     try{
-    //         let requestString = `${import.meta.env.VITE_SERVER_URL}/GetConceptMapArguments?id=${courseId}&lessonPlan=0`
-    //         const response = await axios.get(
-    //             requestString
-    //         )
-    //         setBaseNodes(response.data.nodes)
-    //         setBaseEdges(response.data.edges)
-    //     }
-    //         catch (Error){
-    //         console.log("Couldn't get concept map arguments: ", Error);
-    //     }
-    // }
+    //for now, we get canterbury
+    const requestOldRepo = async (courseId) =>{
+        try{
+            let requestString = `${import.meta.env.VITE_SERVER_URL}/RequestOldRepo?courseId=${courseId}&conceptId=${parentConceptId}&conceptLevel=${levelId}`
+            const response = await axios.get(
+                requestString
+            )
+            console.log(response)
+            setBaseNodes(response.data)
+        }
+            catch (Error){
+            console.log("Couldn't get concept map arguments: ", Error);
+        }
+    }
 
     useEffect( ()=>{
         //if courseId?
-
-        // getConceptMapArguments(courseId);
-        setBaseNodes([
-            {id: "0", position:{x: 0, y: 0}, data: {label: `Question 1`, courseId: courseId}, type:"custom"},
-            {id: "1", position:{x: 0, y: 0}, data: {label: `Question 2`, courseId: courseId}, type:"custom"},
-            {id: "2", position:{x: 0, y: 0}, data: {label: `Question 3`, courseId: courseId}, type:"custom"},
-            {id: "3", position:{x: 0, y: 0}, data: {label: `Question 4`, courseId: courseId}, type:"custom"},
-            {id: "4", position:{x: 0, y: 0}, data: {label: `Question 5`, courseId: courseId}, type:"custom"},
-            {id: "5", position:{x: 0, y: 0}, data: {label: `Question 6`, courseId: courseId}, type:"custom"},
-            ])
-
+        requestOldRepo(courseId);
     },[])
 
     function RenderConceptMap({baseNodes, setBaseNodes, baseEdges, setBaseEdges, courseId}){
@@ -68,9 +85,13 @@ function Questions(){
             <p>Loading questions...</p>
             <RenderConceptMap baseNodes = {baseNodes} baseEdges = {baseEdges} courseId = {courseId} setBaseNodes = {setBaseNodes} setBaseEdges = {setBaseEdges}/>
             <div className = "topcenter">{conceptName} {conceptLevel}</div>
+            {Object.keys(question).length !== 0 && <QuestionPreview questionText = {question.questionText} clearQuestion={clearQuestion}/>}
             <BackButton position = {"bottomleft"}></BackButton>
         </>
     )
 }
+/*
+      {data.level === "q" && showQuestion && <QuestionPreview showQuestion={showQuestion} setShowQuestion={setShowQuestion} data = {data}/>}
+*/
 
 export default Questions

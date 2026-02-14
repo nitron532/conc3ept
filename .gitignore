@@ -3,3 +3,7 @@ backend/venv/
 frontend/.env.frontend
 todo.txt
 backend/__pycache__/
+backend/test.json
+backend/alterjson.py
+backend/simpleannotatedcanterbury.json
+backend/simplecanterbury.json
