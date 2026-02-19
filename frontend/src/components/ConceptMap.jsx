@@ -46,6 +46,7 @@ const getLayoutedElements = (nodes, edges, options = {}) => {
         ...node,
         position: { x: node.x, y: node.y },
         data:{
+          ...node.data,
           layout: isHorizontal,
           label: node.data.label,
         }

@@ -9,12 +9,12 @@ export default function CustomNode({data}) {
   const navigate = useNavigate();
   const [hover, setHover] = useState(false);
   const [selected, setSelected] = useState(false)
-  const [showQuestion, setShowQuestion] = useState(false);
   const defaultBackgroundColor = selected ? '#1f1f' : '#1f1f1f'
   const selectedNodes = useSelectedNodesStore(state => state.selectedNodes);
   const addSelectedNode = useSelectedNodesStore(state => state.addNode);
   const removeSelectedNode = useSelectedNodesStore(state => state.removeNode);
   const setQuestion = useQuestionStore(state => state.setQuestion);
+  const question = useQuestionStore(state=>state.question)
 
   const defaultStyle = {
         borderRadius: '12px',

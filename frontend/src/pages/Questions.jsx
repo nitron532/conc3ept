@@ -52,7 +52,6 @@ function Questions(){
             const response = await axios.get(
                 requestString
             )
-            console.log(response)
             setBaseNodes(response.data)
         }
             catch (Error){
@@ -85,7 +84,7 @@ function Questions(){
             <p>Loading questions...</p>
             <RenderConceptMap baseNodes = {baseNodes} baseEdges = {baseEdges} courseId = {courseId} setBaseNodes = {setBaseNodes} setBaseEdges = {setBaseEdges}/>
             <div className = "topcenter">{conceptName} {conceptLevel}</div>
-            {Object.keys(question).length !== 0 && <QuestionPreview questionText = {question.questionText} clearQuestion={clearQuestion}/>}
+            {question?.questionText && <QuestionPreview/>}
             <BackButton position = {"bottomleft"}></BackButton>
         </>
     )

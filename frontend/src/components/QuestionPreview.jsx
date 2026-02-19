@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import Backdrop from '@mui/material/Backdrop';
 import { Box } from '@mui/material';
+import { useQuestionStore } from '../states/QuestionStore';
 
-export default function QuestionPreview({questionText, clearQuestion}) {
+export default function QuestionPreview() {
+  const questionText = useQuestionStore(state=>state.question).questionText
+  const clearQuestion = useQuestionStore(state=> state.clearQuestion);
   const handleClose = () => {
     clearQuestion();
   };
-  console.log(questionText)
-  // const open = Boolean(questionText);
   return (
       <Backdrop
         sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}

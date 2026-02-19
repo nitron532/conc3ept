@@ -2,7 +2,7 @@ import { create } from 'zustand'
 
 export const useQuestionStore = create((set) => ({
   question: {},
-  setQuestion: () => set((state) => ({ question: state })),
+  setQuestion: (state) => set({ question: state }),
   clearQuestion: () => set({ question: {} }),
 }))
 
