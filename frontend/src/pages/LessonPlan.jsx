@@ -5,7 +5,7 @@ import { useState,useEffect} from "react";
 import axios from "axios";
 import BackButton from "../components/BackButton";
 import MissedPrereqsAlert from "../components/MissedPrereqsAlert";
-import { useSelectedNodesStore } from "../states/SelectedNodesStore";
+import { useSelectedItemsStore } from "../states/SelectedItemsStore";
 
 function LessonPlan(){
     const location = useLocation();
@@ -13,26 +13,26 @@ function LessonPlan(){
     const [baseNodes, setBaseNodes] = useState([]);
     const [baseEdges, setBaseEdges] = useState([]);
     const [missedPrereqs, setMissedPrereqs] = useState("initialState");
-    const selectedNodes = useSelectedNodesStore(state => state.selectedNodes);
+    const selectedItems = useSelectedItemsStore(state => state.selectedItems);
 
 
     //could eventually just pass entire top level nodes in with edges to avoid extra backend communication USE ZUSTAND
     const getConceptMapArgumentsPlan = async (courseId) =>{
         try{
-            let selectedNodesList = Array.from(selectedNodes);
+            let selectedItemsList = Array.from(selectedItems);
             
             // Remove sub level concepts from the request string.
-            for(let i = 0; i < selectedNodesList.length; i++){
-                let concept = selectedNodesList[i].label;
+            for(let i = 0; i < selectedItemsList.length; i++){
+                let concept = selectedItemsList[i].label; // !!!! TODO, need to support asking to put questions in lesson plan
                 let lastIndex = concept.lastIndexOf(" ");
-                switch (concept.substring(lastIndex+1)){
+                switch (concept.substring(lastIndex+1)){ //do i even need this anymore
                     case "Remember":
                     case "Understand":
                     case "Apply":
                     case "Analyze":
                     case "Evaluate":
                     case "Create":
-                        selectedNodesList.splice(i, 1);
+                        selectedItemsList.splice(i, 1);
                         i--;
                         break;
                     default:
@@ -40,8 +40,8 @@ function LessonPlan(){
                 }
             }
             let requestString = `${import.meta.env.VITE_SERVER_URL}/GetConceptMapArguments?id=${courseId}`
-            for(let i = 0; i < selectedNodesList.length; i++){
-                requestString += `&${i}=${selectedNodesList[i].label}`
+            for(let i = 0; i < selectedItemsList.length; i++){
+                requestString += `&${i}=${selectedItemsList[i].label}`
             }
             requestString += "&lessonPlan=1";
             const response = await axios.get(

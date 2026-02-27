@@ -1,11 +1,11 @@
 import  {useState,useEffect} from 'react'
 import {Box, Drawer, Button} from '@mui/material';
-import { useSelectedNodesStore } from '../states/SelectedNodesStore';
+import { useSelectedItemsStore } from '../states/SelectedItemsStore';
 import axios from "axios"
 
 
 function GenerateLessonPlan({data}){
-    const selectedNodes = useSelectedNodesStore(state => state.selectedNodes);
+    const selectedItems = useSelectedItemsStore(state => state.selectedItems);
     const [formData, setFormData] = useState({});
     const sendLessonPlan = async()=>{
         try{
@@ -37,8 +37,8 @@ function GenerateLessonPlan({data}){
                     target: data.edges[i].target
                 })
             }
-            for(let i = 0; i < selectedNodes.length; i++){
-                let concept = selectedNodes[i].label;
+            for(let i = 0; i < selectedItems.length; i++){
+                let concept = selectedItems[i].label;
                 let lastIndex = concept.lastIndexOf(" ");
                     switch (concept.substring(lastIndex+1)){
                         case "Remember":

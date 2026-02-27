@@ -1,25 +1,21 @@
 import { Handle, Position } from '@xyflow/react';
 import {useState, useEffect} from "react"
 import {Outlet, useNavigate} from "react-router-dom"
-import QuestionPreview from './QuestionPreview';
-import { useSelectedNodesStore } from '../states/SelectedNodesStore';
-import { useQuestionStore } from '../states/QuestionStore';
+import { useSelectedItemsStore } from '../states/SelectedItemsStore';
 
 export default function CustomNode({data}) {
   const navigate = useNavigate();
   const [hover, setHover] = useState(false);
   const [selected, setSelected] = useState(false)
-  const defaultBackgroundColor = selected ? '#1f1f' : '#1f1f1f'
-  const selectedNodes = useSelectedNodesStore(state => state.selectedNodes);
-  const addSelectedNode = useSelectedNodesStore(state => state.addNode);
-  const removeSelectedNode = useSelectedNodesStore(state => state.removeNode);
-  const setQuestion = useQuestionStore(state => state.setQuestion);
-  const question = useQuestionStore(state=>state.question)
+  const defaultBackgroundColor = selected ? '#4f84db' : '#1f1f1f'
+  const addSelectedItem = useSelectedItemsStore(state => state.addItem);
+  const removeSelectedItem = useSelectedItemsStore(state => state.removeItem);
+  const selectedItems = useSelectedItemsStore(state => state.selectedItems);
 
   const defaultStyle = {
         borderRadius: '12px',
         background: defaultBackgroundColor,
-        border: '1px solid #333',
+        border: '1px solid #ddd',
         color: '#fff',
         padding: '10px 16px',
         textAlign: 'center',
@@ -33,19 +29,19 @@ export default function CustomNode({data}) {
   const hoveredStyle =
   {
     ...defaultStyle,
-    background: '#085252ff'
+    background: '#a7b6cf'
   }
   
   useEffect(()=>{
     let found = false;
-    for(const node of selectedNodes){
+    for(const node of selectedItems){
       if(data.label === node.label){
         found = true;
         break;
       }
     }
     setSelected(found)
-  },[selectedNodes])
+  },[selectedItems])
 
 
 
@@ -66,7 +62,6 @@ export default function CustomNode({data}) {
       const courseId = data.courseId;
       const parentConceptId = data.id;
       const conceptLevel = data.label.substring(data.label.lastIndexOf(" ")+1);
-      // const conceptLevel = data.levelId
       navigate(`${encodeURIComponent(conceptLevel)}`,{
         state: {courseId, parentConceptId, conceptLevel}
       });
@@ -74,11 +69,11 @@ export default function CustomNode({data}) {
   };
   const handleClickNode = (event) =>{
     if(event.ctrlKey && !selected && data.level !== "l"){
-      addSelectedNode(data)
+      addSelectedItem(data)
       setSelected(true);
     }
     else if (event.ctrlKey && selected && data.level !== "l"){
-      removeSelectedNode(data);
+      removeSelectedItem(data);
       setSelected(false);
     }
   };

@@ -4,6 +4,7 @@ import {useEffect, useState} from 'react';
 import { useCourseEdgesStore } from "../states/CourseEdgesStore";
 import { useCourseNodesStore } from "../states/CourseNodesStore";
 import {useParams, useLocation} from "react-router-dom";
+import { Box } from "@mui/material";
 import axios from "axios"
 import {
   ReactFlowProvider,
@@ -50,6 +51,7 @@ function CoursePage(){
         if(renderReady){
             return(
             <>
+                <Box component="h2" className = "topcenter" sx={{mt:-0.1}}>{courseName}</Box>
                 <ReactFlowProvider><ConceptMap baseNodes = {courseNodes} baseEdges = {courseEdges} courseId = {courseId} setBaseNodes = {setNodes} setBaseEdges = {setEdges} lessonPlanStatus={false} level = "c"/> </ReactFlowProvider>
                 <div className = "bottomleft"> <AddEditConcepts getConceptMapArguments = {getConceptMapArguments} courseId = {courseId} baseNodes = {courseNodes} baseEdges = {courseEdges}/> </div>
             </>

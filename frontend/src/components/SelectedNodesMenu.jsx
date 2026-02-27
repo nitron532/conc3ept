@@ -1,14 +1,14 @@
-import  {useState, useEffect} from 'react'
+import  {useState} from 'react'
 import {Box, Drawer, Button} from '@mui/material';
 import {useNavigate} from 'react-router-dom';
 import DeleteAlert from './DeleteAlert';
 import axios from "axios"
-import { useSelectedNodesStore } from '../states/SelectedNodesStore';
+import { useSelectedItemsStore } from '../states/SelectedItemsStore';
 
-export default function SelectedNodesMenu({courseId, }) {
+export default function SelectedItemsMenu({courseId, }) {
   const [open, setOpen] = useState(false);
-  const selectedNodes = useSelectedNodesStore(state=> state.selectedNodes)
-  const clearSelectedNodes = useSelectedNodesStore(state=> state.clear)
+  const selectedItems = useSelectedItemsStore(state=> state.selectedItems)
+  const clearSelectedItems = useSelectedItemsStore(state=> state.clear)
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
   };
@@ -17,7 +17,7 @@ export default function SelectedNodesMenu({courseId, }) {
     e.preventDefault();
     
     const formData = {
-        "selectedNodes": selectedNodes.map(node => node.label),
+        "selectedNodes": selectedItems.map(item => item.label),
         "courseId" : courseId,
     }
     try{
@@ -26,7 +26,7 @@ export default function SelectedNodesMenu({courseId, }) {
         {data: formData},
         {headers:{"Content-Type" : "application/json"}}
       )
-      clearSelectedNodes();
+      clearSelectedItems();
       (courseId);
     }
     catch(error){
@@ -34,10 +34,9 @@ export default function SelectedNodesMenu({courseId, }) {
     }
   }
 
-
   const clearAll = () =>{
     toggleDrawer(false);
-    clearSelectedNodes();
+    clearSelectedItems();
     // setTimeout(() => {setSelectedNodes([]);}, 250);
     //TODO isnt doing animation
   }
@@ -57,10 +56,18 @@ export default function SelectedNodesMenu({courseId, }) {
         <DeleteAlert deleteSelectedNodes={deleteSelectedNodes}/>
 
         <div>
-        {selectedNodes.map((node)=>(
-            <p key = {node.label}>{node.label}</p>
-        ))}
-
+          {selectedItems.map((node)=>{
+          if(node.level === "c"){
+            return(
+              <p key = {node.id}>{node.label}</p>
+            )
+          }
+          else{
+            return(
+              <p key = {node.id}>{`${node.data.conceptName} Question ${node.id}`}</p>
+            )
+          }
+          })}
         </div>
     
     </Box>
@@ -69,7 +76,7 @@ export default function SelectedNodesMenu({courseId, }) {
 
   return (
     <div className = "bottomcenter">
-      <Button onClick={toggleDrawer(true)}>Selected Nodes</Button>
+      <Button onClick={toggleDrawer(true)}>Selected Items</Button>
       <Drawer anchor = "right" open={open} onClose={toggleDrawer(false)}>
         {Menu}
       </Drawer>
