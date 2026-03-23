@@ -58,6 +58,8 @@ export default function NestedLevel() {
     }
   };
 
+  //TODO fix overlap on resized windows, make list take up constant space that doesnt depend on header length
+
   return (
     <>
     <Box className = "topleft" sx = {{pl:12, pt:4, maxWidth: "50vw"}}>
@@ -68,6 +70,7 @@ export default function NestedLevel() {
     </Box>
       <Box
         sx={{
+        width: '100%',
         maxHeight: '60vh',   
         overflowY: 'auto',   
         border: '1px solid #ddd',

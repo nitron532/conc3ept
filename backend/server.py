@@ -341,25 +341,24 @@ def GenerateLessonPlan():
 
 """
 
+#eventually this should be request questionRepo so people can plugin their own question banks
 @app.route("/RequestOldRepo", methods = ["GET"])
 def RequestOldRepo():
     conceptId: int = int(request.args.get("conceptId"))
-    conceptLevel: int = int(request.args.get("conceptLevel"))
     courseId: int = int(request.args.get("courseId"))
     # request...
     
     #following is for testing only
-    questions = json.load(open("test.json")) # this would be json returned from EQUAL or oldrepo
+    questions = json.load(open("test.json")) # this would be json returned from EQUAL or oldrepo. will also return answers as well for question info view
     matched = []
     qId = 0
-    print(f"concept level:{conceptLevel}, conceptId: {conceptId}")
+    print(f" conceptId: {conceptId}")
     for q in questions["questions"]: #wont need to search since it will have been requested via concept keyword and level
-        print(q["classification"]["level"], q["classification"]["id"])
-        if q["classification"]["level"] == (conceptLevel+1) and q["classification"]["id"] == conceptId:
+        if q["classification"]["id"] == conceptId:
             matched.append({
-                "id":str(qId), "position": {"x":0,"y":0}, "data":{"label": str(qId), "courseId": courseId, "conceptId": conceptId, "conceptLevel": conceptLevel, "questionText":q["question_text"]}, "type": "custom"
+                "id":str(qId), "data":{"label": str(qId), "courseId": courseId, "conceptName": q["classification"]["topic"], "conceptId": conceptId, "conceptLevel": q["classification"]["level"], "questionText":q["question_text"]}, "type": "question"
             })
-            qId +=1
+            qId +=1 # this should come from oldrepo
     return jsonify(matched)
 
 if __name__ == "__main__":

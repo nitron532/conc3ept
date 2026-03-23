@@ -10,6 +10,7 @@ import LessonPlan from './pages/LessonPlan.jsx'
 import CoursePage from './pages/CoursePage.jsx'
 import Questions from './pages/Questions.jsx';
 import Login from './pages/Login.jsx'
+import SelectedItems from './pages/SelectedItems.jsx';
 import { useState } from 'react';
 
 
@@ -37,6 +38,7 @@ function App() {
           <Route path = "/:course/lessonplan" element = {<LessonPlan/>}></Route>
           <Route path = "/:course/lessonplan/:concept" element = {<Questions/>}></Route>
           <Route path = "/:course/:concept/lessonplan" element = {<Questions/>}></Route>
+          <Route path = "/:course/selecteditems" element = {<SelectedItems/>}></Route>
         </Routes>
       </ThemeProvider>
   )

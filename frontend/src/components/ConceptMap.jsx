@@ -1,8 +1,9 @@
 import ELK from 'elkjs/lib/elk.bundled.js';
 import { useCallback, useLayoutEffect , useEffect, useState,useMemo} from 'react';
+import { useNavigate } from 'react-router-dom';
 import {useParams} from "react-router-dom";
 import axios from "axios";
-import SelectedNodesMenu from './SelectedNodesMenu';
+import { Button } from '@mui/material';
 import MiddleArrowEdge from './MiddleArrowEdge';
 import CustomNode from './CustomNode';
 import Appearance from './Appearance';
@@ -73,6 +74,9 @@ function ConceptMap({baseNodes,setBaseNodes, baseEdges,setBaseEdges, courseId, l
       borderRadius: 12,
     }
   })
+
+  let navigate = useNavigate();
+  
   const { fitView } = useReactFlow();
 
   const getGraph = async(courseId) =>{
@@ -202,7 +206,10 @@ function ConceptMap({baseNodes,setBaseNodes, baseEdges,setBaseEdges, courseId, l
                                         onLayout = {onLayout}/>
                                         </div>
       </div>
-        {selectedItems.length > 0 && !lessonPlanStatus && level !== "l" && level !== "t" && <SelectedNodesMenu baseEdges = {baseEdges} courseId = {courseId} getGraph = {getGraph}/>} 
+        {selectedItems.length > 0 && !lessonPlanStatus && level !== "l" && level !== "t" &&
+                    <div className = "bottomcenter">
+                      <Button onClick={function(){navigate("selecteditems")}}>Selected Items</Button>
+                    </div>} 
         {lessonPlanStatus && <GenerateLessonPlan data = {{nodes:nodes, edges:edges,courseId:courseId}}></GenerateLessonPlan>}
     </div>
   );
