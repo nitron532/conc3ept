@@ -30,6 +30,23 @@ export default function SelectedItems() {
   const navigate = useNavigate();
   const clearSelectedItems = useSelectedItemsStore(state=> state.clear)
 
+  useEffect(()=>{
+    let newState = [
+        {label: "Create", value: 0},
+        {label: "Evaluate", value: 0},
+        {label: "Analyze", value: 0},
+        {label: "Apply", value: 0},
+        {label: "Understand", value: 0},
+        {label: "Remember", value: 0},
+    ]
+    for(let i = 0; i < selectedItems.length; i++){
+        if (selectedItems[i].hasOwnProperty("data") && selectedItems[i].data.hasOwnProperty("conceptLevel")){
+            newState[bloomsState.length - selectedItems[i].data.conceptLevel-1].value++;
+        }
+        setBloomsState(newState);
+    }
+  },[selectedItems])
+
   useEffect(() => {
     if(selectedItems.length == 0){
         navigate(-1);
@@ -39,22 +56,6 @@ export default function SelectedItems() {
   if (selectedItems.length === 0) return null;
 
   const courseId = selectedItems[0].courseId;
-//   const bloomMap = ["Remember", "Understand", "Apply", "Analyze", "Evaluate", "Create"]
-
-//TODO support different types of items in materials list(concepts, questions...)
-//TODO question ids arent unique rn, but oldrepo should be
-//TODO format data to be uniform
-//Blooms distribution per concept?
-  useEffect(()=>{
-    for(let i = 0; i < selectedItems.length; i++){
-        if (selectedItems[i].hasOwnProperty("data") && selectedItems[i].data.hasOwnProperty("conceptLevel")){
-            let newState = [...bloomsState]
-            newState[bloomsState.length - selectedItems[i].data.conceptLevel-1].value++;
-            setBloomsState(newState);
-        }
-    }
-  },[selectedItems])
-
 
   const deleteSelectedNodes = async (e) =>{
     e.preventDefault();
@@ -101,11 +102,24 @@ export default function SelectedItems() {
     }
   }
 
+  const handleRemove = () =>{
+    for(let i = 0; i < selectedSelected.length; i++){
+        removeSelectedItem(selectedSelected[i]);
+    }
+    setSelectedSelected([]);
+    if(selectedItems.length === 0){
+        navigate(-1);
+    }
+  }
+
 
 
   return (
     <>
         <BackButton position = {"bottomleft"}></BackButton>
+        <Box sx ={{display: 'flex'}} component = "h2">
+            Selected Materials
+        </Box>
         <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', gap: 4, width: '100%' }}>
             <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <Box
@@ -120,6 +134,9 @@ export default function SelectedItems() {
                     {selectedItems.length > 0
                     ? selectedItems.map((item) => {
                         const labelId = `checkbox-list-label-${item.id}`;
+                        const displayText = item.hasOwnProperty("type") && item.type == "question"?
+                         `${item.data.conceptName} Question ${item.id}`:
+                         item.label;
                         return (
                         <ListItem
                             key={item.id}
@@ -141,7 +158,7 @@ export default function SelectedItems() {
                                 inputProps={{ 'aria-labelledby': labelId }}
                                 />
                             </ListItemIcon>
-                            <ListItemText id={labelId} primary={`Question ${item.id}`} />
+                            <ListItemText id={labelId} primary={displayText} />
                             </ListItemButton>
                         </ListItem>
                         );
@@ -153,25 +170,10 @@ export default function SelectedItems() {
             <Box>
                 {/* add top padding for input fields  */}
 
-                    <Button onClick = {clearAll}>Clear Selections</Button>
-                    <Button onClick = {handleClickPlan} >Create Lesson Plan</Button>
+                    <Button onClick = {clearAll}>Reset Selections</Button>
+                    {selectedSelected.length > 0 && <Button onClick = {handleRemove}>Remove Selected from List</Button>}
+                    {/* if there are selected <Button onClick = {handleClickPlan} >Create Lesson Plan</Button> */}
                     <DeleteAlert deleteSelectedNodes={deleteSelectedNodes}/>
-
-                    <div>
-                    {selectedItems.map((node)=>{
-                    if(node.level === "c"){
-                        return(
-                        <p key = {node.id}>{node.label}</p>
-                        )
-                    }
-                    else{
-                        return(
-                            
-                        <p key = {node.id}>{`${node.data.conceptName} Question ${node.id}`}</p>
-                        )
-                    }
-                    })}
-                    </div>
             </Box>
         </Box>
         

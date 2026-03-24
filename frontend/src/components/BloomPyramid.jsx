@@ -57,7 +57,7 @@ export default function BloomPyramid({
   title,
   subtitle,
   width = "100%",
-  height = 420,
+  height = 640,
   colorScale = "blue",
   showValues = true,
   showLegend = true,
@@ -66,13 +66,13 @@ export default function BloomPyramid({
 }) {
   // ─── Geometry ──────────────────────────────────────────────────────────────
   const PAD_TOP = title ? 72 : 16;
-  const PAD_BOTTOM = showLegend ? 56 : 20;
-  const PAD_H = 48;
-  const LABEL_W = 140;
-  const GAP = 3; // px gap between levels
+  const PAD_BOTTOM = showLegend ? 72 : 30;
+  const PAD_H = 64;
+  const LABEL_W = 200;
+  const GAP = 1; // px gap between levels
 
   const svgH = height;
-  const pyramidW = 560;
+  const pyramidW = 700;
   const pyramidH = svgH - PAD_TOP - PAD_BOTTOM;
 
   const n = data.length;
@@ -145,7 +145,7 @@ export default function BloomPyramid({
       {(title || subtitle) && (
         <div
           style={{
-            padding: "16px 20px 0",
+            padding: "16px 10px 0",
             display: "flex",
             flexDirection: "column",
             gap: 2,
@@ -154,9 +154,9 @@ export default function BloomPyramid({
           {title && (
             <span
               style={{
-                fontSize: 15,
+                fontSize: 16,
                 fontWeight: 700,
-                color: "#0f172a",
+                color: "#f8fafd",
                 letterSpacing: "-0.01em",
               }}
             >
@@ -164,7 +164,7 @@ export default function BloomPyramid({
             </span>
           )}
           {subtitle && (
-            <span style={{ fontSize: 12, color: "#64748b" }}>{subtitle}</span>
+            <span style={{ fontSize: 14, color: "#64748b" }}>{subtitle}</span>
           )}
         </div>
       )}
@@ -241,7 +241,7 @@ export default function BloomPyramid({
                   textAnchor="middle"
                   dominantBaseline="middle"
                   fill={s.textCol}
-                  fontSize={Math.min(13, sliceH * 0.38)}
+                  fontSize={Math.min(20, sliceH * 0.67)}
                   fontWeight="600"
                   fontFamily="'DM Sans','Segoe UI',sans-serif"
                   style={{ pointerEvents: "none" }}
@@ -256,8 +256,8 @@ export default function BloomPyramid({
                 y={s.midY + 1}
                 textAnchor="end"
                 dominantBaseline="middle"
-                fill="#334155"
-                fontSize={Math.min(12.5, sliceH * 0.36)}
+                fill="#f8fafd"
+                fontSize={Math.min(20, sliceH * 0.67)}
                 fontWeight="500"
                 fontFamily="'DM Sans','Segoe UI',sans-serif"
                 style={{ pointerEvents: "none" }}
@@ -281,12 +281,12 @@ export default function BloomPyramid({
 
         {/* ── Legend ── */}
         {showLegend && (
-          <g transform={`translate(${LABEL_W + PAD_H},${svgH - PAD_BOTTOM + 14})`}>
+          <g transform={`translate(${LABEL_W + PAD_H},${svgH - PAD_BOTTOM + 28})`}>
             <text
               x={0}
               y={0}
               fill="#94a3b8"
-              fontSize={10}
+              fontSize={15}
               fontFamily="'DM Sans','Segoe UI',sans-serif"
             >
               {formatValue(minVal)}
@@ -308,21 +308,21 @@ export default function BloomPyramid({
               x={28 + LEGEND_STOPS * 28 + 6}
               y={0}
               fill="#94a3b8"
-              fontSize={10}
+              fontSize={15}
               fontFamily="'DM Sans','Segoe UI',sans-serif"
             >
               {formatValue(maxVal)}
             </text>
 
             <text
-              x={pyramidW / 2}
-              y={18}
+              x={88}
+              y={30}
               textAnchor="middle"
               fill="#94a3b8"
-              fontSize={10}
+              fontSize={20}
               fontFamily="'DM Sans','Segoe UI',sans-serif"
             >
-              intensity scale
+              Intensity scale
             </text>
           </g>
         )}
@@ -331,44 +331,3 @@ export default function BloomPyramid({
   );
 }
 
-
-// ─── Demo ────────────────────────────────────────────────────────────────────
-// Uncomment below to preview in isolation:
-
-/*
-import { useState } from "react";
-
-const DEMO_DATA = [
-  { label: "Awareness",    value: 9800 },
-  { label: "Interest",     value: 6200 },
-  { label: "Consideration",value: 3800 },
-  { label: "Intent",       value: 2100 },
-  { label: "Purchase",     value:  980 },
-];
-
-export function PyramidDemo() {
-  const [scale, setScale] = useState("blue");
-  return (
-    <div style={{ padding: 32, maxWidth: 700 }}>
-      <div style={{ marginBottom: 16, display: "flex", gap: 8 }}>
-        {["blue","teal","amber","rose"].map(s => (
-          <button key={s} onClick={() => setScale(s)}
-            style={{ padding:"4px 14px", borderRadius:6,
-              background: scale===s?"#0f172a":"#e2e8f0", color: scale===s?"#fff":"#334155",
-              border:"none", cursor:"pointer", fontSize:13 }}>
-            {s}
-          </button>
-        ))}
-      </div>
-      <PyramidChart
-        data={DEMO_DATA}
-        title="Sales Funnel"
-        subtitle="Quarterly pipeline · all channels"
-        colorScale={scale}
-        formatValue={v => v.toLocaleString()}
-        onSegmentClick={(item) => alert(`${item.label}: ${item.value}`)}
-      />
-    </div>
-  );
-}
-*/

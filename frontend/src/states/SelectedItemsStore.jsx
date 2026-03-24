@@ -9,6 +9,7 @@ export const useSelectedItemsStore = create(set => ({
     })),
 
   removeItem: itemObject =>
+    //TODO might need to change this to support multiple types of items
     set(state => ({
       selectedItems: state.selectedItems.filter(o => o.id !== itemObject.id)
     })),

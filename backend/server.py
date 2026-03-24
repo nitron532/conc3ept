@@ -347,11 +347,10 @@ def RequestOldRepo():
     conceptId: int = int(request.args.get("conceptId"))
     courseId: int = int(request.args.get("courseId"))
     # request...
-    
+    qId = 0
     #following is for testing only
     questions = json.load(open("test.json")) # this would be json returned from EQUAL or oldrepo. will also return answers as well for question info view
     matched = []
-    qId = 0
     print(f" conceptId: {conceptId}")
     for q in questions["questions"]: #wont need to search since it will have been requested via concept keyword and level
         if q["classification"]["id"] == conceptId:
