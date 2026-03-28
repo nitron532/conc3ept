@@ -26,6 +26,7 @@ export default function SelectedItems() {
         {label: "Understand", value: 0},
         {label: "Remember", value: 0},
     ]);
+  const [selectedItemLevel, setSelectedItemLevel] = useState(-1);
   const [selectedSelected, setSelectedSelected] = useState([]);
   const navigate = useNavigate();
   const clearSelectedItems = useSelectedItemsStore(state=> state.clear)
@@ -96,9 +97,17 @@ export default function SelectedItems() {
                 i.id !== item.id
             )
         );
+        setSelectedItemLevel(-1);
     }
     else{
         setSelectedSelected([...selectedSelected, item])
+
+        if(item.hasOwnProperty("data") && item.data.hasOwnProperty("conceptLevel")){
+            setSelectedItemLevel(item.data.conceptLevel);
+        }
+        else{
+            setSelectedItemLevel(-1);
+        }
     }
   }
 
@@ -179,7 +188,7 @@ export default function SelectedItems() {
         
             <Box sx={{ flex: 1 }}>
                     <BloomPyramid data = {bloomsState} title = {"Lesson Plan's Distribution of Bloom's Cognitive Processes"}
-                    subtitle = {"subtitle kaef"}
+                    subtitle = {"subtitle kaef"} highlightLevel={selectedItemLevel}
                     ></BloomPyramid>
             </Box>
         </Box>

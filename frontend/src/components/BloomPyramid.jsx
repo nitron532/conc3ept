@@ -63,7 +63,16 @@ export default function BloomPyramid({
   showLegend = true,
   formatValue = (v) => v.toLocaleString(),
   onSegmentClick,
+  highlightLevel = -1,
 }) {
+  const labelToLevel = {
+    Remember: 0,
+    Understand: 1,
+    Apply: 2,
+    Analyze: 3,
+    Evaluate: 4,
+    Create: 5
+  }
   // ─── Geometry ──────────────────────────────────────────────────────────────
   const PAD_TOP = title ? 72 : 16;
   const PAD_BOTTOM = showLegend ? 72 : 30;
@@ -203,6 +212,7 @@ export default function BloomPyramid({
         {segments.map((s) => {
           const points = `${s.x1},${s.y} ${s.x2},${s.y} ${s.x3},${s.y + sliceH} ${s.x4},${s.y + sliceH}`;
           const isClickable = !!onSegmentClick;
+          const selectedLevel = highlightLevel == labelToLevel[s.label] ? "#84c4f2" : "#f8fafd";
           return (
             <g
               key={s.i}
@@ -226,7 +236,7 @@ export default function BloomPyramid({
                 strokeWidth={GAP}
                 style={{ transition: "fill .15s" }}
                 onMouseEnter={(e) =>
-                  (e.currentTarget.style.fill = "rgba(255,255,255,0.15)")
+                  (e.currentTarget.style.fill = "#c0c4ce")
                 }
                 onMouseLeave={(e) =>
                   (e.currentTarget.style.fill = "transparent")
@@ -256,7 +266,7 @@ export default function BloomPyramid({
                 y={s.midY + 1}
                 textAnchor="end"
                 dominantBaseline="middle"
-                fill="#f8fafd"
+                fill = {selectedLevel}
                 fontSize={Math.min(20, sliceH * 0.67)}
                 fontWeight="500"
                 fontFamily="'DM Sans','Segoe UI',sans-serif"
