@@ -6,7 +6,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
-export default function DeleteAlert({deleteSelectedNodes, selectedNodes}) {
+export default function DeleteAlert({deleteFunction, warningText, warningTitle}) {
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -20,7 +20,7 @@ export default function DeleteAlert({deleteSelectedNodes, selectedNodes}) {
   return (
     <React.Fragment>
       <Button onClick={handleClickOpen}>
-        Delete Selected Concepts
+        {warningTitle}
       </Button>
       <Dialog
         open={open}
@@ -33,12 +33,12 @@ export default function DeleteAlert({deleteSelectedNodes, selectedNodes}) {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            This will DELETE all selected concepts and any incoming and outgoing edges to and from them.
+            {warningText}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={function(event){handleClose(); deleteSelectedNodes(event);}} autoFocus>
+          <Button onClick={function(event){handleClose(); deleteFunction(event);}} autoFocus>
             Proceed
           </Button>
         </DialogActions>

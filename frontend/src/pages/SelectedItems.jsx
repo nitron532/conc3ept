@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import {useEffect, useState } from 'react';
 import {Box, Button} from '@mui/material';
 import {useNavigate} from 'react-router-dom';
 import DeleteAlert from '../components/DeleteAlert';
@@ -10,7 +10,6 @@ import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import CommentIcon from '@mui/icons-material/Comment';
-import axios from "axios"
 import BloomPyramid from '../components/BloomPyramid.jsx';
 import { useSelectedItemsStore } from '../states/SelectedItemsStore';
 import BackButton from '../components/BackButton.jsx';
@@ -54,34 +53,18 @@ export default function SelectedItems() {
     }
   },[])
 
-  if (selectedItems.length === 0) return null;
+  if (selectedItems.length === 0){
+    navigate(-1);
+    return null;
+  }
 
   const courseId = selectedItems[0].courseId;
 
-  const deleteSelectedNodes = async (e) =>{
-    e.preventDefault();
-    
-    const formData = {
-        "selectedNodes": selectedItems.map(item => item.label),
-        "courseId" : courseId,
-    }
-    try{
-      await axios.delete(
-        `${import.meta.env.VITE_SERVER_URL}/DeleteSelectedNodes`,
-        {data: formData},
-        {headers:{"Content-Type" : "application/json"}}
-      )
-      clearSelectedItems();
-      (courseId);
-    }
-    catch(error){
-      console.log("Failed to delete: ", error)
-    }
-  }
-
   const clearAll = () =>{
     clearSelectedItems();
-    navigate(-1);
+    if(selectedItems.length == 0){
+        navigate(-1);
+    }
   }
 
   const handleClickPlan = () =>{
@@ -181,8 +164,11 @@ export default function SelectedItems() {
 
                     <Button onClick = {clearAll}>Reset Selections</Button>
                     {selectedSelected.length > 0 && <Button onClick = {handleRemove}>Remove Selected from List</Button>}
-                    {/* if there are selected <Button onClick = {handleClickPlan} >Create Lesson Plan</Button> */}
-                    <DeleteAlert deleteSelectedNodes={deleteSelectedNodes}/>
+                    <Button onClick = {handleClickPlan} >Create Lesson Plan</Button>
+                    {/* <DeleteAlert deleteFunction={deleteSelectedNodes} 
+                    warningText = {"This will DELETE all selected concepts and any incoming and outgoing edges to and from them."}
+                    warningTitle = {"Delete Selected Concepts"}
+                    /> */}
             </Box>
         </Box>
         

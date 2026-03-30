@@ -10,13 +10,14 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import HomeIcon from '@mui/icons-material/Home';
 import SettingsIcon from '@mui/icons-material/Settings';
-import ListSubheader from '@mui/material/ListSubheader';
 import { useCoursesStore } from '../states/CoursesStore';
 import { Link as RouterLink } from 'react-router-dom';
+import { useSelectedItemsStore } from '../states/SelectedItemsStore';
 
 export default function SideMenu() {
   const [open, setOpen] = useState(false);
   const courses = useCoursesStore(state => state.courseList);
+  const clearSelectedItems = useSelectedItemsStore(state => state.clear);
 
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
@@ -25,17 +26,14 @@ export default function SideMenu() {
   const DrawerList = (
     <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)}>
       <List>
-        {['Home', 'Settings'].map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton component = {RouterLink} to = {`${text}`}>
+          <ListItem key={"Home"} disablePadding>
+            <ListItemButton component = {RouterLink} to = {"Home"}>
               <ListItemIcon>
-                {index % 2 === 0 ? <HomeIcon /> : <SettingsIcon />} 
-                {/* switch case for menu options? */}
+                <HomeIcon />
               </ListItemIcon>
-              <ListItemText primary={text} />
+              <ListItemText primary={"Home"} />
             </ListItemButton>
           </ListItem>
-        ))}
       </List>
       <Divider />
       <List>

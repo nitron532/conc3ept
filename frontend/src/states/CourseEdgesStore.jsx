@@ -14,14 +14,14 @@ export const useCourseEdgesStore = create(set => ({
       courseEdges: edgeList
     }),
 
-  addNode: edgeObject =>
+  addEdge: edgeObject =>
     set(state => ({
       courseEdges: ([...state.courseEdges, edgeObject])
     })),
 
-  removeNode: edgeObject =>
+  removeEdge: edgeObject =>
     set(state => ({
-      courseEdges: state.courseEdges.filter(o => o.label !== edgeObject.label)
+      courseEdges: state.courseEdges.filter(o => o.source !== edgeObject.id && o.target !== edgeObject.id)
     })),
 
   clear: () => set({ courseEdges: [] })

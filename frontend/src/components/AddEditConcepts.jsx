@@ -3,13 +3,17 @@ import {Box, Drawer, Button} from '@mui/material';
 import axios from "axios"
 import NodeSelector from './NodeSelector';
 import EdgesSelector from './EdgesSelector';
+import { useCourseNodesStore } from '../states/CourseNodesStore';
+import { useCourseEdgesStore } from '../states/CourseEdgesStore';
+import { useSelectedItemsStore } from '../states/SelectedItemsStore';
 
 export default function AddEditConcepts({getConceptMapArguments, baseNodes, baseEdges, courseId}) {
   const [open, setOpen] = useState(false);
-  const initialState = {conceptInput: "", outgoingConnections : [], incomingConnections :[], courseId: courseId}
+  const initialState = {conceptInput: "", id: -1, outgoingConnections : [], incomingConnections :[], courseId: courseId, type: "custom"}
   const [formData, setFormData] = useState(initialState) //to db
   const [submittable, setSubmittable] = useState(false);
   const [add, setAdd] = useState(true); //boolean flipped?
+  const removeNodeFromSelected = useSelectedItemsStore(state=>state.removeItem);
 
 
   const toggleDrawer = (newOpen) => () => {
@@ -18,6 +22,9 @@ export default function AddEditConcepts({getConceptMapArguments, baseNodes, base
 
   const deleteNode = async (e) =>{
     e.preventDefault();
+    //TODO need to pass ID somehow to remove from selected item store. 
+
+    removeNodeFromSelected(formData);
     try{
       await axios.delete(
         `${import.meta.env.VITE_SERVER_URL}/DeleteNode`,
@@ -88,7 +95,7 @@ export default function AddEditConcepts({getConceptMapArguments, baseNodes, base
       setSubmittable(formData.conceptInput?.trim().length > 0);
       const addOrEdit = baseNodes?.some((n)=> n.data.label.trim().toLowerCase() === formData.conceptInput.trim().toLowerCase());
       setAdd(!addOrEdit);
-  }, [formData.conceptInput]);
+  }, [formData.conceptInput, formData.conceptId]);
 
   const AddEditMenu = (
     <Box sx={{ width: 300 }} role="presentation">
