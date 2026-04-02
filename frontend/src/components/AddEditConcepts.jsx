@@ -3,8 +3,6 @@ import {Box, Drawer, Button} from '@mui/material';
 import axios from "axios"
 import NodeSelector from './NodeSelector';
 import EdgesSelector from './EdgesSelector';
-import { useCourseNodesStore } from '../states/CourseNodesStore';
-import { useCourseEdgesStore } from '../states/CourseEdgesStore';
 import { useSelectedItemsStore } from '../states/SelectedItemsStore';
 
 export default function AddEditConcepts({getConceptMapArguments, baseNodes, baseEdges, courseId}) {

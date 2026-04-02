@@ -175,6 +175,10 @@ function ConceptMap({baseNodes,setBaseNodes, baseEdges,setBaseEdges, courseId, l
     custom: CustomNode
   }), []);
 
+  const edgeTypes = useMemo(()=> ({
+    'middleArrow':MiddleArrowEdge
+  }),[]);
+
   return (
     <div style={{
       position: 'absolute',
@@ -192,7 +196,7 @@ function ConceptMap({baseNodes,setBaseNodes, baseEdges,setBaseEdges, courseId, l
           nodeTypes = {nodeTypes}
           nodes={nodesWithState}
           edges={edges}
-          edgeTypes = {{middleArrow:MiddleArrowEdge}}
+          edgeTypes = {edgeTypes}
           onConnect={onConnect}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
