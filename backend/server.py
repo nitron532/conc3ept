@@ -103,6 +103,22 @@ def DeleteNode():
     #will need to delete from courses as well later
     return "OK", 200
 
+
+@app.route("/EditEdgeLabel", methods = ["PATCH"])
+def EditEdgeLabel():
+    data = request.json
+    newLabel = data["newLabel"]
+    sourceId = data["id"][:data["id"].find("-")]
+    targetId = data["id"][data["id"].find("-") + 1:]
+    editLabelResponse = (
+        supabase.table("conceptlinks")
+        .update({"linktype":newLabel})
+        .eq("sourceconceptid", sourceId)
+        .eq("targetconceptid", targetId)
+        .execute()
+    )
+    return "OK", 200
+
 @app.route("/EditNodeOutgoing", methods = ["PATCH"]) #could rewrite this to encompass both editnodeoutgoingandincoming
 def EditNodeOutgoing():
     data = request.json
@@ -219,7 +235,7 @@ def getGraphHelper(courseId:int, selectedNodes):
         nameId = [(concept["conceptName"], concept["id"]) for concept in getConceptsResponse.data]
         getConnectionsResponse = (
             supabase.table("conceptlinks")
-            .select("sourceconceptid, targetconceptid")
+            .select("sourceconceptid, targetconceptid, linktype")
             .eq("courseid",courseId)
             .execute()
         )
@@ -231,19 +247,20 @@ def getGraphHelper(courseId:int, selectedNodes):
             .in_("conceptName",conceptNames)
             .execute()
         )
-        conceptIds: list[int] = [concept["id"] for concept in getConceptsResponse.data]
+        # conceptIds: list[int] = [concept["id"] for concept in getConceptsResponse.data]
         nameId = [(concept["conceptName"], concept["id"]) for concept in getConceptsResponse.data]
         getConnectionsResponse = (
             supabase.table("conceptlinks")
-            .select("sourceconceptid, targetconceptid")
+            .select("sourceconceptid, targetconceptid, linktype")
             .eq("courseid",courseId)
             .in_("sourceconceptid", conceptIds)
             .in_("targetconceptid", conceptIds)
             .execute()
         )
+
     sourcesToTargets: list[tuple[int,int]] = []
     for row in getConnectionsResponse.data:
-        sourcesToTargets.append((row["sourceconceptid"], row["targetconceptid"]))
+        sourcesToTargets.append((row["sourceconceptid"], row["targetconceptid"], row["linktype"]))
     nodes = []
     edges = []
     for conceptTuple in nameId:
@@ -254,7 +271,7 @@ def getGraphHelper(courseId:int, selectedNodes):
         )
     for tuple in sourcesToTargets:
         edges.append( # can add type of edge 
-                {"id":f"{tuple[0]}-{tuple[1]}", "source": str(tuple[0]), "target": str(tuple[1]),"courseId":courseId}
+                {"id":f"{tuple[0]}-{tuple[1]}", "source": str(tuple[0]), "target": str(tuple[1]),"courseId":courseId, "data":{"label": tuple[2]}}
         )
     
     return jsonify({"nodes":nodes, "edges":edges})
