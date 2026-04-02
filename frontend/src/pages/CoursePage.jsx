@@ -41,10 +41,10 @@ function CoursePage(){
     }
 
     useEffect( ()=>{
-        if(courseNodes.length == 0 || (nodesCourseId == -1 || nodesCourseId !== courseId)){
+        if((nodesCourseId == -1 || nodesCourseId !== courseId)){
             getConceptMapArguments(courseId);
         }
-        setRenderReady(true);
+        else{setRenderReady(true);}
     },[courseNodes])
 
     function RenderConceptMap({courseId}){

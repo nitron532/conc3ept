@@ -37,11 +37,11 @@ def AddNode():
     conceptId: int = responseConcept.data[0]["id"]
 
     allRows = [
-        {"sourceconceptid": conceptId, "targetconceptid": id, "linktype": "source_is_prereq_to_target", "courseid":courseId}
+        {"sourceconceptid": conceptId, "targetconceptid": id, "linktype": "Prereq for", "courseid":courseId}
         for id in outgoingConnections
     ]
     incomingRows = [
-        {"sourceconceptid": id, "targetconceptid": conceptId, "linktype": "source_is_prereq_to_target", "courseid":courseId}
+        {"sourceconceptid": id, "targetconceptid": conceptId, "linktype": "Prereq for", "courseid":courseId}
         for id in incomingConnections
     ]
     allRows.extend(incomingRows)
@@ -142,7 +142,7 @@ def EditNodeOutgoing():
         .execute()
     )
     rows = [
-        {"sourceconceptid": conceptId, "targetconceptid": id, "linktype": "source_is_prereq_to_target","courseid":courseId}
+        {"sourceconceptid": conceptId, "targetconceptid": id, "linktype": "Prereq for","courseid":courseId}
         for id in outgoingConnections
     ]
     if rows:
@@ -176,7 +176,7 @@ def EditNodeIncoming():
         .execute()
     )
     rows = [
-        {"sourceconceptid": id, "targetconceptid": conceptId, "linktype": "source_is_prereq_to_target", "courseid": courseId}
+        {"sourceconceptid": id, "targetconceptid": conceptId, "linktype": "Prereq for", "courseid": courseId}
         for id in incomingConnections
     ]
     if rows:
