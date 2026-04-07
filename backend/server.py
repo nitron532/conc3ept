@@ -119,72 +119,42 @@ def EditEdgeLabel():
     )
     return "OK", 200
 
-@app.route("/EditNodeOutgoing", methods = ["PATCH"]) #could rewrite this to encompass both editnodeoutgoingandincoming
-def EditNodeOutgoing():
+@app.route("/EditNodeEdges", methods = ["PATCH"])
+def EditNodeEdges():
     data = request.json
     courseId: int = data["courseId"]
-    conceptName: str = data["conceptInput"]
-    #TODO pass conceptID
-    outgoingConnections: list[int] = [int(id) for id in data["outgoingConnections"]]
-    concept = (
-        supabase.table("Concepts")
-        .select("id")
-        .eq("courseid", courseId)
-        .eq("conceptName", conceptName)
-        .execute()
-    )
-    conceptId = concept.data[0]["id"]
-    # TODO rewrite to insert. this is removing all old links and placing new ones
-    (
-        supabase.table("conceptlinks")
-        .delete()
-        .eq("sourceconceptid", conceptId)
-        .eq("courseid",courseId)
-        .execute()
-    )
-    rows = [
-        {"sourceconceptid": conceptId, "targetconceptid": id, "linktype": "","courseid":courseId}
-        for id in outgoingConnections
-    ]
-    if rows:
-        (
-            supabase.table("conceptlinks")
-            .insert(rows)
-            .execute()
+    conceptId: int = data["id"]
+    print("data:", data)
+    sourceToTargetPairs = [(int(id), conceptId) for id in data["incomingConnections"]] + [(conceptId,int(id)) for id in data["outgoingConnections"]]
+    print("sourcetotargetpairs:", sourceToTargetPairs)
+    existing = (
+        supabase.table("conceptlinks") 
+            .select("sourceconceptid, targetconceptid") 
+            .or_(f"sourceconceptid.eq.{conceptId}, targetconceptid.eq.{conceptId}")
+            .eq("courseid", courseId) 
+            .execute().data
         )
-    return "OK", 200
+
+    existingPairs = {(e["sourceconceptid"], e["targetconceptid"]) for e in existing}
+
+    toInsert = [sTTP for sTTP in sourceToTargetPairs if sTTP not in existingPairs]
+    toInsert = [
+        {"sourceconceptid": sTTP[0], "targetconceptid": sTTP[1], "linktype": "","courseid":courseId} for sTTP in toInsert
+        ]
     
-@app.route("/EditNodeIncoming", methods = ["PATCH"])
-def EditNodeIncoming():
-    data = request.json
-    courseId: int = data["courseId"]
-    conceptName: str = data["conceptInput"]
-    #TODO pass concept ID to avoid extra request
-    incomingConnections: list[int] = [int(id) for id in data["incomingConnections"]]
-    concept = (
-        supabase.table("Concepts")
-        .select("id")
-        .eq("courseid",courseId)
-        .eq("conceptName", conceptName)
-        .execute()
-    )
-    conceptId = concept.data[0]["id"]
-    (
-        supabase.table("conceptlinks")
-        .delete()
-        .eq("courseid",courseId)
-        .eq("targetconceptid", conceptId)
-        .execute()
-    )
-    rows = [
-        {"sourceconceptid": id, "targetconceptid": conceptId, "linktype": "Prereq for", "courseid": courseId}
-        for id in incomingConnections
-    ]
-    if rows:
+    toDelete = existingPairs - set(sourceToTargetPairs)
+    if toInsert:
+        supabase.table("conceptlinks").insert(toInsert).execute()
+
+    toDelete = existingPairs - set(sourceToTargetPairs)
+    for (source, target) in toDelete:
         (
-            supabase.table("conceptlinks")
-            .insert(rows)
-            .execute()
+            supabase.table("conceptlinks") 
+                .delete()
+                .eq("sourceconceptid", source) 
+                .eq("targetconceptid", target) 
+                .eq("courseid", courseId) 
+                .execute()
         )
     return "OK", 200
 

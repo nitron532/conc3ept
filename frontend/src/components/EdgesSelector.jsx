@@ -1,12 +1,6 @@
 import  {useState, useEffect} from 'react'
 import {Autocomplete, TextField} from '@mui/material';
 
-/*
-incoming needs to query incoming edges from database
-search thru BaseEdges to find incoming connections
-form data might need two different connection fields since the two components share state with parent 
-*/
-
 export default function EdgesSelector({baseNodes, formData, setFormData, add, baseEdges, outgoing}){
     const [inputValue, setInputValue] = useState('');
     const [options, setOptions] = useState([]);
@@ -18,7 +12,7 @@ export default function EdgesSelector({baseNodes, formData, setFormData, add, ba
         : formData.incomingConnections;
 
         const labels = ids
-        .map((id) => baseNodes.find((n) => n.id === id)?.data.label)
+        .map((id) => baseNodes.find((n) => n.data.conceptId === id)?.data.label)
         .filter(Boolean);
 
         setSelectedLabels(labels);
@@ -30,7 +24,7 @@ export default function EdgesSelector({baseNodes, formData, setFormData, add, ba
             setFormData({
             ...formData,
             outgoingConnections: values.map(
-                (label) => baseNodes.find((t) => t.data.label === label)?.id
+                (label) => baseNodes.find((n) => n.data.label === label)?.data.conceptId
             ),
             });
         }
@@ -38,7 +32,7 @@ export default function EdgesSelector({baseNodes, formData, setFormData, add, ba
             setFormData({
             ...formData,
             incomingConnections: values.map(
-                (label) => baseNodes.find((t) => t.data.label === label)?.id
+                (label) => baseNodes.find((n) => n.data.label === label)?.data.conceptId
             ),
             });
         }
@@ -55,11 +49,12 @@ export default function EdgesSelector({baseNodes, formData, setFormData, add, ba
     }, [formData.conceptInput]);
 
     useEffect(() => {
-        if (!formData.conceptInput){
+        if (!formData.conceptInput || (baseNodes.map((n) => n.data.label).filter((label) => label === formData.conceptInput)).length == 0){
             setFormData({
                 ...formData,
                 incomingConnections: [],
                 outgoingConnections: [],
+                id: -1
             });
             setSelectedLabels([]);
         }
@@ -70,17 +65,13 @@ export default function EdgesSelector({baseNodes, formData, setFormData, add, ba
 
         const conceptId = conceptNode.id;
         if (add && outgoing) {
-            // EDIT MODE: prefill outgoing edges
-
-            // only edges where this node is the source
             const outgoingEdges = baseEdges.filter(
             (edge) => edge.source === conceptId
             );
 
-            // update parent formData with IDs of outgoing nodes
             setFormData((prev) => ({
             ...prev,
-            outgoingConnections: outgoingEdges.map((edge) => edge.target),
+            outgoingConnections: outgoingEdges.map((edge) => parseInt(edge.target)),
             }));
         } 
         else if (add && !outgoing){
@@ -89,10 +80,10 @@ export default function EdgesSelector({baseNodes, formData, setFormData, add, ba
             );
             setFormData( (prev)=>({
                 ...prev,
-                incomingConnections: incomingEdges.map((edge)=>edge.source)
+                incomingConnections: incomingEdges.map((edge)=> parseInt(edge.source))
             }));
         }
-        // ADD MODE: do not clear selectedLabels, let user select freely
+
     }, [add, formData.conceptInput, baseEdges, baseNodes, setFormData]);
     const outgoingIngoing = outgoing ? "Outgoing Edges" : "Incoming Edges"
     return (

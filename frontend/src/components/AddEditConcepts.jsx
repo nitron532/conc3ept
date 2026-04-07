@@ -7,7 +7,14 @@ import { useSelectedItemsStore } from '../states/SelectedItemsStore';
 
 export default function AddEditConcepts({getConceptMapArguments, baseNodes, baseEdges, courseId}) {
   const [open, setOpen] = useState(false);
-  const initialState = {conceptInput: "", id: -1, outgoingConnections : [], incomingConnections :[], courseId: courseId, type: "custom"}
+  const initialState = {
+    conceptInput: "", 
+    id: -1, 
+    outgoingConnections : [], 
+    incomingConnections :[], 
+    courseId: courseId, 
+    type: "custom"
+  }
   const [formData, setFormData] = useState(initialState) //to db
   const [submittable, setSubmittable] = useState(false);
   const [add, setAdd] = useState(true); //boolean flipped?
@@ -38,33 +45,17 @@ export default function AddEditConcepts({getConceptMapArguments, baseNodes, base
     }
   }
 
-  const editNodeOutgoing = async (e) => {
+  const editNodeEdges = async (e) => {
     e.preventDefault();
     try{
       await axios.patch(
-        `${import.meta.env.VITE_SERVER_URL}/EditNodeOutgoing`,
+        `${import.meta.env.VITE_SERVER_URL}/EditNodeEdges`,
         formData,
         {headers:{"Content-Type": "application/json"}}
       )
       setFormData(initialState);
       getConceptMapArguments(courseId);
-    }
-    catch (error){
-      console.error("Failed to update: ", error);
-    }
-  }
-  const editNodeIncoming = async (e) => {
-    e.preventDefault();
-    try{
-      await axios.patch(
-        `${import.meta.env.VITE_SERVER_URL}/EditNodeIncoming`,
-        formData,
-        {headers:{"Content-Type": "application/json"}}
-      )
-      setFormData(initialState);
-      // getConceptMapArguments(courseId);
-    }
-    catch (error){
+    } catch (error){
       console.error("Failed to update: ", error);
     }
   }
@@ -103,8 +94,7 @@ export default function AddEditConcepts({getConceptMapArguments, baseNodes, base
     <EdgesSelector baseNodes = {baseNodes} formData = {formData} setFormData = {setFormData} add = {add} baseEdges = {baseEdges} outgoing = {true}/>
     <EdgesSelector baseNodes = {baseNodes} formData = {formData} setFormData = {setFormData} add = {add} baseEdges = {baseEdges} outgoing = {false}/>
     {submittable && add && <Button variant="outlined" onClick={function(event){toggleDrawer(false)(); addNode(event)}}>Add {formData.conceptInput}</Button>}
-    {/* make it so that i dont call two functions if not needed? */}
-    {submittable && !add && <Button variant="outlined" onClick={function(event){toggleDrawer(false)(); editNodeOutgoing(event); editNodeIncoming(event);}}>Edit {formData.conceptInput}</Button>}
+    {submittable && !add && <Button variant="outlined" onClick={function(event){toggleDrawer(false)(); editNodeEdges(event);}}>Edit {formData.conceptInput}</Button>}
     {submittable && !add && formData.outgoingConnections.length === 0 && formData.incomingConnections.length === 0 && <Button variant="outlined" onClick={function(event){toggleDrawer(false)(); deleteNode(event)}}>Delete {formData.conceptInput}</Button>}
     </Box>
     //have a section where available nodes/edges pop up, instead of overlapping the other input fields?
