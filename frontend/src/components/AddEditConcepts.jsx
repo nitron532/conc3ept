@@ -16,6 +16,7 @@ export default function AddEditConcepts({getConceptMapArguments, baseNodes, base
 
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
+    setFormData(initialState);
   };
 
   const deleteNode = async (e) =>{

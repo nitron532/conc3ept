@@ -134,6 +134,7 @@ def EditNodeOutgoing():
         .execute()
     )
     conceptId = concept.data[0]["id"]
+    # TODO rewrite to insert. this is removing all old links and placing new ones
     (
         supabase.table("conceptlinks")
         .delete()
@@ -142,7 +143,7 @@ def EditNodeOutgoing():
         .execute()
     )
     rows = [
-        {"sourceconceptid": conceptId, "targetconceptid": id, "linktype": "Prereq for","courseid":courseId}
+        {"sourceconceptid": conceptId, "targetconceptid": id, "linktype": "","courseid":courseId}
         for id in outgoingConnections
     ]
     if rows:
