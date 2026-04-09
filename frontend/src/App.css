@@ -13,53 +13,53 @@
   color: #888;
 }
 
-.topleft{
+.topleft {
   position: fixed;
   top: 10px;
   left: 20px;
 }
-.topright{
+.topright {
   position: fixed;
   top: 10px;
   right: 20px;
 }
 
-.topcenter{
+.topcenter {
   position: fixed;
   top: 10px;
 }
 
-.graphContainer{
+.graphContainer {
   border: none !important;
   outline: none !important;
 }
-.bottomleft{
+.bottomleft {
   position: fixed;
   bottom: 10px;
   left: 20px;
 }
 
-.bottomright{
+.bottomright {
   position: fixed;
   bottom: 10px;
   right: 20px;
 }
 
-.bottomcenter{
+.bottomcenter {
   position: fixed;
   bottom: 10px;
 }
 
 .react-flow {
-  --xy-background-color: #121212; 
+  --xy-background-color: #121212;
   --xy-minimap-background-color-default: #242424;
   --xy-node-background-color: #1e1e1e;
   --xy-node-border-color: #888;
   --xy-edge-stroke-default: #888;
   --xy-handle-color: #aaa;
   --xy-font-color: #eee;
-  text-align: center;         /* centers text horizontally */
-  justify-content: center;    /* centers text vertically */
+  text-align: center; /* centers text horizontally */
+  justify-content: center; /* centers text vertically */
   align-items: center;
   display: flex;
 }

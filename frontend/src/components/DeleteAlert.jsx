@@ -1,12 +1,16 @@
-import * as React from 'react';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
+import * as React from "react";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 
-export default function DeleteAlert({deleteFunction, warningText, warningTitle}) {
+export default function DeleteAlert({
+  deleteFunction,
+  warningText,
+  warningTitle,
+}) {
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -19,9 +23,7 @@ export default function DeleteAlert({deleteFunction, warningText, warningTitle})
 
   return (
     <React.Fragment>
-      <Button onClick={handleClickOpen}>
-        {warningTitle}
-      </Button>
+      <Button onClick={handleClickOpen}>{warningTitle}</Button>
       <Dialog
         open={open}
         onClose={handleClose}
@@ -38,7 +40,13 @@ export default function DeleteAlert({deleteFunction, warningText, warningTitle})
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={function(event){handleClose(); deleteFunction(event);}} autoFocus>
+          <Button
+            onClick={function (event) {
+              handleClose();
+              deleteFunction(event);
+            }}
+            autoFocus
+          >
             Proceed
           </Button>
         </DialogActions>

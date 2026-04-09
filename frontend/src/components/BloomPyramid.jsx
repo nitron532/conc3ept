@@ -71,8 +71,8 @@ export default function BloomPyramid({
     Apply: 2,
     Analyze: 3,
     Evaluate: 4,
-    Create: 5
-  }
+    Create: 5,
+  };
   // ─── Geometry ──────────────────────────────────────────────────────────────
   const PAD_TOP = title ? 72 : 16;
   const PAD_BOTTOM = showLegend ? 72 : 30;
@@ -99,7 +99,7 @@ export default function BloomPyramid({
   const segments = useMemo(() => {
     return data.map((item, i) => {
       // Trapezoid: narrower at top, full width at bottom
-      const topFrac = i / n;       // 0 → apex
+      const topFrac = i / n; // 0 → apex
       const botFrac = (i + 1) / n; // 1 → base
 
       const halfTop = (pyramidW / 2) * topFrac;
@@ -125,7 +125,19 @@ export default function BloomPyramid({
 
       return { ...item, i, x1, x2, x3, x4, y, midY, midX, fill, textCol, t };
     });
-  }, [data, n, pyramidW, sliceH, PAD_TOP, GAP, minVal, range, colorFn, LABEL_W, PAD_H]);
+  }, [
+    data,
+    n,
+    pyramidW,
+    sliceH,
+    PAD_TOP,
+    GAP,
+    minVal,
+    range,
+    colorFn,
+    LABEL_W,
+    PAD_H,
+  ]);
 
   const totalSvgW = LABEL_W + PAD_H + pyramidW + PAD_H;
 
@@ -197,10 +209,7 @@ export default function BloomPyramid({
               x2="0%"
               y2="100%"
             >
-              <stop
-                offset="0%"
-                stopColor={colorFn(Math.min(1, s.t + 0.12))}
-              />
+              <stop offset="0%" stopColor={colorFn(Math.min(1, s.t + 0.12))} />
               <stop offset="100%" stopColor={s.fill} />
             </linearGradient>
           ))}
@@ -212,7 +221,8 @@ export default function BloomPyramid({
         {segments.map((s) => {
           const points = `${s.x1},${s.y} ${s.x2},${s.y} ${s.x3},${s.y + sliceH} ${s.x4},${s.y + sliceH}`;
           const isClickable = !!onSegmentClick;
-          const selectedLevel = highlightLevel == labelToLevel[s.label] ? "#84c4f2" : "#f8fafd";
+          const selectedLevel =
+            highlightLevel == labelToLevel[s.label] ? "#84c4f2" : "#f8fafd";
           return (
             <g
               key={s.i}
@@ -235,9 +245,7 @@ export default function BloomPyramid({
                 stroke="transparent"
                 strokeWidth={GAP}
                 style={{ transition: "fill .15s" }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.fill = "#c0c4ce")
-                }
+                onMouseEnter={(e) => (e.currentTarget.style.fill = "#c0c4ce")}
                 onMouseLeave={(e) =>
                   (e.currentTarget.style.fill = "transparent")
                 }
@@ -266,7 +274,7 @@ export default function BloomPyramid({
                 y={s.midY + 1}
                 textAnchor="end"
                 dominantBaseline="middle"
-                fill = {selectedLevel}
+                fill={selectedLevel}
                 fontSize={Math.min(20, sliceH * 0.67)}
                 fontWeight="500"
                 fontFamily="'DM Sans','Segoe UI',sans-serif"
@@ -291,7 +299,9 @@ export default function BloomPyramid({
 
         {/* ── Legend ── */}
         {showLegend && (
-          <g transform={`translate(${LABEL_W + PAD_H},${svgH - PAD_BOTTOM + 28})`}>
+          <g
+            transform={`translate(${LABEL_W + PAD_H},${svgH - PAD_BOTTOM + 28})`}
+          >
             <text
               x={0}
               y={0}
@@ -310,7 +320,13 @@ export default function BloomPyramid({
                 width={28}
                 height={10}
                 fill={stop.color}
-                rx={idx === 0 ? "3 0 0 3" : idx === LEGEND_STOPS - 1 ? "0 3 3 0" : "0"}
+                rx={
+                  idx === 0
+                    ? "3 0 0 3"
+                    : idx === LEGEND_STOPS - 1
+                      ? "0 3 3 0"
+                      : "0"
+                }
               />
             ))}
 
@@ -340,4 +356,3 @@ export default function BloomPyramid({
     </div>
   );
 }
-

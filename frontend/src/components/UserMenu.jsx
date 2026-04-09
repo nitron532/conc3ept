@@ -1,7 +1,7 @@
-import * as React from 'react';
-import Button from '@mui/material/Button';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
+import * as React from "react";
+import Button from "@mui/material/Button";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 
 // get login state from main component
 
@@ -16,12 +16,12 @@ export default function BasicMenu() {
   };
 
   return (
-    <div className = "topright"style = {{zIndex:1}}>
+    <div className="topright" style={{ zIndex: 1 }}>
       <Button
         id="basic-button"
-        aria-controls={open ? 'basic-menu' : undefined}
+        aria-controls={open ? "basic-menu" : undefined}
         aria-haspopup="true"
-        aria-expanded={open ? 'true' : undefined}
+        aria-expanded={open ? "true" : undefined}
         onClick={handleClick}
       >
         Dashboard
@@ -33,7 +33,7 @@ export default function BasicMenu() {
         onClose={handleClose}
         slotProps={{
           list: {
-            'aria-labelledby': 'basic-button',
+            "aria-labelledby": "basic-button",
           },
         }}
       >

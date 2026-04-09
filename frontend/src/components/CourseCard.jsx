@@ -1,20 +1,20 @@
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
-import Typography from '@mui/material/Typography';
-import CardActionArea from '@mui/material/CardActionArea';
-import {useNavigate} from 'react-router-dom';
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import CardMedia from "@mui/material/CardMedia";
+import Typography from "@mui/material/Typography";
+import CardActionArea from "@mui/material/CardActionArea";
+import { useNavigate } from "react-router-dom";
 
-export default function CourseCard({courseName, courseId}) {
+export default function CourseCard({ courseName, courseId }) {
   const navigate = useNavigate();
-    const handleClick = () => {
-      navigate(`/${courseName}`, {
-        state: { courseId } 
-      });
+  const handleClick = () => {
+    navigate(`/${courseName}`, {
+      state: { courseId },
+    });
   };
   return (
     <Card sx={{ maxWidth: 345 }}>
-      <CardActionArea onClick = {handleClick}>
+      <CardActionArea onClick={handleClick}>
         {/* i would like to add a preview of the concept map as the image, link will probably need to have extra params for each course */}
         {/* <CardMedia
           component="img"
