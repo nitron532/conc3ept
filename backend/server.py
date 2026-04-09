@@ -37,11 +37,11 @@ def AddNode():
     conceptId: int = responseConcept.data[0]["id"]
 
     allRows = [
-        {"sourceconceptid": conceptId, "targetconceptid": id, "linktype": "Prereq for", "courseid":courseId}
+        {"sourceconceptid": conceptId, "targetconceptid": id, "linktype": "", "courseid":courseId}
         for id in outgoingConnections
     ]
     incomingRows = [
-        {"sourceconceptid": id, "targetconceptid": conceptId, "linktype": "Prereq for", "courseid":courseId}
+        {"sourceconceptid": id, "targetconceptid": conceptId, "linktype": "", "courseid":courseId}
         for id in incomingConnections
     ]
     allRows.extend(incomingRows)
@@ -158,16 +158,6 @@ def EditNodeEdges():
         )
     return "OK", 200
 
-@app.route("/GetGraph", methods = ["GET"])
-def GetGraph():
-    #query db for graph
-    courseId = request.args.get("id")
-    if not courseId:
-        return "Failed", 500
-    courseId = int(courseId)
-    return getGraphHelper(courseId, [])
-
-
 @app.route("/GetConceptIds", methods = ["GET"])
 def GetConceptIds():
     courseId: int = int(request.args.get("id"))
@@ -187,6 +177,16 @@ def GetConceptIds():
     )
 
     return jsonify([id["id"] for id in conceptIdsResponse.data])
+
+
+@app.route("/GetGraph", methods = ["GET"])
+def GetGraph():
+    #query db for graph
+    courseId = request.args.get("id")
+    if not courseId:
+        return "Failed", 500
+    courseId = int(courseId)
+    return getGraphHelper(courseId, [])
 
 def getGraphHelper(courseId:int, selectedNodes):
     getConceptsResponse = ()
@@ -320,14 +320,6 @@ def GenerateLessonPlan():
     createLessonPlan(data)
 
     return "OK", 200
-
-
-"""
-@app.route("/RequestOldRepo)
-    node has field
-    {id; , position, ... data:{oldrepoid, concept(s), taxonomy(s)?}}
-
-"""
 
 #eventually this should be request questionRepo so people can plugin their own question banks
 @app.route("/RequestOldRepo", methods = ["GET"])
