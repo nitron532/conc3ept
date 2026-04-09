@@ -1,7 +1,7 @@
-import CourseCard from "../components/CourseCard";
+import CourseCard from "../components/courses/CourseCard";
 import axios from "axios";
 import { useState, useEffect, useCallback } from "react";
-import AddEditCourses from "../components/AddEditCourses";
+import AddEditCourses from "../components/courses/AddEditCourses";
 import { useCourseNodesStore } from "../states/CourseNodesStore";
 import { useCourseEdgesStore } from "../states/CourseEdgesStore";
 import { useCoursesStore } from "../states/CoursesStore";

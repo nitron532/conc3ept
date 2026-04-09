@@ -54,6 +54,26 @@ export default function Appearance({
         {" "}
         <MultipleStopIcon />
       </ToggleButton>
+      <Button
+        id="RIGHT"
+        sx={{ my: 1 }}
+        onClick={() => {
+          if (appearanceSettings.edgeType === "avoidNodes") {
+            setAppearanceSettings({
+              ...appearanceSettings,
+              edgeType: "middleArrow",
+            });
+          } else {
+            setAppearanceSettings({
+              ...appearanceSettings,
+              edgeType: "avoidNodes",
+            });
+          }
+        }}
+      >
+        {" "}
+        Experimental Edge Avoidance{" "}
+      </Button>
     </Box>
   );
 

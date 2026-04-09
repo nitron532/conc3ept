@@ -1,5 +1,5 @@
-import ConceptMap from "../components/ConceptMap";
-import AddEditConcepts from "../components/AddEditConcepts";
+import ConceptMap from "../components/map/ConceptMap";
+import AddEditConcepts from "../components/map/AddEditConcepts";
 import { useEffect, useState } from "react";
 import { useCourseEdgesStore } from "../states/CourseEdgesStore";
 import { useCourseNodesStore } from "../states/CourseNodesStore";

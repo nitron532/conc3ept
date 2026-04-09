@@ -1,10 +1,10 @@
-import ConceptMap from "../components/ConceptMap";
+import ConceptMap from "../components/map/ConceptMap";
 import { ReactFlowProvider } from "@xyflow/react";
 import { useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import BackButton from "../components/BackButton";
-import MissedPrereqsAlert from "../components/MissedPrereqsAlert";
+import MissedPrereqsAlert from "../components/alerts/MissedPrereqsAlert";
 import { useSelectedItemsStore } from "../states/SelectedItemsStore";
 
 function LessonPlan() {

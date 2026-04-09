@@ -1,5 +1,5 @@
 import Box from "@mui/material/Box";
-import BackButton from "../components/BackButton";
+import BackButton from "../BackButton";
 
 export default function QuestionInfo({ currentQuestion }) {
   function CheckAndRender({ currentQuestion }) {

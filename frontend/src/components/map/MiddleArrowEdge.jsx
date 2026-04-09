@@ -48,6 +48,7 @@ export default function MiddleArrowEdge({
         { headers: { "Content-Type": "application/json" } },
       );
       setLabelState(newLabel);
+      data.label = newLabel;
     } catch (error) {
       console.log(`Failed to update edge ${id}.`);
     }
@@ -55,7 +56,6 @@ export default function MiddleArrowEdge({
 
   const handleLabelClick = () => {
     setEdit(!edit);
-    console.log("clicked");
   };
   const handleKeyDown = async (event) => {
     if (event.key === "Enter") {

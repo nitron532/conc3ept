@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Box, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import DeleteAlert from "../components/DeleteAlert";
+import DeleteAlert from "../components/alerts/DeleteAlert.jsx";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -10,7 +10,7 @@ import ListItemText from "@mui/material/ListItemText";
 import Checkbox from "@mui/material/Checkbox";
 import IconButton from "@mui/material/IconButton";
 import CommentIcon from "@mui/icons-material/Comment";
-import BloomPyramid from "../components/BloomPyramid.jsx";
+import BloomPyramid from "../components/lessonplan/BloomPyramid.jsx";
 import { useSelectedItemsStore } from "../states/SelectedItemsStore";
 import BackButton from "../components/BackButton.jsx";
 

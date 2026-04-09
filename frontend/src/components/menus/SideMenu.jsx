@@ -10,9 +10,9 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import HomeIcon from "@mui/icons-material/Home";
 import SettingsIcon from "@mui/icons-material/Settings";
-import { useCoursesStore } from "../states/CoursesStore";
+import { useCoursesStore } from "../../states/CoursesStore";
 import { Link as RouterLink } from "react-router-dom";
-import { useSelectedItemsStore } from "../states/SelectedItemsStore";
+import { useSelectedItemsStore } from "../../states/SelectedItemsStore";
 
 export default function SideMenu() {
   const [open, setOpen] = useState(false);

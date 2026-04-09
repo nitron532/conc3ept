@@ -1,5 +1,3 @@
-
-
 function getBoxesFromNodes(nodes, margin) {
   const boxes = new Array(nodes.length);
 
@@ -87,4 +85,3 @@ export const resolveCollisions = (
 
   return newNodes;
 };
-
