@@ -12,7 +12,7 @@ import IconButton from "@mui/material/IconButton";
 import CommentIcon from "@mui/icons-material/Comment";
 import { useSelectedItemsStore } from "../states/SelectedItemsStore";
 import { useQuestionsStore } from "../states/QuestionsStore";
-import QuestionInfo from "../components/QuestionInfo";
+import QuestionInfo from "../components/lessonplan/QuestionInfo";
 import axios from "axios";
 
 export default function NestedLevel() {
@@ -40,7 +40,7 @@ export default function NestedLevel() {
 
   useEffect(() => {
     requestOldRepo(courseId);
-  }, [requestOldRepo]);
+  }, []);
 
   const handleToggle = (q) => () => {
     if (selectedItems.some((item) => item.id == q.id)) {

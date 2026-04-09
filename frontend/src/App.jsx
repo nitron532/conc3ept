@@ -1,8 +1,7 @@
-import "./components/SideMenu.jsx";
 import "./App.css";
-import SideMenu from "./components/SideMenu.jsx";
+import SideMenu from "./components/menus/SideMenu.jsx";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import UserMenu from "./components/UserMenu.jsx";
+import UserMenu from "./components/menus/UserMenu.jsx";
 import { useMediaQuery } from "@mui/material";
 import Home from "./pages/Home";
 import { Routes, Route } from "react-router-dom";

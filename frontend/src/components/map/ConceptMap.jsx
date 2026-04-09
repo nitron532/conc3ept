@@ -12,10 +12,13 @@ import axios from "axios";
 import { Button } from "@mui/material";
 import MiddleArrowEdge from "./MiddleArrowEdge";
 import CustomNode from "./CustomNode";
-import Appearance from "./Appearance";
-import GenerateLessonPlan from "./GenerateLessonPlan";
-import { useSelectedItemsStore } from "../states/SelectedItemsStore";
-import {resolveCollisions} from "../util/resolveCollisions"
+import Appearance from "../menus/Appearance";
+import GenerateLessonPlan from "../lessonplan/GenerateLessonPlan";
+import { useSelectedItemsStore } from "../../states/SelectedItemsStore";
+import { resolveCollisions } from "../../util/resolveCollisions";
+
+import { useAvoidNodesRouterFromWorker } from "avoid-nodes-edge";
+import AvoidEdge from "./AvoidEdge";
 
 import {
   ReactFlow,
@@ -23,6 +26,7 @@ import {
   useNodesState,
   useEdgesState,
   useReactFlow,
+  applyNodeChanges,
 } from "@xyflow/react";
 
 import "@xyflow/react/dist/style.css";
@@ -208,6 +212,7 @@ function ConceptMap({
   const edgeTypes = useMemo(
     () => ({
       middleArrow: MiddleArrowEdge,
+      avoidNodes: AvoidEdge,
     }),
     [],
   );
@@ -221,6 +226,13 @@ function ConceptMap({
       }),
     );
   }, [setNodes]);
+
+  const { updateRoutingOnNodesChange, resetRouting } =
+    useAvoidNodesRouterFromWorker(nodes, edges, {
+      edgeToNodeSpacing: 24,
+      edgeToEdgeSpacing: 20,
+      edgeRounding: 12,
+    });
 
   return (
     <div
@@ -243,7 +255,12 @@ function ConceptMap({
           edges={edges}
           edgeTypes={edgeTypes}
           onConnect={onConnect}
-          onNodesChange={onNodesChange}
+          onNodesChange={(changes) => {
+            setNodes((nds) => applyNodeChanges(changes, nds));
+            if (appearanceSettings.edgeType === "avoidNodes") {
+              updateRoutingOnNodesChange(changes);
+            }
+          }}
           onEdgesChange={onEdgesChange}
           onNodeDragStop={onNodeDragStop}
           fitView

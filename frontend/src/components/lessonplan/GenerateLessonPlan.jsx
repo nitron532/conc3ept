@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Box, Drawer, Button } from "@mui/material";
-import { useSelectedItemsStore } from "../states/SelectedItemsStore";
+import { useSelectedItemsStore } from "../../states/SelectedItemsStore";
 import axios from "axios";
 
 function GenerateLessonPlan({ data }) {

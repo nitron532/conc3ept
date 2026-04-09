@@ -1,7 +1,7 @@
 import { Handle, Position } from "@xyflow/react";
 import { useState, useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import { useSelectedItemsStore } from "../states/SelectedItemsStore";
+import { useSelectedItemsStore } from "../../states/SelectedItemsStore";
 
 export default function CustomNode({ data }) {
   const navigate = useNavigate();
