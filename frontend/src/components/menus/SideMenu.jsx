@@ -37,10 +37,10 @@ export default function SideMenu() {
       </List>
       <Divider />
       <List>
-        {courses.map((courseObject, index) => {
-          //simulate clicking the course card button (pass courseId from the object, set node&edge stores to correct course by requesting backend,
-          // then route to coursepage )
-        })}
+        {/* TODO */}
+        {/* {courses.map((courseObject, index) => {
+          courses. treat as if you went back home then clicked a course card (handle caching?)
+        })} */}
       </List>
     </Box>
   );

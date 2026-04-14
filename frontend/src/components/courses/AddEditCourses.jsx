@@ -1,66 +1,52 @@
 import { useState, useEffect } from "react";
 import { Box, Drawer, Button } from "@mui/material";
+import { TextField } from "@mui/material";
 import axios from "axios";
 import CourseSelector from "./CourseSelector";
 
 export default function AddEditCourses({ getCourses, courses }) {
   const [open, setOpen] = useState(false);
-  const initialState = { courseInput: "" };
+  const initialState = { courseInput: "", courseId: -1, newName: "" };
   const [formData, setFormData] = useState(initialState); //to db
   const [submittable, setSubmittable] = useState(false);
   const [add, setAdd] = useState(true); //boolean flipped?
 
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
+    setFormData(initialState);
   };
 
-  const deleteCourse = async (e) => {
-    //should say warning making sure you want to delete this, all questions and nodes will be deleted as well
+  const modifyCourse = async (e, action) => {
     e.preventDefault();
+    const requestObject = {
+      url: `${import.meta.env.VITE_SERVER_URL}/${action}Course`,
+      data: formData,
+      headers: { headers: { "Content-Type": "application/json" } },
+    };
     try {
-      await axios.delete(
-        `${import.meta.env.VITE_SERVER_URL}/DeleteCourse`,
-        { data: formData },
-        { headers: { "Content-Type": "application/json" } },
-      );
+      if (action == "Delete") {
+        await axios.delete(
+          requestObject.url,
+          { data: requestObject.data },
+          requestObject.headers,
+        );
+      } else if (action == "Edit") {
+        await axios.patch(
+          requestObject.url,
+          requestObject.data,
+          requestObject.headers,
+        );
+      } else {
+        await axios.post(
+          requestObject.url,
+          requestObject.data,
+          requestObject.headers,
+        );
+      }
       setFormData(initialState);
       getCourses();
     } catch (error) {
-      console.log("Failed to delete: ", error);
-    }
-  };
-
-  const editCourse = async (e) => {
-    e.preventDefault();
-    try {
-      await axios.patch(
-        `${import.meta.env.VITE_SERVER_URL}/EditCourse`,
-        formData,
-        { headers: { "Content-Type": "application/json" } },
-      );
-      setFormData(initialState);
-      getCourses();
-    } catch (error) {
-      console.error("Failed to update: ", error);
-    }
-  };
-
-  const addCourse = async (e) => {
-    e.preventDefault();
-    if (formData.courseInput.length === 0) {
-      //add warning saying it cant be empty?
-      return;
-    }
-    try {
-      await axios.post(
-        `${import.meta.env.VITE_SERVER_URL}/AddCourse`,
-        formData,
-        { headers: { "Content-Type": "application/json" } },
-      );
-      setFormData(initialState);
-      getCourses();
-    } catch (error) {
-      console.error("Submission failed: ", error);
+      console.error("Failed to ", action);
     }
   };
 
@@ -68,7 +54,8 @@ export default function AddEditCourses({ getCourses, courses }) {
     setSubmittable(formData.courseInput?.trim().length > 0);
     const addOrEdit = courses?.some(
       (c) =>
-        c[0].trim().toLowerCase() === formData.courseInput.trim().toLowerCase(),
+        c.courseName.trim().toLowerCase() ===
+        formData.courseInput.trim().toLowerCase(),
     );
     setAdd(!addOrEdit);
   }, [formData.courseInput]);
@@ -86,7 +73,7 @@ export default function AddEditCourses({ getCourses, courses }) {
           variant="outlined"
           onClick={function (event) {
             toggleDrawer(false)();
-            addCourse(event);
+            modifyCourse(event, "Add");
           }}
         >
           Add {formData.courseInput}
@@ -97,22 +84,35 @@ export default function AddEditCourses({ getCourses, courses }) {
           variant="outlined"
           onClick={function (event) {
             toggleDrawer(false)();
-            editCourse(event);
-          }}
-        >
-          Edit {formData.courseInput}
-        </Button>
-      )}
-      {submittable && !add && formData.courseInput.length == 0 && (
-        <Button
-          variant="outlined"
-          onClick={function (event) {
-            toggleDrawer(false)();
-            deleteCourse(event);
+            modifyCourse(event, "Delete");
           }}
         >
           Delete {formData.courseInput}
         </Button>
+      )}
+
+      {submittable && !add && (
+        <>
+          <TextField
+            onChange={function (event) {
+              setFormData((prev) => ({
+                ...prev,
+                newName: event.target.value,
+              }));
+            }}
+            label="New Course Name"
+            variant="outlined"
+          />
+          <Button
+            variant="outlined"
+            onClick={function (event) {
+              toggleDrawer(false)();
+              modifyCourse(event, "Edit");
+            }}
+          >
+            Rename {formData.courseInput} to {formData.newName}
+          </Button>
+        </>
       )}
     </Box>
   );

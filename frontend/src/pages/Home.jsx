@@ -5,6 +5,7 @@ import AddEditCourses from "../components/courses/AddEditCourses";
 import { useCourseNodesStore } from "../states/CourseNodesStore";
 import { useCourseEdgesStore } from "../states/CourseEdgesStore";
 import { useCoursesStore } from "../states/CoursesStore";
+import { Grid } from "@mui/material";
 
 export default function Home() {
   // add header that says "welcome, username"
@@ -19,15 +20,13 @@ export default function Home() {
       const response = await axios.get(
         `${import.meta.env.VITE_SERVER_URL}/GetCourses`,
       );
-      setCourses(response.data.courses);
+      setCourses(response.data);
     } catch (Error) {
       console.log("Failed to retrieve courses: ", Error);
       setTimeout(() => getCourses(), 2000);
     }
   }, []);
   useEffect(() => {
-    clearNodes();
-    clearEdges();
     if (courses.length === 0) {
       getCourses();
     }
@@ -37,19 +36,20 @@ export default function Home() {
   function RenderCourseList() {
     if (renderReady) {
       return (
-        <>
+        <Grid container spacing={2}>
           {courses.map((course) => (
-            <CourseCard
-              key={course[1]}
-              courseName={course[0]}
-              courseId={course[1]}
-            />
+            <Grid key={course.courseId} size={4}>
+              <CourseCard
+                courseName={course.courseName}
+                courseId={course.courseId}
+              />
+            </Grid>
           ))}
           <div className="bottomleft">
             {" "}
             <AddEditCourses getCourses={getCourses} courses={courses} />{" "}
           </div>
-        </>
+        </Grid>
       );
     }
   }

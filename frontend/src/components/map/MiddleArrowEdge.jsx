@@ -39,6 +39,8 @@ export default function MiddleArrowEdge({
   // Compute angle in degrees (SVG rotate uses degrees)
   const angleDeg = (Math.atan2(dy, dx) * 180) / Math.PI;
 
+  const prefersDark = matchMedia("(prefers-color-scheme: dark)").matches;
+
   const editEdgeLabel = async (newLabel) => {
     let formData = { newLabel: newLabel, id: id };
     try {
@@ -87,7 +89,7 @@ export default function MiddleArrowEdge({
       <g transform={`translate(${midX}, ${midY}) rotate(${angleDeg})`}>
         <polygon
           points="0,-4 0,4 16,0"
-          fill={style.stroke || "#fff"}
+          fill={prefersDark ? "#eaeaea" : "#484848"}
           opacity="0.9"
         />
       </g>

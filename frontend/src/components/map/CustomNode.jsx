@@ -4,19 +4,20 @@ import { Outlet, useNavigate } from "react-router-dom";
 import { useSelectedItemsStore } from "../../states/SelectedItemsStore";
 
 export default function CustomNode({ data }) {
+  const prefersDark = matchMedia("(prefers-color-scheme:dark)").matches;
+  const selectedColor = prefersDark ? "#4f84db" : "#4f84db";
+  const defaultColor = prefersDark ? "#1f1f1f" : "#ffffff";
   const navigate = useNavigate();
   const [hover, setHover] = useState(false);
   const [selected, setSelected] = useState(false);
-  const defaultBackgroundColor = selected ? "#4f84db" : "#1f1f1f";
+  const defaultBackgroundColor = selected ? selectedColor : defaultColor;
   const addSelectedItem = useSelectedItemsStore((state) => state.addItem);
   const removeSelectedItem = useSelectedItemsStore((state) => state.removeItem);
   const selectedItems = useSelectedItemsStore((state) => state.selectedItems);
-
   const defaultStyle = {
     borderRadius: "12px",
     background: defaultBackgroundColor,
     border: "1px solid #ddd",
-    color: "#fff",
     padding: "10px 16px",
     textAlign: "center",
     display: "flex",
@@ -84,9 +85,7 @@ export default function CustomNode({ data }) {
       }}
       onClick={handleClickNode}
     >
-      <div style={{ color: "#fff" }} onClick={handleClickLink}>
-        {data.label}
-      </div>
+      <div onClick={handleClickLink}>{data.label}</div>
 
       <Outlet />
       {data.layout ? (

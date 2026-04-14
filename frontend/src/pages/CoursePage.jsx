@@ -21,6 +21,7 @@ function CoursePage() {
   const courseNodes = useCourseNodesStore((state) => state.courseNodes);
   const courseEdges = useCourseEdgesStore((state) => state.courseEdges);
   const setNodes = useCourseNodesStore((state) => state.setNodes);
+  const nodes = useCourseNodesStore((state) => state.courseNodes);
   const setEdges = useCourseEdgesStore((state) => state.setEdges);
   const [renderReady, setRenderReady] = useState(false);
 
@@ -38,7 +39,11 @@ function CoursePage() {
   };
 
   useEffect(() => {
-    if (nodesCourseId == -1 || nodesCourseId !== courseId) {
+    if (
+      nodesCourseId == -1 ||
+      nodesCourseId !== courseId ||
+      nodes.length == 0
+    ) {
       getConceptMapArguments(courseId);
     } else {
       setRenderReady(true);

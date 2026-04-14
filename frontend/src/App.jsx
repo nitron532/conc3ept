@@ -10,15 +10,30 @@ import CoursePage from "./pages/CoursePage.jsx";
 import Questions from "./pages/Questions.jsx";
 import Login from "./pages/Login.jsx";
 import SelectedItems from "./pages/SelectedItems.jsx";
+import { green, purple, yellow } from "@mui/material/colors";
 import { useState } from "react";
 
 function App() {
   const [login, setLogin] = useState(false); //global state thing
-  const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
 
   const theme = createTheme({
-    palette: {
-      mode: prefersDarkMode ? "dark" : "light",
+    colorSchemes: {
+      dark: true,
+    },
+    typography: {
+      button: { textTransform: "none" },
+      fontFamily: [
+        "-apple-system",
+        "BlinkMacSystemFont",
+        '"Segoe UI"',
+        "Roboto",
+        '"Helvetica Neue"',
+        "Arial",
+        "sans-serif",
+        '"Apple Color Emoji"',
+        '"Segoe UI Emoji"',
+        '"Segoe UI Symbol"',
+      ].join(","),
     },
   });
   return (

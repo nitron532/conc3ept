@@ -198,6 +198,7 @@ export default function SelectedItems() {
             title={"Lesson Plan's Distribution of Bloom's Cognitive Processes"}
             subtitle={"subtitle kaef"}
             highlightLevel={selectedItemLevel}
+            colorScale="blue"
           ></BloomPyramid>
         </Box>
       </Box>

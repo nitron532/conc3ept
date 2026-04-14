@@ -53,6 +53,17 @@ def AddNode():
         )
     return "OK", 200
 
+@app.route("/EditNodeName", methods = ["PATCH"])
+def EditNodeName():
+    data = request.json
+    (
+        supabase.table("Concepts")
+        .update({"conceptName": data["newName"]})
+        .eq("id", data["id"])
+        .execute()
+    )
+    return "OK", 200
+
 @app.route("/DeleteSelectedNodes", methods = ["DELETE"])
 def DeleteSelectedNodes():
     data = request.json
@@ -78,7 +89,6 @@ def DeleteSelectedNodes():
     )
     return "OK", 200
 
-#TODO get rid of this and just use delete selected nodes
 @app.route("/DeleteNode", methods = ["DELETE"])
 def DeleteNode():
     data = request.json
@@ -110,7 +120,7 @@ def EditEdgeLabel():
     newLabel = data["newLabel"]
     sourceId = data["id"][:data["id"].find("-")]
     targetId = data["id"][data["id"].find("-") + 1:]
-    editLabelResponse = (
+    (
         supabase.table("conceptlinks")
         .update({"linktype":newLabel})
         .eq("sourceconceptid", sourceId)
@@ -124,9 +134,7 @@ def EditNodeEdges():
     data = request.json
     courseId: int = data["courseId"]
     conceptId: int = data["id"]
-    print("data:", data)
     sourceToTargetPairs = [(int(id), conceptId) for id in data["incomingConnections"]] + [(conceptId,int(id)) for id in data["outgoingConnections"]]
-    print("sourcetotargetpairs:", sourceToTargetPairs)
     existing = (
         supabase.table("conceptlinks") 
             .select("sourceconceptid, targetconceptid") 
@@ -157,27 +165,6 @@ def EditNodeEdges():
                 .execute()
         )
     return "OK", 200
-
-@app.route("/GetConceptIds", methods = ["GET"])
-def GetConceptIds():
-    courseId: int = int(request.args.get("id"))
-    conceptNames: list[str] = []
-    conceptName: str = request.args.get("0")
-    i = 0
-    while(conceptName):
-        conceptNames.append(conceptName)
-        i+=1
-        conceptName = request.args.get(f"{i}")
-    conceptIdsResponse = (
-        supabase.table("Concepts")
-        .select("id")
-        .eq("courseid",courseId)
-        .in_("conceptName", conceptNames)
-        .execute()
-    )
-
-    return jsonify([id["id"] for id in conceptIdsResponse.data])
-
 
 @app.route("/GetGraph", methods = ["GET"])
 def GetGraph():
@@ -247,16 +234,6 @@ def getGraphHelper(courseId:int, selectedNodes):
     
     return jsonify({"nodes":nodes, "edges":edges})
 
-@app.route("/AddCourse", methods = ["POST"])
-def AddCourse():
-    data = request.json
-    (
-        supabase.table("Courses")
-        .insert({"courseName":data["courseInput"]})
-        .execute()
-    )
-    return "OK", 200
-
 @app.route("/GetCourses", methods = ["GET"])
 def GetCourses():
     courses = (
@@ -267,18 +244,40 @@ def GetCourses():
     courseNamesList: list[str] = [object["courseName"] for object in courses.data]
     courseIdList: list[int] = [object["id"] for object in courses.data]
     nameId = list(zip(courseNamesList, courseIdList))
-    return jsonify({"courses":nameId})
+    return jsonify([{"courseName": nId[0], "courseId": nId[1]} for nId in nameId])
 
-@app.route("/GetCourseId", methods = ["GET"]) # TODO fallback if courseid is undefined. Needs error handling
-def GetCourseId():
-    courseName: str = request.args.get("courseName")
-    courseIdResponse = (
+@app.route("/DeleteCourse", methods = ["DELETE"])
+def DeleteCourse():
+    data = request.json
+    courseId: int = data["courseId"]
+    (
         supabase.table("Courses")
-        .select("id")
-        .eq("courseName",courseName)
+        .delete()
+        .eq("id", courseId)
         .execute()
     )
-    return jsonify({"courseId": courseIdResponse.data[0]["id"]})
+    return "OK", 200
+
+@app.route("/AddCourse", methods = ["POST"])
+def AddCourse():
+    data = request.json
+    (
+        supabase.table("Courses")
+        .insert({"courseName":data["courseInput"]})
+        .execute()
+    )
+    return "OK", 200
+
+@app.route("/EditCourse", methods = ["PATCH"])
+def EditCourse():
+    data = request.json
+    (
+        supabase.table("Courses")
+        .update({"courseName": data["newName"]})
+        .eq("id", data["courseId"])
+        .execute()
+    )
+    return "OK", 200
 
 
 @app.route("/GetConceptMapArguments", methods = ["GET"])

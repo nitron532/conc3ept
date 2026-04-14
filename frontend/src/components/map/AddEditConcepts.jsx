@@ -4,6 +4,7 @@ import axios from "axios";
 import NodeSelector from "./NodeSelector";
 import EdgesSelector from "./EdgesSelector";
 import { useSelectedItemsStore } from "../../states/SelectedItemsStore";
+import { TextField } from "@mui/material";
 
 export default function AddEditConcepts({
   getConceptMapArguments,
@@ -14,6 +15,7 @@ export default function AddEditConcepts({
   const [open, setOpen] = useState(false);
   const initialState = {
     conceptInput: "",
+    newName: "",
     id: -1,
     outgoingConnections: [],
     incomingConnections: [],
@@ -30,6 +32,21 @@ export default function AddEditConcepts({
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
     setFormData(initialState);
+  };
+
+  const editNodeName = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.patch(
+        `${import.meta.env.VITE_SERVER_URL}/EditNodeName`,
+        formData,
+        { headers: { "Content-Type": "application/json" } },
+      );
+      setFormData(initialState);
+      getConceptMapArguments(courseId);
+    } catch (error) {
+      console.error("Could not update name: ", error);
+    }
   };
 
   const deleteNode = async (e) => {
@@ -157,6 +174,30 @@ export default function AddEditConcepts({
             Delete {formData.conceptInput}
           </Button>
         )}
+
+      {submittable && !add && (
+        <>
+          <TextField
+            onChange={function (event) {
+              setFormData((prev) => ({
+                ...prev,
+                newName: event.target.value,
+              }));
+            }}
+            label="New Concept Name"
+            variant="outlined"
+          />
+          <Button
+            variant="outlined"
+            onClick={function (event) {
+              toggleDrawer(false)();
+              editNodeName(event);
+            }}
+          >
+            Rename {formData.conceptInput} to {formData.newName}
+          </Button>
+        </>
+      )}
     </Box>
     //have a section where available nodes/edges pop up, instead of overlapping the other input fields?
   );

@@ -89,7 +89,7 @@ function ConceptMap({
     edgeType: "middleArrow",
     edgeAnimated: false,
     nodeStyle: {
-      backgroundColor: "#1f1f1f",
+      backgroundColor: "#fff",
       color: "#fff",
       borderRadius: 12,
     },
