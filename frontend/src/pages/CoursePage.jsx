@@ -41,8 +41,7 @@ function CoursePage() {
   useEffect(() => {
     if (
       nodesCourseId == -1 ||
-      nodesCourseId !== courseId ||
-      nodes.length == 0
+      nodesCourseId !== courseId
     ) {
       getConceptMapArguments(courseId);
     } else {
