@@ -120,7 +120,7 @@ export default function SelectedItems() {
           width: "100%",
         }}
       >
-        <Box sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
+        <Box sx={{ flex: 1.25, display: "flex", flexDirection: "column", gap: 2 }}>
           <Box
             sx={{
               maxHeight: "60vh",
@@ -192,11 +192,11 @@ export default function SelectedItems() {
           </Box>
         </Box>
 
-        <Box sx={{ flex: 1 }}>
+        <Box sx={{ flex: 2 }}>
           <BloomPyramid
             data={bloomsState}
-            title={"Lesson Plan's Distribution of Bloom's Cognitive Processes"}
-            subtitle={"subtitle kaef"}
+            // title={"Lesson Plan's Distribution of Bloom's Cognitive Processes"}
+            // subtitle={"subtitle kaef"}
             highlightLevel={selectedItemLevel}
             colorScale="blue"
           ></BloomPyramid>

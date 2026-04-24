@@ -67,9 +67,9 @@ export default function BloomPyramid({
     Create: 5,
   };
 
-  const PAD_TOP = title ? 72 : 16;
+  const PAD_TOP = title ? 32 : 16;
   const PAD_BOTTOM = showLegend ? 72 : 30;
-  const PAD_H = 64;
+  const PAD_H = 16;
   const LABEL_W = 200;
   const GAP = 1;
 
@@ -89,7 +89,7 @@ export default function BloomPyramid({
       const botFrac = (i + 1) / n;
       const halfTop = (pyramidW / 2) * topFrac;
       const halfBot = (pyramidW / 2) * botFrac;
-      const y = PAD_TOP + i * (sliceH + GAP);
+      const y = PAD_TOP - 32 + i * (sliceH + GAP);
       const cx = LABEL_W + PAD_H + pyramidW / 2;
       const x1 = cx - halfTop,
         x2 = cx + halfTop;
@@ -151,7 +151,7 @@ export default function BloomPyramid({
         userSelect: "none",
       }}
     >
-      {(title || subtitle) && (
+      {/* {(title || subtitle) && (
         <div
           style={{
             padding: "16px 10px 0",
@@ -178,7 +178,7 @@ export default function BloomPyramid({
             </span>
           )}
         </div>
-      )}
+      )} */}
 
       <svg
         viewBox={`0 0 ${totalSvgW} ${height}`}
