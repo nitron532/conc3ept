@@ -5,4 +5,4 @@ Stack:
 - Flask (backend)
 - PostgreSQL (metadata storage)
 
-*see conc3eptrag repository
+*see [conc3eptrag repository](https://github.com/nitron532/conc3eptrag/tree/main)
